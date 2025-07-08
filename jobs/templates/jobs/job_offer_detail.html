@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Detalles de la oferta</h1>
+<p><strong>Título:</strong> {{ job_offer.title }}</p>
+<p><strong>Descripción:</strong> {{ job_offer.description }}</p>
+<p><strong>Salario:</strong> {{ job_offer.salary }}</p>
+<p><strong>Fecha de publicación:</strong> {{ job_offer.published_date }}</p>
+<p><strong>Fecha de cierre:</strong> {{ job_offer.closing_date }}</p>
+<p><strong>Empresa:</strong> {{ job_offer.company.name }}</p>
+<p><strong>Ubicación:</strong> {{ job_offer.location }}</p>
+
+{% if job_offer.applications %}
+<h2>Aplicaciones</h2>
+<ul>
+    {% for application in job_offer.applications.all %}
+    <li>
+        <strong>{{ application.applicant.name }}</strong> - {{ application.status }}
+        <a href="{% url 'application_detail' application.id %}">Ver detalles</a>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No hay aplicaciones para esta oferta.</p>
+{% endif %}
+<a href="{% url 'job_offer_list' %}">Volver a la lista de ofertas</a>
+{% endblock %}
