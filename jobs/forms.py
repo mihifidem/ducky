@@ -1,5 +1,5 @@
 from django import forms
-from .models import JobOffer, JobApplication
+from .models import JobOffer, JobApplication, User
 
 
 class JobOfferForm(forms.ModelForm):
