@@ -40,10 +40,10 @@
             </div>
         {% endif %}
 
-        {% if user.is_authenticated and user.groups.filter(name='headhunter').exists %}
-        <div class="mt-4 text-center">
-            <a href="{% url 'create_offer' %}" class="btn btn-success">Crear Nueva Oferta</a>
-        </div>
-        {% endif %}
+        <!-- {% if user.is_authenticated and user.groups.filter(name='headhunter').exists %}
+            <div class="mt-4 text-center">
+                <a href="{% url 'create_offer' %}" class="btn btn-success">Crear Nueva Oferta</a>
+            </div>
+        {% endif %} -->
     </div>
 {% endblock %}

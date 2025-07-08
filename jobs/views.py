@@ -10,17 +10,18 @@ def create_offer(request):
     if not request.user.groups.filter(name='headhunter').exists():
         messages.error(request, "Solo los headhunters pueden crear ofertas.")
         return redirect('home')
-
+    form={}
     if request.method == 'POST':
         form = JobOfferForm(request.POST)
         if form.is_valid():
+            print("BANDERA")
             offer = form.save(commit=False)
             offer.created_by = request.user
             offer.save()
             messages.success(request, "Oferta creada correctamente.")
             return redirect('job_offer_list')
-    else:
-        form = JobOfferForm()
+    # else:
+    #     form = JobOfferForm()
 
     return render(request, 'jobs/create_offer.html', {'form': form})
 
