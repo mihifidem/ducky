@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestión de mi CV{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">🎓 Gestión de mi CV</h2>
+
+<!-- Perfil -->
+<div class="card mb-3">
+  <div class="card-header">📇 Perfil</div>
+  <div class="card-body d-flex align-items-center">
+    {% if profile.avatar %}
+    <img
+      src="{{ profile.avatar.url }}"
+      alt="Avatar"
+      width="150"
+      height="150"
+      class="rounded-circle me-3"
+      style="object-fit: cover"
+    />
+    {% else %}
+    <div
+      class="rounded-circle bg-secondary text-white d-flex justify-content-center align-items-center me-3"
+      style="width: 80px; height: 80px"
+    >
+      <span class="fs-4">{{ profile.user.username|first|upper }}</span>
+    </div>
+    {% endif %}
+
+    <div>
+      <p><strong>Nombre:</strong> {{ profile.user.username }}</p>
+      <p>
+        <strong>Teléfono:</strong> {{ profile.phone|default:"No especificado" }}
+      </p>
+      <p>
+        <strong>Fecha de nacimiento:</strong> {{profile.birthdate|date:"d/m/Y"|default:"No indicada" }}
+      </p>
+      <p>
+        <strong>Dirección:</strong> {{ profile.address|default:"No indicada" }}
+      </p>
+      <p><strong>Bio:</strong> {{ profile.bio|default:"No hay biografía." }}</p>
+      <a href="{% url 'profile' %}" class="btn btn-sm btn-outline-primary mt-2"
+        >Editar Perfil</a
+      >
+      <a
+        href="{% url 'delete_userprofile_confirm' %}"
+        class="btn btn-sm btn-outline-danger mt-2"
+        onclick="return true;"
+      >
+        Eliminar Perfil
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Experiencias -->
+<div class="card mb-3">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span>💼 Experiencias Laborales</span>
+    <a href="{% url 'add_experience' %}" class="btn btn-sm btn-success"
+      >Añadir</a
+    >
+  </div>
+  <div class="card-body">
+    {% for exp in experiences %}
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <div>
+        <strong>{{ exp.position }}</strong> en {{ exp.company }} ({{
+        exp.start_date }} - {{ exp.end_date|default:"Actualidad" }})
+      </div>
+      <div>
+        <a
+          href="{% url 'edit_experience' exp.pk %}"
+          class="btn btn-sm btn-outline-primary me-1"
+          >Editar</a
+        >
+        <a
+          href="{% url 'delete_experience' exp.pk %}"
+          class="btn btn-sm btn-outline-danger"
+          >Eliminar</a
+        >
+      </div>
+    </div>
+    {% empty %}
+    <p>No hay experiencias laborales aún.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Educación -->
+<div class="card mb-3">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span>🏫 Educación</span>
+    <a href="{% url 'add_education' %}" class="btn btn-sm btn-success"
+      >Añadir</a
+    >
+  </div>
+  <div class="card-body">
+    {% for edu in educations %}
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <div>
+        <strong>{{ edu.degree }}</strong> en {{ edu.institution }} ({{ edu.start_date }} - {{ edu.end_date|default:"Actualidad" }})
+      </div>
+      <div>
+        {% comment %}
+        <a
+          href="{% url 'edit_education' edu.pk %}"
+          class="btn btn-sm btn-outline-primary me-1"
+          >Editar</a
+        >
+        <a
+          href="{% url 'delete_education' edu.pk %}"
+          class="btn btn-sm btn-outline-danger"
+          >Eliminar</a
+        >
+        {% endcomment %}
+      </div>
+    </div>
+    {% empty %}
+    <p>No hay estudios registrados aún.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Idiomas -->
+<div class="card mb-3">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span>🌐 Idiomas</span>
+    {% comment %}
+    <a href="{% url 'add_language' %}" class="btn btn-sm btn-success">Añadir</a>
+    {% endcomment %}
+  </div>
+  <div class="card-body">
+    {% for lang in languages %}
+    <p>{{ lang.language }} - Nivel: {{ lang.level }}</p>
+    {% empty %}
+    <p>No hay idiomas registrados aún.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Habilidades Blandas -->
+<div class="card mb-3">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span>🧠 Habilidades Blandas</span>
+    {% comment %}
+    <a href="{% url 'add_softskill' %}" class="btn btn-sm btn-success"
+      >Añadir</a
+    >
+    {% endcomment %}
+  </div>
+  <div class="card-body">
+    {% for skill in softskills %}
+    <p>{{ skill.skill }}</p>
+    {% empty %}
+    <p>No hay habilidades blandas registradas aún.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Hobbies -->
+<div class="card mb-3">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span>🎯 Pasatiempos</span>
+    {% comment %} <a href="{% url 'add_hobby' %}" class="btn btn-sm btn-success">Añadir</a>  {% endcomment %}
+  </div>
+  <div class="card-body">
+    {% for hobby in hobbies %}
+    <p>{{ hobby.hobby }}</p>
+    {% empty %}
+    <p>No hay hobbies registrados aún.</p>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}
