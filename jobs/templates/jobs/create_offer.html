@@ -1,21 +1,55 @@
 {% extends "base.html" %}
 
+{% block title %}Crear Oferta{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
-    <h1 class="mb-4">Crear nueva oferta</h1>
+<h1>Crear Nueva Oferta</h1>
 
-    {% if form.errors %}
-        <div class="alert alert-danger">
-            <strong>¡Oops!</strong> Hay errores en el formulario. Revisa los campos marcados.
-        </div>
-    {% endif %}
+<form method="POST" action="{% url 'create_offer' %}">
+    {% csrf_token %}
 
-    <form method="post" novalidate>
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Publicar</button>
-        <a href="{% url 'ofertas_lista' %}" class="btn btn-secondary">Cancelar</a>
-    </form>
-</div>
+    <div>
+        <label for="id_title">Título de la Oferta:</label>
+        {{ form.title.errors }}
+        {{ form.title }}
+    </div>
+
+    <div>
+        <label for="id_description">Descripción:</label>
+        {{ form.description.errors }}
+        {{ form.description }}
+    </div>
+
+    <div>
+        <label for="id_category">Categoría:</label>
+        {{ form.category.errors }}
+        {{ form.category }}
+    </div>
+
+    <div>
+        <label for="id_salary">Salario:</label>
+        {{ form.salary.errors }}
+        {{ form.salary }}
+    </div>
+
+    <div>
+        <label for="id_location">Ubicación:</label>
+        {{ form.location.errors }}
+        {{ form.location }}
+    </div>
+
+    <div>
+        <label for="id_requirements">Requisitos:</label>
+        {{ form.requirements.errors }}
+        {{ form.requirements }}
+    </div>
+
+    <div>
+        <label for="id_benefits">Beneficios:</label>
+        {{ form.benefits.errors }}
+        {{ form.benefits }}
+    </div>
+
+    <button type="submit">Enviar Oferta </button>
+</form>
 {% endblock %}
-
