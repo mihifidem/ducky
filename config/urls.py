@@ -28,6 +28,7 @@ urlpatterns = [
     path('account/', include('account.urls')),
     path('', core_views.home, name='home'),  # Página de inicio
     path('account/', include('django.contrib.auth.urls')),  # login/logout
+    path('forum/', include('forum.urls')),  # URLs del foro
 
 
 ]

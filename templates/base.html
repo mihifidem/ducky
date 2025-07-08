@@ -48,6 +48,9 @@
                   <button type="submit" class="btn btn-outline-warning">Cerrar sesión</button>
                 </form>
               </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'forum_home' %}">Forums</a>
+              </li>
             {% else %}
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'login' %}">Iniciar sesión</a>
