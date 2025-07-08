@@ -14,9 +14,7 @@ class Sector(models.TextChoices):
     OTRO = 'Otro', 'Otro'
 
 class Profesional(User):
-    username = models.CharField(max_length=150, unique=True)
-    email = models.EmailField(unique=True)
-    password = models.CharField(max_length=128)
+    
     sector = models.CharField(max_length=50, choices=Sector.choices, default=Sector.OTRO)
 
 class Pregunta(models.Model):
