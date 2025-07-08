@@ -13,27 +13,40 @@ class Sector(models.TextChoices):
     MARKETING = 'Marketing', 'Marketing'
     OTRO = 'Otro', 'Otro'
 
-class Profesional(User):
-    
-    sector = models.CharField(max_length=50, choices=Sector.choices, default=Sector.OTRO)
+class SectoresProfesionales(models.Model):
+
+    sector = models.CharField(max_length=50, choices=Sector.choices, default=Sector.OTRO) 
+
+class Profesional(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    empresa = models.CharField(max_length=100)
+    sector = models.ForeignKey(SectoresProfesionales, on_delete=models.CASCADE)
+    email2 = models.EmailField()
+    direccion = models.CharField(max_length=100)
+    telefono = models.CharField(max_length=100)
+    bio = models.TextField()
+
+    def __str__(self):
+        return self.username
+
 
 class Pregunta(models.Model):
     pregunta = models.TextField()
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date_at = models.DateTimeField(auto_now_add=True)
+    user_question = models.ForeignKey(User, on_delete=models.CASCADE)
     professional_user = models.ForeignKey(Profesional, on_delete=models.CASCADE)
     is_public = models.BooleanField(default=True)
-    sector = models.ForeignKey(Sector, on_delete=models.CASCADE)
+    sector = models.ForeignKey(SectoresProfesionales, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.pregunta[:50] + "..."  # Return the first 50 characters of the question
+        return self.pregunta
     
 class Respuesta(models.Model):
     respuesta = models.TextField()
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
-    pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    professional_user = models.ForeignKey(Profesional, on_delete=models.CASCADE)
+    date_at = models.DateTimeField(auto_now_add=True)
+    question = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
+    user_answer = models.ForeignKey(User, on_delete=models.CASCADE)
+    professional_answer = models.ForeignKey(Profesional, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.respuesta[:50] + "..."  # Return the first 50 characters of the answer
+        return self.respuesta
