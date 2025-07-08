@@ -1,6 +1,16 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
+<<<<<<< HEAD
+=======
+from .models import UserJobExperience, UserEducation, UserLanguage, UserSoftSkill, UserHobby, UserProfile
+
+
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username']
+>>>>>>> 7a09ebf (Sesion 1-2-3)
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True, label='Correo electrónico')
@@ -24,3 +34,58 @@ class CustomAuthenticationForm(AuthenticationForm):
     password = forms.CharField(widget=forms.PasswordInput(attrs={
         'class': 'form-control', 'placeholder': 'Contraseña'
     }))
+<<<<<<< HEAD
+=======
+
+
+class UserJobExperienceForm(forms.ModelForm):
+    class Meta:
+        model = UserJobExperience
+        fields = ['position', 'company', 'start_date', 'end_date', 'description']
+        widgets = {
+            'start_date': forms.DateInput(attrs={'type': 'date'}),
+            'end_date': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+
+class UserEducationForm(forms.ModelForm):
+    class Meta:
+        model = UserEducation
+        fields = ['title', 'institution', 'start_date', 'end_date', 'description']
+        widgets = {
+            'start_date': forms.DateInput(attrs={'type': 'date'}),
+            'end_date': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+
+class UserLanguageForm(forms.ModelForm):
+    class Meta:
+        model = UserLanguage
+        fields = ['language', 'level']
+
+
+class UserSoftSkillForm(forms.ModelForm):
+    class Meta:
+        model = UserSoftSkill
+        fields = ['skill']
+
+class UserHobbyForm(forms.ModelForm):
+    class Meta:
+        model = UserHobby
+        fields = ['hobby']
+
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['avatar', 'phone', 'birthdate', 'address', 'bio']
+        widgets = {
+            'phone': forms.TextInput(attrs={'class': 'form-control'}),
+            'birthdate': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'address': forms.TextInput(attrs={'class': 'form-control'}),
+            'bio': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
+        
+        
+        
+>>>>>>> 7a09ebf (Sesion 1-2-3)
