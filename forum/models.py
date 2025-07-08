@@ -27,7 +27,7 @@ class Profesional(models.Model):
     bio = models.TextField()
 
     def __str__(self):
-        return self.username
+        return self.user.username
 
 
 class Pregunta(models.Model):
