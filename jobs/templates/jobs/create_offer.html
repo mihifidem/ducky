@@ -1,12 +1,21 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Crear nueva oferta</h1>
 
-<h1>Crear nueva oferta</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Publicar</button>
-</form>
+    {% if form.errors %}
+        <div class="alert alert-danger">
+            <strong>¡Oops!</strong> Hay errores en el formulario. Revisa los campos marcados.
+        </div>
+    {% endif %}
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Publicar</button>
+        <a href="{% url 'ofertas_lista' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
 {% endblock %}
 
