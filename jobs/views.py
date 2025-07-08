@@ -27,7 +27,17 @@ def create_offer(request):
 
 def job_offer_list(request):
     offers = JobOffer.objects.filter(is_active=True).order_by('-created_at')
-    return render(request, 'jobs/job_offer_list.html', {'offers': offers})
+    offers = JobOffer.objects.all()
+
+    # Comprobamos si el usuario es headhunter
+    is_headhunter = request.user.groups.filter(name='headhunter').exists()
+
+    return render(request, 'jobs/job_offer_list.html', {
+        'offers': offers,
+        'is_headhunter': is_headhunter,
+    })
+   
+    
 
 
 def job_offer_detail(request, pk):

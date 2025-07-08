@@ -7,6 +7,7 @@
 
 <form method="POST" action="{% url 'create_offer' %}">
     {% csrf_token %}
+    {{ form.as_p}}
 
     <div>
         <label for="id_title">Título de la Oferta:</label>

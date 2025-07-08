@@ -39,8 +39,10 @@
                 No hay ofertas de empleo activas en este momento.
             </div>
         {% endif %}
+{% if is_headhunter %}
+    <!-- Mostrar cosas para headhunters -->
 
-        {% if user.is_authenticated and user.groups.filter(name='headhunter').exists %}
+        
         <div class="mt-4 text-center">
             <a href="{% url 'create_offer' %}" class="btn btn-success">Crear Nueva Oferta</a>
         </div>

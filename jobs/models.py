@@ -3,16 +3,11 @@ from django.contrib.auth.models import User
 
 # Oferta de empleo creada por un headhunter
 class JobOffer(models.Model):
-    created_by = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='job_offers'  # headhunter
-    )
-    company_name = models.CharField(max_length=200)  # Nombre de la empresa (no es un modelo)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='job_offers')
+    company_name = models.CharField(max_length=200)
     title = models.CharField(max_length=200)
     description = models.TextField()
     location = models.CharField(max_length=100, blank=True)
-
     modality = models.CharField(
         max_length=20,
         choices=[
@@ -23,6 +18,9 @@ class JobOffer(models.Model):
         default='onsite'
     )
     salary = models.CharField(max_length=100, blank=True)
+    category = models.CharField(max_length=100, blank=True)
+    requirements = models.TextField(blank=True)
+    benefits = models.TextField(blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

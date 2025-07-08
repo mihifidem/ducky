@@ -12,7 +12,10 @@ class JobOfferForm(forms.ModelForm):
             'location',
             'modality',
             'salary',
-            'is_active'
+            'category',
+            'requirements',
+            'benefits',
+            'is_active',
         ]
 
 
