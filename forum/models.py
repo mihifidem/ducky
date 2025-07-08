@@ -14,8 +14,9 @@ class Sector(models.TextChoices):
     OTRO = 'Otro', 'Otro'
 
 class Profesional(User):
-    
+
     sector = models.CharField(max_length=50, choices=Sector.choices, default=Sector.OTRO)
+    empresa = models.CharField(max_length=100, blank=True, null=True)
 
 class Pregunta(models.Model):
     pregunta = models.TextField()
