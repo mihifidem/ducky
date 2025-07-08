@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Listado de Ofertas de Empleo{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h1 class="mb-4">Ofertas de Empleo Disponibles</h1>
+
+        {% if offers %}
+            <div class="row">
+                {% for offer in offers %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title text-primary">{{ offer.title }}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">{{ offer.company_name }} - {{ offer.location }}</h6>
+                                <p class="card-text flex-grow-1">{{ offer.description|truncatechars:150 }}</p>
+                                <ul class="list-group list-group-flush mb-3">
+                                    <li class="list-group-item">
+                                        <strong>Modalidad:</strong> {{ offer.modality }}
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>Salario:</strong> {{ offer.salary }}
+                                    </li>
+                                </ul>
+                                <div class="mt-auto">
+                                    <a href="{% url 'job_offer_detail' offer.pk %}" class="btn btn-outline-primary btn-sm">Ver Detalles</a>
+                                </div>
+                            </div>
+                            <div class="card-footer text-muted text-end">
+                                Publicado: {{ offer.created_at|date:"d M, Y" }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info" role="alert">
+                No hay ofertas de empleo activas en este momento.
+            </div>
+        {% endif %}
+
+        {% if user.is_authenticated and user.groups.filter(name='headhunter').exists %}
+        <div class="mt-4 text-center">
+            <a href="{% url 'create_offer' %}" class="btn btn-success">Crear Nueva Oferta</a>
+        </div>
+        {% endif %}
+    </div>
+{% endblock %}
