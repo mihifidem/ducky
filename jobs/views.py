@@ -10,7 +10,7 @@ def create_offer(request):
     if not request.user.groups.filter(name='headhunter').exists():
         messages.error(request, "Solo los headhunters pueden crear ofertas.")
         return redirect('home')
-
+    form={}
     if request.method == 'POST':
         form = JobOfferForm(request.POST)
         if form.is_valid():
@@ -19,13 +19,18 @@ def create_offer(request):
             offer.save()
             messages.success(request, "Oferta creada correctamente.")
             return redirect('job_offer_list')
-    else:
-        form = JobOfferForm()
+    # else:
+    #     form = JobOfferForm()
 
     return render(request, 'jobs/create_offer.html', {'form': form})
 
+from django.shortcuts import render
+from .models import JobOffer # Asume que tienes un modelo JobOffer
+# Importa el modelo User si necesitas acceder a él directamente, aunque request.user ya lo proporciona
+# from django.contrib.auth.models import User 
 
 def job_offer_list(request):
+<<<<<<< HEAD
     offers = JobOffer.objects.filter(is_active=True).order_by('-created_at')
     offers = JobOffer.objects.all()
 
@@ -38,6 +43,23 @@ def job_offer_list(request):
     })
    
     
+=======
+    offers = JobOffer.objects.all() # O tu lógica para obtener las ofertas
+
+    # Agrega esta lógica para verificar si el usuario es un headhunter
+    is_headhunter = False
+    if request.user.is_authenticated:
+        is_headhunter = request.user.groups.filter(name='headhunter').exists()
+
+    context = {
+        'offers': offers,
+        'is_headhunter': is_headhunter, # Pasa esta variable al contexto
+    }
+    return render(request, 'jobs/job_offer_list.html', context)
+# def job_offer_list(request):
+#     offers = JobOffer.objects.filter(is_active=True).order_by('-created_at')
+#     return render(request, 'jobs/job_offer_list.html', {'offers': offers})
+>>>>>>> 54909d7fb482761a61441433bb297c1b25098337
 
 
 def job_offer_detail(request, pk):
