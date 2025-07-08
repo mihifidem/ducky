@@ -28,6 +28,8 @@ urlpatterns = [
     path('account/', include('account.urls')),
     path('', core_views.home, name='home'),  # Página de inicio
     path('account/', include('django.contrib.auth.urls')),  # login/logout
+    path('jobs/', include('jobs.urls')),  # URLs de la app jobs
+   
 
 
 ]
