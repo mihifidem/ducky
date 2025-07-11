@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Foro - Ducky{% endblock %}
+
+{%block content%}
+    <h1 class="text-center fw-bold text-primary display-4 text-uppercase">DUCKY FORUM</h1>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2 class="card-title">Preguntas y respuestas</h2>
+                        <a href="" class="btn btn-primary float-end">Crear</a>
+                        <div class="list-group">
+                            {% for question in questions %}
+                                <a href="{% url 'forum_question' question.id %}" class="list-group-item list-group-item-action">
+                                    <h3 class="text-primary fw-bold">{{ question.title }}</h3>
+                                    <p>{{ question.content }}</p>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
