@@ -30,7 +30,7 @@ from .models import JobOffer # Asume que tienes un modelo JobOffer
 # from django.contrib.auth.models import User 
 
 def job_offer_list(request):
-<<<<<<< HEAD
+
     offers = JobOffer.objects.filter(is_active=True).order_by('-created_at')
     offers = JobOffer.objects.all()
 
@@ -43,7 +43,7 @@ def job_offer_list(request):
     })
    
     
-=======
+
     offers = JobOffer.objects.all() # O tu lógica para obtener las ofertas
 
     # Agrega esta lógica para verificar si el usuario es un headhunter
@@ -59,7 +59,6 @@ def job_offer_list(request):
 # def job_offer_list(request):
 #     offers = JobOffer.objects.filter(is_active=True).order_by('-created_at')
 #     return render(request, 'jobs/job_offer_list.html', {'offers': offers})
->>>>>>> 54909d7fb482761a61441433bb297c1b25098337
 
 
 def job_offer_detail(request, pk):
