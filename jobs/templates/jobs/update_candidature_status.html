@@ -1,0 +1,8 @@
+<h2>Cambiar estado de la candidatura</h2>
+<p>{{ candidature.user.username }} para {{ candidature.offer.title
+}}</p>
+<form method="post">
+{% csrf_token %}
+{{ form.as_p }}
+<button type="submit">Actualizar estado</button>
+</form>

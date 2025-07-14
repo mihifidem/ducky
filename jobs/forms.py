@@ -1,5 +1,5 @@
 from django import forms
-from .models import JobOffer, JobApplication, User
+from .models import JobOffer, JobApplication, User, Candidature
 
 
 class JobOfferForm(forms.ModelForm):
@@ -31,3 +31,8 @@ class JobApplicationForm(forms.ModelForm):
                 }
             )
         }
+
+class CandidatureStatusForm(forms.ModelForm):
+    class Meta:
+        model = Candidature
+        fields = ['estado']

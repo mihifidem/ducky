@@ -23,6 +23,7 @@ class JobOffer(models.Model):
     benefits = models.TextField(blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    headhunter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='job_offers_as_headhunter', null=True, blank=True)
 
     def __str__(self):
         return f"{self.title} at {self.company_name}"
@@ -47,4 +48,25 @@ class JobApplication(models.Model):
 
     def __str__(self):
         return f"{self.applicant.username} → {self.offer.title}"
+    
+class Candidature(models.Model):
+    ESTADO_CHOICES = [
+        ('pendiente', 'Pendiente'),
+        ('aceptado', 'Aceptado'),
+        ('rechazado', 'Rechazado'),
+    ]
+
+    offer = models.ForeignKey(
+        JobOffer, on_delete=models.CASCADE, related_name='candidatures'
+    )
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='candidatures'
+    )
+    estado = models.CharField(
+        max_length=20, choices=ESTADO_CHOICES, default='pendiente'
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.offer.title} ({self.estado})"
 

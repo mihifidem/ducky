@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .models import JobOffer, JobApplication
-from .forms import JobOfferForm, JobApplicationForm
+from .models import JobOffer, JobApplication, Candidature
+from .forms import JobOfferForm, JobApplicationForm, CandidatureStatusForm
 from django.contrib import messages
 
 
@@ -87,3 +87,40 @@ def apply_to_offer(request, pk):
         form = JobApplicationForm()
 
     return render(request, 'jobs/apply_to_offer.html', {'form': form, 'offer': offer})
+
+@login_required
+def headhunter_dashboard(request):
+    if not request.user.groups.filter(name='headhunter').exists():
+        messages.error(request, "Acceso restringido al rol headhunter.")
+        return redirect('home')
+
+    offers = JobOffer.objects.filter(created_by=request.user)
+    return render(request, 'jobs/headhunter_dashboard.html', {
+        'offers': offers
+    })
+
+@login_required
+def offer_applications(request, offer_id):
+    offer = get_object_or_404(JobOffer, id=offer_id, created_by=request.user)
+    applications = offer.applications.all()
+    return render(request, 'jobs/offer_applications.html', {
+        'offer': offer,
+        'applications': applications
+    })
+
+@login_required
+def update_candidature_status(request, candidature_id):
+    candidature = get_object_or_404(Candidature, id=candidature_id)
+
+    if request.method == 'POST':
+        form = CandidatureStatusForm(request.POST, instance=candidature)
+        if form.is_valid():
+            form.save()
+            return redirect('headhunter_dashboard')  # o la ruta deseada
+    else:
+        form = CandidatureStatusForm(instance=candidature)
+
+    return render(request, 'joboffers/update_candidature_status.html', {
+        'form': form,
+        'candidature': candidature
+    })
