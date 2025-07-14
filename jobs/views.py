@@ -5,12 +5,11 @@ from .forms import JobOfferForm, JobApplicationForm
 from django.contrib import messages
 
 
-@login_required
-def create_offer(request):
+def create_offer(request): # Agrege el metodo POST porque estaba en GET y no se guardaba la oferta
     if not request.user.groups.filter(name='headhunter').exists():
         messages.error(request, "Solo los headhunters pueden crear ofertas.")
         return redirect('home')
-    form={}
+
     if request.method == 'POST':
         form = JobOfferForm(request.POST)
         if form.is_valid():
@@ -18,9 +17,9 @@ def create_offer(request):
             offer.created_by = request.user
             offer.save()
             messages.success(request, "Oferta creada correctamente.")
-            return redirect('job_offer_list')
-    # else:
-    #     form = JobOfferForm()
+            return redirect('job_offer_list')  # Cambia esto si tu URL se llama diferente
+    else:
+        form = JobOfferForm()
 
     return render(request, 'jobs/create_offer.html', {'form': form})
 
@@ -44,21 +43,21 @@ def job_offer_list(request):
    
     
 
-    offers = JobOffer.objects.all() # O tu lógica para obtener las ofertas
+#     offers = JobOffer.objects.all() # O tu lógica para obtener las ofertas
 
-    # Agrega esta lógica para verificar si el usuario es un headhunter
-    is_headhunter = False
-    if request.user.is_authenticated:
-        is_headhunter = request.user.groups.filter(name='headhunter').exists()
+#     # Agrega esta lógica para verificar si el usuario es un headhunter
+#     is_headhunter = False
+#     if request.user.is_authenticated:
+#         is_headhunter = request.user.groups.filter(name='headhunter').exists()
 
-    context = {
-        'offers': offers,
-        'is_headhunter': is_headhunter, # Pasa esta variable al contexto
-    }
-    return render(request, 'jobs/job_offer_list.html', context)
-# def job_offer_list(request):
-#     offers = JobOffer.objects.filter(is_active=True).order_by('-created_at')
-#     return render(request, 'jobs/job_offer_list.html', {'offers': offers})
+#     context = {
+#         'offers': offers,
+#         'is_headhunter': is_headhunter, # Pasa esta variable al contexto
+#     }
+#     return render(request, 'jobs/job_offer_list.html', context)
+# # def job_offer_list(request):
+# #     offers = JobOffer.objects.filter(is_active=True).order_by('-created_at')
+# #     return render(request, 'jobs/job_offer_list.html', {'offers': offers})
 
 
 def job_offer_detail(request, pk):
