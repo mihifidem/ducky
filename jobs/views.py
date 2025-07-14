@@ -42,22 +42,23 @@ def job_offer_list(request):
     })
    
     
-
-#     offers = JobOffer.objects.all() # O tu lógica para obtener las ofertas
+=======
+    offers = JobOffer.objects.all() # O tu lógica para obtener las ofertas
 
 #     # Agrega esta lógica para verificar si el usuario es un headhunter
 #     is_headhunter = False
 #     if request.user.is_authenticated:
 #         is_headhunter = request.user.groups.filter(name='headhunter').exists()
 
-#     context = {
-#         'offers': offers,
-#         'is_headhunter': is_headhunter, # Pasa esta variable al contexto
-#     }
-#     return render(request, 'jobs/job_offer_list.html', context)
-# # def job_offer_list(request):
-# #     offers = JobOffer.objects.filter(is_active=True).order_by('-created_at')
-# #     return render(request, 'jobs/job_offer_list.html', {'offers': offers})
+    context = {
+        'offers': offers,
+        'is_headhunter': is_headhunter, # Pasa esta variable al contexto
+    }
+    return render(request, 'jobs/job_offer_list.html', context)
+# def job_offer_list(request):
+#     offers = JobOffer.objects.filter(is_active=True).order_by('-created_at')
+#     return render(request, 'jobs/job_offer_list.html', {'offers': offers})
+>>>>>>> 54909d7fb482761a61441433bb297c1b25098337
 
 
 def job_offer_detail(request, pk):
