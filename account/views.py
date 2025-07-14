@@ -7,12 +7,18 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .forms import UserJobExperienceForm, UserEducationForm, UserLanguageForm, UserSoftSkillForm, UserHobbyForm, UserProfileForm, UserForm, UserProfileForm
-from .models import (UserProfile, UserJobExperience, UserEducation,UserLanguage, UserSoftSkill, UserHobby)
+from .forms import UserJobExperienceForm, UserEducationForm, UserLanguageForm, UserSoftSkillForm, UserHobbyForm, UserProfileForm, UserForm, UserProfileForm, UserLanguageForm
+from .models import (UserProfile, UserJobExperience, UserEducation, UserLanguage, UserSoftSkill, UserHobby, Language, CVProfile)
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
-
+from .forms import CVProfileForm
+from .models import CVProfile
+from django.http import HttpResponse, JsonResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+import uuid
+from django.utils.text import slugify
 
 
 
@@ -266,3 +272,219 @@ def create_profile_view(request):
         form = UserProfileForm()
 
     return render(request, 'account/create_profile.html', {'form': form})
+
+# Edit Education View
+
+@login_required
+def edit_education(request, pk):
+    education = get_object_or_404(UserEducation, pk=pk, user=request.user)
+    if request.method == 'POST':
+        form = UserEducationForm(request.POST, instance=education)
+        if form.is_valid():
+            form.save()
+            return redirect('cv_panel')
+    else:
+        form = UserEducationForm(instance=education)
+    return render(request, 'account/education_form.html', {'form': form})
+
+@login_required
+def delete_education(request, pk):
+    education = get_object_or_404(UserEducation, pk=pk, user=request.user)
+    if request.method == 'POST':
+        education.delete()
+        return redirect('cv_panel')
+    return render(request, 'account/education_confirm_delete.html', {'education': education})
+
+# leanguage management views
+
+@login_required
+def edit_language(request, pk):
+    lang = get_object_or_404(UserLanguage, pk=pk, user=request.user)
+
+    if request.method == 'POST':
+        form = UserLanguageForm(request.POST, instance=lang)
+        if form.is_valid():
+            form.save()
+            return redirect('cv_panel')
+    else:
+        form = UserLanguageForm(instance=lang)
+
+    return render(request, 'account/edit_language.html', {'form': form})
+
+
+@login_required
+def delete_language(request, pk):
+    language = get_object_or_404(UserLanguage, pk=pk, user=request.user)
+    if request.method == 'POST':
+        language.delete()
+        return redirect('cv_panel')
+    return render(request, 'account/language_confirm_delete.html', {'language': language})
+
+
+# habilidades blandas
+
+@login_required
+def edit_softskill(request, pk):
+    softskill = get_object_or_404(UserSoftSkill, pk=pk, user=request.user)
+    if request.method == 'POST':
+        form = UserSoftSkillForm(request.POST, instance=softskill)
+        if form.is_valid():
+            form.save()
+            return redirect('cv_panel')
+    else:
+        form = UserSoftSkillForm(instance=softskill)
+    return render(request, 'account/edit_softskill.html', {'form': form})
+
+@login_required
+def delete_softskill(request, pk):
+    softskill = get_object_or_404(UserSoftSkill, pk=pk, user=request.user)
+    if request.method == 'POST':
+        softskill.delete()
+        return redirect('cv_panel')
+    return render(request, 'account/softskill_confirm_delete.html', {'softskill': softskill})
+
+
+# hobbies management views
+
+@login_required
+def edit_hobby(request, pk):
+    hobby = get_object_or_404(UserHobby, pk=pk, user=request.user)
+    if request.method == 'POST':
+        form = UserHobbyForm(request.POST, instance=hobby)
+        if form.is_valid():
+            form.save()
+            return redirect('cv_panel')
+    else:
+        form = UserHobbyForm(instance=hobby)
+    return render(request, 'account/edit_hobby.html', {'form': form})
+
+@login_required 
+def delete_hobby(request, pk):
+    hobby = get_object_or_404(UserHobby, pk=pk, user=request.user)
+    if request.method == 'POST':
+        hobby.delete()
+        return redirect('cv_panel')
+    return render(request, 'account/hobby_confirm_delete.html', {'hobby': hobby})
+
+
+# CV Profile management views
+
+
+@login_required
+def create_cv(request):
+    if request.method == 'POST':
+        form = CVProfileForm(request.POST, user=request.user)
+        if form.is_valid():
+            cv = form.save(commit=False)
+            cv.user = request.user
+            cv.save()
+            form.save_m2m()
+            return redirect('cv_list')
+    else:
+        form = CVProfileForm(user=request.user)
+        
+    return render(request, 'account/cv_form.html', {'form': form})
+
+
+
+@login_required
+def cv_list(request):
+    cvs = request.user.cv_profiles.all()
+    return render(request, 'account/cv_list.html', {'cvs': cvs})
+
+
+@login_required
+def cv_create(request):
+	if request.method == 'POST':
+		form = CVProfileForm(request.POST)
+		if form.is_valid():
+			cv = form.save(commit=False)
+			cv.user = request.user
+			cv.slug = slugify(f"{request.user.username}_{cv.title}")
+			cv.save()
+			form.save_m2m()
+			return redirect('cv_list')
+	else:
+		form = CVProfileForm()
+	return render(request, 'account/cv_form.html', {'form': form})
+
+@login_required
+def cv_edit(request, pk):
+	cv = get_object_or_404(CVProfile, pk=pk, user=request.user)
+	form = CVProfileForm(request.POST or None, instance=cv)
+	if form.is_valid():
+		form.save()
+		return redirect('cv_list')
+	return render(request, 'account/cv_form.html', {'form': form})
+
+@login_required
+def cv_delete(request, pk):
+	cv = get_object_or_404(CVProfile, pk=pk, user=request.user)
+	if request.method == 'POST':
+		cv.delete()
+		return redirect('cv_list')
+	return render(request, 'account/cv_confirm_delete.html', {'cv': cv})
+
+@login_required
+def cv_clone(request, pk):
+	cv = get_object_or_404(CVProfile, pk=pk, user=request.user)
+	clone = CVProfile.objects.create(
+		user=request.user,
+		title=cv.title + " (copia)",
+		slug=slugify(f"{cv.slug}_copy"),
+		skin=cv.skin
+	)
+	clone.selected_experiences.set(cv.selected_experiences.all())
+	clone.selected_educations.set(cv.selected_educations.all())
+	clone.selected_softskills.set(cv.selected_softskills.all())
+	clone.selected_languages.set(cv.selected_languages.all())
+	clone.selected_hobbies.set(cv.selected_hobbies.all())
+	return redirect('cv_list')
+
+
+# Vista para previsualizar el CV
+
+def preview_cv(request, slug):
+    cv = get_object_or_404(CVProfile, slug=slug)
+    template_map = {
+        'default': 'account/skins/cv_default.html',
+        'modern': 'account/skins/cv_modern.html',
+        'minimal': 'account/skins/cv_minimal.html',
+    }
+    template_path = template_map.get(cv.skin, 'account/skins/cv_default.html')
+    return render(request, template_path, {'cv': cv})
+
+
+
+# Vista para ver el CV en PDF
+
+def generate_cv_pdf(request, slug):
+    # Buscar el CV por slug
+    cv = get_object_or_404(CVProfile, slug=slug)
+    
+    # Mapeo de skins a templates
+    template_map = {
+        'default': 'account/skins/pdf/cv_default_pdf.html',
+        'modern': 'account/skins/pdf/cv_modern_pdf.html',
+        'minimal': 'account/skins/pdf/cv_minimal_pdf.html',
+    }
+
+    # Selección del template
+    template_path = template_map.get(cv.skin, 'account/skins/pdf/cv_default_pdf.html')
+    template = get_template(template_path)
+    
+    # Renderizar el HTML con el contexto
+    html = template.render({'cv': cv})
+
+    # Crear respuesta como PDF
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="{cv.slug}.pdf"'
+
+    # Generar PDF desde HTML
+    pisa_status = pisa.CreatePDF(html, dest=response)
+
+    # Comprobar errores
+    if pisa_status.err:
+        return HttpResponse('Error al generar el PDF', status=500)
+    
+    return response

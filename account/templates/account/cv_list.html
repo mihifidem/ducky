@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container my-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="text-primary">📁 Mis perfiles de CV</h3>
+    <a href="{% url 'cv_create' %}" class="btn btn-success">
+      <i class="bi bi-plus-lg"></i> Nuevo CV
+    </a>
+  </div>
+
+  {% if cvs %}
+    <ul class="list-group shadow-sm">
+      {% for cv in cvs %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+          <strong class="h5">{{ cv.title }}</strong><br>
+          <small class="text-muted">Creado el {{ cv.created_at|date:"d M Y" }}</small>
+        </div>
+        <div class="btn-group" role="group" aria-label="Acciones CV">
+          <a href="{% url 'cv_preview' cv.slug %}" class="btn btn-outline-info btn-sm" title="Ver CV">
+            <i class="bi bi-eye"></i> Ver
+          </a>
+          <a href="{% url 'cv_edit' cv.pk %}" class="btn btn-outline-warning btn-sm" title="Editar CV">
+            <i class="bi bi-pencil"></i> Editar
+          </a>
+
+          <a href="{% url 'cv_clone' cv.pk %}" class="btn btn-outline-secondary btn-sm" title="Clonar CV">
+            <i class="bi bi-files"></i> Clonar
+          </a>
+          <a href="{% url 'cv_delete' cv.pk %}" class="btn btn-outline-danger btn-sm" title="Eliminar CV">
+            <i class="bi bi-trash"></i> Eliminar
+          </a>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="alert alert-info text-center">
+      No tienes perfiles de CV creados aún. ¡Crea uno nuevo!
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

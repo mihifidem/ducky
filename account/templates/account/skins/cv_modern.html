@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block content %}
+<a href="{% url 'download_cv_pdf' slug=cv.slug %}" class="btn btn-primary mb-3">📄 Descargar PDF</a>
+
+<div class="container my-5">
+  <h1 class="mb-4 text-center">{{ cv.title }}</h1>
+  <div class="row g-4">
+    <div class="col-md-6">
+
+      
+      <div class="bg-primary text-white rounded p-3 shadow">
+        
+        <h3>📌 Experiencias</h3>
+        <ul class="list-unstyled">
+          {% for exp in cv.experiences.all %}
+          <li>
+            <h5>{{ exp.position }}</h5>
+            <p>{{ exp.company }} | <small>{{ exp.start_date }} - {{ exp.end_date|default:"Actualidad" }}</small></p>
+          </li>
+          {% empty %}
+          <li><em>No hay experiencias registradas.</em></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="bg-light rounded p-3 shadow">
+        <h3>🎓 Formación</h3>
+        <ul class="list-unstyled">
+          {% for edu in cv.educations.all %}
+          <li>
+            <h5>{{ edu.title }}</h5>
+            <p>{{ edu.institution }}</p>
+          </li>
+          {% empty %}
+          <li><em>No hay formación registrada.</em></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="bg-primary text-white rounded p-3 shadow">
+        <h3>🌍 Idiomas</h3>
+        <ul class="list-unstyled">
+          {% for lang in cv.languages.all %}
+          <li>{{ lang.language.name }} - {{ lang.level }}</li>
+          {% empty %}
+          <li><em>No hay idiomas registrados.</em></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="bg-light rounded p-3 shadow">
+        <h3>💡 Habilidades Blandas</h3>
+        <ul class="list-unstyled">
+          {% for skill in cv.softskills.all %}
+          <li>{{ skill.skill.name }}</li>
+          {% empty %}
+          <li><em>No hay habilidades blandas registradas.</em></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    <div class="col-12">
+      <div class="bg-primary text-white rounded p-3 shadow">
+        <h3>🎯 Hobbies</h3>
+        <ul class="list-unstyled">
+          {% for h in cv.hobbies.all %}
+          <li>{{ h.hobby.name }}</li>
+          {% empty %}
+          <li><em>No hay hobbies registrados.</em></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

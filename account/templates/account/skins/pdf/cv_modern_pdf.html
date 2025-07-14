@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: Helvetica, sans-serif;
+      font-size: 12px;
+      color: #333;
+      margin: 30px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    h3 {
+      margin-top: 20px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 5px;
+    }
+    .section {
+      margin-bottom: 25px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+    }
+    .primary-bg {
+      background-color: #f0f4ff;
+    }
+    .light-bg {
+      background-color: #f9f9f9;
+    }
+    ul {
+      padding-left: 15px;
+    }
+    li {
+      margin-bottom: 10px;
+    }
+    em {
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>{{ cv.title }}</h1>
+
+  <div class="section primary-bg">
+    <h3>📌 Experiencias</h3>
+    <ul>
+      {% for exp in cv.experiences.all %}
+      <li>
+        <strong>{{ exp.position }}</strong><br>
+        {{ exp.company }} | <small>{{ exp.start_date }} - {{ exp.end_date|default:"Actualidad" }}</small>
+      </li>
+      {% empty %}
+      <li><em>No hay experiencias registradas.</em></li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="section light-bg">
+    <h3>🎓 Formación</h3>
+    <ul>
+      {% for edu in cv.educations.all %}
+      <li>
+        <strong>{{ edu.title }}</strong><br>
+        {{ edu.institution }}
+      </li>
+      {% empty %}
+      <li><em>No hay formación registrada.</em></li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="section primary-bg">
+    <h3>🌍 Idiomas</h3>
+    <ul>
+      {% for lang in cv.languages.all %}
+      <li>{{ lang.language.name }} - {{ lang.level }}</li>
+      {% empty %}
+      <li><em>No hay idiomas registrados.</em></li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="section light-bg">
+    <h3>💡 Habilidades Blandas</h3>
+    <ul>
+      {% for skill in cv.softskills.all %}
+      <li>{{ skill.skill.name }}</li>
+      {% empty %}
+      <li><em>No hay habilidades blandas registradas.</em></li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="section primary-bg">
+    <h3>🎯 Hobbies</h3>
+    <ul>
+      {% for h in cv.hobbies.all %}
+      <li>{{ h.hobby.name }}</li>
+      {% empty %}
+      <li><em>No hay hobbies registrados.</em></li>
+      {% endfor %}
+    </ul>
+  </div>
+
+</body>
+</html>

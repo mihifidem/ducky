@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<a href="{% url 'download_cv_pdf' slug=cv.slug %}" class="btn btn-primary mb-3">📄 Descargar PDF</a>
+
+<div class="container my-5">
+  <h1 class="mb-4 text-center">{{ cv.title }}</h1>
+  <div class="border-start border-3 border-primary ps-3">
+    <section class="mb-4">
+
+      
+      <h3>📌 Experiencias</h3>
+
+      
+      {% for exp in cv.experiences.all %}
+      <p><strong>{{ exp.position }}</strong> en {{ exp.company }} ({{ exp.start_date }} - {{ exp.end_date|default:"Actualidad" }})</p>
+      {% empty %}
+      <p class="text-muted">No hay experiencias registradas.</p>
+      {% endfor %}
+    </section>
+
+    <section class="mb-4">
+      <h3>🎓 Formación</h3>
+      {% for edu in cv.educations.all %}
+      <p>{{ edu.title }} - {{ edu.institution }}</p>
+      {% empty %}
+      <p class="text-muted">No hay formación registrada.</p>
+      {% endfor %}
+    </section>
+
+    <section class="mb-4">
+      <h3>🌍 Idiomas</h3>
+      {% for lang in cv.languages.all %}
+      <p>{{ lang.language.name }} - {{ lang.level }}</p>
+      {% empty %}
+      <p class="text-muted">No hay idiomas registrados.</p>
+      {% endfor %}
+    </section>
+
+    <section class="mb-4">
+      <h3>💡 Habilidades Blandas</h3>
+      {% for skill in cv.softskills.all %}
+      <p>{{ skill.skill.name }}</p>
+      {% empty %}
+      <p class="text-muted">No hay habilidades blandas registradas.</p>
+      {% endfor %}
+    </section>
+
+    <section>
+      <h3>🎯 Hobbies</h3>
+      {% for h in cv.hobbies.all %}
+      <p>{{ h.hobby.name }}</p>
+      {% empty %}
+      <p class="text-muted">No hay hobbies registrados.</p>
+      {% endfor %}
+    </section>
+  </div>
+</div>
+{% endblock %}

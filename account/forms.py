@@ -1,16 +1,15 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-<<<<<<< HEAD
-=======
 from .models import UserJobExperience, UserEducation, UserLanguage, UserSoftSkill, UserHobby, UserProfile
+from .models import CVProfile
+
 
 
 class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username']
->>>>>>> 7a09ebf (Sesion 1-2-3)
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True, label='Correo electrónico')
@@ -34,8 +33,6 @@ class CustomAuthenticationForm(AuthenticationForm):
     password = forms.CharField(widget=forms.PasswordInput(attrs={
         'class': 'form-control', 'placeholder': 'Contraseña'
     }))
-<<<<<<< HEAD
-=======
 
 
 class UserJobExperienceForm(forms.ModelForm):
@@ -87,5 +84,20 @@ class UserProfileForm(forms.ModelForm):
         }
         
         
-        
->>>>>>> 7a09ebf (Sesion 1-2-3)
+# 🔹 CV Profile Form
+class CVProfileForm(forms.ModelForm):
+	class Meta:
+		model = CVProfile
+		fields = [
+			'title', 'skin', 'selected_experiences',
+			'selected_educations',
+			'selected_softskills', 'selected_languages',
+			'selected_hobbies'
+		]
+		widgets = {
+			'selected_experiences': forms.CheckboxSelectMultiple(),
+			'selected_educations': forms.CheckboxSelectMultiple(),
+			'selected_softskills': forms.CheckboxSelectMultiple(),
+			'selected_languages': forms.CheckboxSelectMultiple(),
+			'selected_hobbies': forms.CheckboxSelectMultiple(),
+		}

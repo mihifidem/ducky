@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: Helvetica, sans-serif;
+      font-size: 12px;
+      color: #333;
+      margin: 30px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    h3 {
+      margin-top: 20px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 4px;
+    }
+    p {
+      margin: 4px 0;
+    }
+    .section {
+      margin-bottom: 20px;
+    }
+    .muted {
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>{{ cv.title }}</h1>
+
+  <div class="section">
+    <h3>📌 Experiencias</h3>
+    {% if cv.experiences.all %}
+      {% for exp in cv.experiences.all %}
+        <p><strong>{{ exp.position }}</strong> en {{ exp.company }} ({{ exp.start_date }} - {{ exp.end_date|default:"Actualidad" }})</p>
+      {% endfor %}
+    {% else %}
+      <p class="muted">No hay experiencias registradas.</p>
+    {% endif %}
+  </div>
+
+  <div class="section">
+    <h3>🎓 Formación</h3>
+    {% if cv.educations.all %}
+      {% for edu in cv.educations.all %}
+        <p>{{ edu.title }} - {{ edu.institution }}</p>
+      {% endfor %}
+    {% else %}
+      <p class="muted">No hay formación registrada.</p>
+    {% endif %}
+  </div>
+
+  <div class="section">
+    <h3>🌍 Idiomas</h3>
+    {% if cv.languages.all %}
+      {% for lang in cv.languages.all %}
+        <p>{{ lang.language.name }} - {{ lang.level }}</p>
+      {% endfor %}
+    {% else %}
+      <p class="muted">No hay idiomas registrados.</p>
+    {% endif %}
+  </div>
+
+  <div class="section">
+    <h3>💡 Habilidades Blandas</h3>
+    {% if cv.softskills.all %}
+      {% for skill in cv.softskills.all %}
+        <p>{{ skill.skill.name }}</p>
+      {% endfor %}
+    {% else %}
+      <p class="muted">No hay habilidades blandas registradas.</p>
+    {% endif %}
+  </div>
+
+  <div class="section">
+    <h3>🎯 Hobbies</h3>
+    {% if cv.hobbies.all %}
+      {% for h in cv.hobbies.all %}
+        <p>{{ h.hobby.name }}</p>
+      {% endfor %}
+    {% else %}
+      <p class="muted">No hay hobbies registrados.</p>
+    {% endif %}
+  </div>
+
+</body>
+</html>

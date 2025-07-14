@@ -1,9 +1,8 @@
 from django.db import models
-<<<<<<< HEAD
-
-# Create your models here.
-=======
 from django.contrib.auth.models import User
+from django.db import models
+from django.contrib.auth.models import User
+from django.utils.text import slugify
 
 # 🔹 1. UserProfile (1-1 con User)
 class UserProfile(models.Model):
@@ -91,20 +90,39 @@ class UserEducation(models.Model):
         return f"{self.title} at {self.institution}"
 
 
-# 🔹 7. CVProfile (1-N con User)
+# CV Profile Sections
+
 class CVProfile(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    SKIN_CHOICES = [
+        ('default', 'Clásico'),
+        ('modern', 'Moderno'),
+        ('minimal', 'Minimalista'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='cv_profiles')
     title = models.CharField(max_length=100)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(unique=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    skin = models.CharField(max_length=50, choices=SKIN_CHOICES, default='default')
+
+    # Secciones individuales: relaciones M2M con modelos propios del usuario
+    selected_experiences = models.ManyToManyField(UserJobExperience, blank=True)
+    selected_educations = models.ManyToManyField(UserEducation,blank=True)
+    selected_softskills = models.ManyToManyField(UserSoftSkill,blank=True)
+    selected_languages = models.ManyToManyField(UserLanguage,blank=True)
+    selected_hobbies = models.ManyToManyField(UserHobby, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    include_profile = models.BooleanField(default=True)
-    include_jobs = models.BooleanField(default=True)
-    include_education = models.BooleanField(default=True)
-    include_languages = models.BooleanField(default=True)
-    include_softskills = models.BooleanField(default=True)
-    include_hobbies = models.BooleanField(default=False)
-
     def __str__(self):
-        return self.title
->>>>>>> 7a09ebf (Sesion 1-2-3)
+        return f"{self.user.username} - {self.title}"
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(f"{self.user.username}-{self.title}")
+            count = 1
+            unique_slug = base_slug
+            while CVProfile.objects.filter(slug=unique_slug).exists():
+                unique_slug = f"{base_slug}-{count}"
+                count += 1
+            self.slug = unique_slug
+        super().save(*args, **kwargs)
