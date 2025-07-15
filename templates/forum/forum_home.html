@@ -13,10 +13,11 @@
     <div class="row">
         {% for pregunta in preguntas %}
         <div class="col-12 mb-3">
+            <a href="{% url 'pregunta_detail' pregunta.id %}" class="text-decoration-none">
             <div class="card border-primary">
                 <div class="card-body">
                     <strong>{{ pregunta.user_question.username }} : 
-                        <a href="{% url 'pregunta_detail' pregunta.id %}" class="text-dark text-decoration-none">{{ pregunta.titulo }}</a>
+                        <span class="text-dark text-decoration-none">{{ pregunta.titulo }}</span>
                     </strong>
                     
                     <br>
@@ -24,6 +25,7 @@
                     <small class="text-muted">Sector: {{ pregunta.sector }} | Fecha: {{ pregunta.date_at|date:"d/m/Y H:i" }} | Respuestas: {{ pregunta.respuesta_set.count }}</small>
                 </div>
             </div>
+            </a>
         </div>
         {% endfor %}
     </div>

@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from .models import Pregunta, Profesional, Respuesta
 from .forms import PreguntaFormPublic, RespuestaForm, PreguntaFormPrivate
+from django.urls import reverse_lazy
+from django.views.generic import UpdateView, DeleteView, DetailView
 # Create your views here.
 
 def forum_home(request):
@@ -64,3 +66,46 @@ def respuesta_edit(request, pk):
 
 def respuesta_delete(request, pk):  
     return render(request, 'forum/respuesta_delete.html', {'pk': pk})
+
+class PreguntaDetailView(DetailView):
+    model = Pregunta
+    template_name = 'forum/pregunta_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['respuestas'] = Respuesta.objects.filter(question=self.object).order_by('-date_at')
+        return context
+    
+class PreguntaUpadteView(UpdateView):
+    model = Pregunta
+    form_class = PreguntaFormPublic
+    template_name = 'forum/pregunta_edit.html'
+    success_url = reverse_lazy('forum_home')
+
+    def get_question(self):
+        return Pregunta.objects.filter(user_question=self.request.user)
+    
+class PreguntaDeleteView(DeleteView):
+    model = Pregunta
+    template_name = 'forum/pregunta_delete.html'
+    success_url = reverse_lazy('forum_home')
+
+    def get_question(self):
+        return Pregunta.objects.filter(user_question=self.request.user)
+    
+class RespuestaUpadteView(UpdateView):
+    model = Respuesta
+    form_class = RespuestaForm
+    template_name = 'forum/respuesta_edit.html'
+    success_url = reverse_lazy('forum_home')
+
+    def get_question(self):
+        return Respuesta.objects.filter(user_answer=self.request.user)
+
+class RespuestaDeleteView(DeleteView):
+    model = Respuesta
+    template_name = 'forum/respuesta_delete.html'
+    success_url = reverse_lazy('forum_home')
+
+    def get_question(self):
+        return Respuesta.objects.filter(user_answer=self.request.user)
