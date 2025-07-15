@@ -4,7 +4,7 @@ from .forms import PreguntaFormPublic, RespuestaForm, PreguntaFormPrivate
 # Create your views here.
 
 def forum_home(request):
-    preguntas = Pregunta.objects.all().order_by('-date_at')
+    preguntas = Pregunta.objects.filter(is_public=True).order_by('-date_at')
     respuestas = Respuesta.objects.filter(question__in=preguntas).order_by('-date_at')
     return render(request, 'forum/forum_home.html', {'preguntas': preguntas, 'respuestas': respuestas})
 
@@ -14,7 +14,17 @@ def pregunta_detail(request, pk):
     return render(request, 'forum/pregunta_detail.html', {'pregunta': pregunta, 'respuestas': respuestas})
 
 def pregunta_create_private(request):
-    return render(request, 'forum/pregunta_create_private.html')
+    if request.method == 'POST':
+        form = PreguntaFormPrivate(request.POST)
+        if form.is_valid():
+            pregunta = form.save(commit=False)
+            pregunta.user_question = request.user
+            pregunta.is_public = False
+            pregunta.save()
+            return redirect('pregunta_detail', pk=pregunta.pk)
+    else:
+        form = PreguntaFormPrivate()
+    return render(request, 'forum/pregunta_create_private.html', {'form': form})
 
 def pregunta_create_public(request):
     if request.method == 'POST':
