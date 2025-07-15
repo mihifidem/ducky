@@ -9,12 +9,30 @@
     </a>
     <p><strong>Por:</strong> {{ pregunta.user_question.username }} <small class="text-muted">{{ pregunta.date_at|date:"d/m/Y H:i" }}</small></p>
     <h1 class="mb-4">{{ pregunta.titulo }}</h1>
-    <div class="card border-primary mb-4">
+    <div class="card border-primary mb-4 ">
         <div class="card-body">
             <p><strong>Sector:</strong> {{ pregunta.sector }}</p>
-            <hr>
+             <hr>
             <p class="fs-5">{{ pregunta.pregunta }}</p>
+
+            {% if user == pregunta.user_question %}
+            <div>
+                <a 
+                href="{% url 'pregunta_edit' pregunta.id %}" 
+                class="btn btn-sm btn-primary mr-2"
+                >
+                 <i class="material-icons align-middle">edit</i> Editar
+                </a>
+                <a 
+                 href="{% url 'pregunta_delete' pregunta.id %}" 
+                 class="btn btn-sm btn-danger"
+                >
+                 <i class="material-icons align-middle">delete</i> Eliminar
+                </a>
+            </div>
+            {% endif %}
         </div>
+    
     </div>
 
     <h3>Respuestas</h3>
@@ -25,6 +43,22 @@
                     <p>{{ respuesta.respuesta }}</p>
                     <small class="text-muted">Por: {{ respuesta.user_answer.username }} | Fecha: {{ respuesta.date_at|date:"d/m/Y H:i" }}</small>
                 </div>
+                {% if user == respuesta.user_answer %}
+                <div class="card-footer">
+                    <a 
+                    href="{% url 'respuesta_edit' respuesta.id %}" 
+                    class="btn btn-sm btn-primary mr-2"
+                    >
+                     <i class="material-icons align-middle">edit</i> Editar
+                    </a>
+                    <a 
+                     href="{% url 'respuesta_delete' respuesta.id %}" 
+                     class="btn btn-sm btn-danger"
+                    >
+                     <i class="material-icons align-middle">delete</i> Eliminar
+                    </a>
+                </div>
+                {% endif %}
             </div>
         {% endfor %}
     {% else %}
