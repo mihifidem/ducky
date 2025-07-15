@@ -20,8 +20,15 @@
     cursor: pointer;
 
     text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+.custombutton:hover{
+    background-color: #0871e0;
 }
 
-.custombutton:hover{
-    background-color: #0362c9;
+.customfooter{
+    background-color: #f8f9fa;
+    margin-top: 2.5rem;
+    padding: 1.5rem 0;
+    text-align: center;
 }

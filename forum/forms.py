@@ -6,7 +6,9 @@ class PreguntaFormPublic(forms.ModelForm):
         model = Pregunta
         fields = ['titulo', 'pregunta', 'sector']
         widgets = {
-            'sector': forms.Select(attrs={'class': 'form-control'}),
+            'sector': forms.Select(attrs={
+                'class': 'form-control pattern',
+                'pattern': '[0-9]',}),
             'pregunta': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
             'titulo': forms.TextInput(attrs={'class': 'form-control'}),
         }
