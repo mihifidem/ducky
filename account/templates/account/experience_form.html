@@ -3,26 +3,34 @@
 {% block title %}{{ form.instance.pk|yesno:"Editar experiencia,Añadir experiencia" }}{% endblock %}
 
 {% block content %}
-<h2>{{ form.instance.pk|yesno:"Editar experiencia,Añadir experiencia" }}</h2>
+<div class="container my-5" style="max-width: 600px;">
+  <div class="card shadow-sm p-4">
+    <h2 class="mb-4 text-center text-primary">
+      {{ form.instance.pk|yesno:"✏️ Editar experiencia,➕ Añadir experiencia" }}
+    </h2>
 
-<form method="post" class="card p-4 shadow-sm">
-  {% csrf_token %}
-  
-  {% if form.errors %}
-    <div class="alert alert-danger">
-      <ul>
-        {% for field in form %}
-          {% for error in field.errors %}
-            <li><strong>{{ field.label }}:</strong> {{ error }}</li>
-          {% endfor %}
-        {% endfor %}
-      </ul>
-    </div>
-  {% endif %}
-  
-  {{ form.as_p }}
+    <form method="post" novalidate>
+      {% csrf_token %}
 
-  <button type="submit" class="btn btn-primary">Guardar</button>
-  <a href="{% url 'cv_panel' %}" class="btn btn-secondary ms-2">Cancelar</a>
-</form>
+      {% if form.errors %}
+        <div class="alert alert-danger">
+          <ul class="mb-0">
+            {% for field in form %}
+              {% for error in field.errors %}
+                <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+              {% endfor %}
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      {{ form.as_p }}
+
+      <div class="d-flex justify-content-between mt-4">
+        <button type="submit" class="btn btn-success px-4">Guardar</button>
+        <a href="{% url 'cv_panel' %}" class="btn btn-outline-secondary px-4">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
 {% endblock %}

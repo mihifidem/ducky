@@ -19,6 +19,9 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 import uuid
 from django.utils.text import slugify
+from django.template.loader import render_to_string
+import weasyprint
+
 
 
 
@@ -273,6 +276,33 @@ def create_profile_view(request):
 
     return render(request, 'account/create_profile.html', {'form': form})
 
+# panel view for CV management
+
+@login_required
+def cv_panel_view(request):
+    user = request.user
+    try:
+        profile = user.userprofile
+    except ObjectDoesNotExist:
+        return redirect('profile_create')  
+
+    experiences = UserJobExperience.objects.filter(user=user)
+    educations = UserEducation.objects.filter(user=user)
+    languages = UserLanguage.objects.filter(user=user)
+    softskills = UserSoftSkill.objects.filter(user=user)
+    hobbies = UserHobby.objects.filter(user=user)
+
+    context = {
+        'profile': profile,
+        'experiences': experiences,
+        'educations': educations,
+        'languages': languages,
+        'softskills': softskills,
+        'hobbies': hobbies,
+    }
+    return render(request, 'account/cv_panel.html', context)
+
+
 # Edit Education View
 
 @login_required
@@ -488,3 +518,30 @@ def generate_cv_pdf(request, slug):
         return HttpResponse('Error al generar el PDF', status=500)
     
     return response
+
+# Vista cv Public
+
+def cv_public_view(request, slug):
+    cv = get_object_or_404(CVProfile, slug=slug)
+    return render(request, f'account/skins/cv_{cv.skin}.html', {'cv': cv})
+
+# exportar pdf
+
+def cv_download_pdf(request, pk):
+    cv = get_object_or_404(CVProfile, pk=pk, user=request.user)
+    
+    html = render_to_string(f'accounts/cv/skins/{cv.skin}.html', {'cv': cv})
+    
+    pdf = weasyprint.HTML(string=html).write_pdf()
+    
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="{cv.slug}.pdf"'
+    
+    return response
+
+# cv vista lista
+
+@login_required
+def cv_list_view(request):
+    cvs = CVProfile.objects.filter(user=request.user)
+    return render(request, 'account/skins/cv_list.html', {'cvs': cvs})

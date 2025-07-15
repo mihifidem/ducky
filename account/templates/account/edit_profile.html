@@ -3,33 +3,49 @@
 {% block title %}Editar Perfil{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">✏️ Editar Perfil</h2>
+<div class="container py-4">
+  <h2 class="mb-4 text-primary"><i class="bi bi-pencil-square"></i> Editar Perfil</h2>
 
-<form method="post" enctype="multipart/form-data" class="card shadow-sm p-4">
-  {% csrf_token %}
+  <form method="post" enctype="multipart/form-data" class="card shadow-sm p-4 border-0 bg-light">
+    {% csrf_token %}
 
-  {% if user_form.errors or profile_form.errors %}
-    <div class="alert alert-danger">
-      <ul>
-        {% for field in user_form %}
-          {% for error in field.errors %}
-            <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+    {% if user_form.errors or profile_form.errors %}
+      <div class="alert alert-danger">
+        <h5 class="alert-heading">Errores en el formulario</h5>
+        <ul class="mb-0">
+          {% for field in user_form %}
+            {% for error in field.errors %}
+              <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+            {% endfor %}
           {% endfor %}
-        {% endfor %}
-        {% for field in profile_form %}
-          {% for error in field.errors %}
-            <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+          {% for field in profile_form %}
+            {% for error in field.errors %}
+              <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+            {% endfor %}
           {% endfor %}
-        {% endfor %}
-      </ul>
+        </ul>
+      </div>
+    {% endif %}
+
+    <div class="row">
+      <div class="col-md-6">
+        <h5 class="text-secondary mb-3">Datos de Usuario</h5>
+        {{ user_form.as_p }}
+      </div>
+      <div class="col-md-6">
+        <h5 class="text-secondary mb-3">Información del Perfil</h5>
+        {{ profile_form.as_p }}
+      </div>
     </div>
-  {% endif %}
 
-  {{ user_form.as_p }}
-  {{ profile_form.as_p }}
-
-  <button type="submit" class="btn btn-primary">Guardar cambios</button>
-  <a href="{% url 'cv_panel' %}" class="btn btn-secondary ms-2">Cancelar</a>
-</form>
-
+    <div class="mt-4 d-flex justify-content-between">
+      <a href="{% url 'cv_panel' %}" class="btn btn-secondary">
+        <i class="bi bi-x-circle"></i> Cancelar
+      </a>
+      <button type="submit" class="btn btn-success">
+        <i class="bi bi-save"></i> Guardar cambios
+      </button>
+    </div>
+  </form>
+</div>
 {% endblock %}

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import UserRegisterView, UserLoginView, UserLogoutView, profile_view, cv_edit, cv_list, cv_create, cv_delete, cv_clone, generate_cv_pdf, signup_view, dashboard_view, cv_panel_view, edit_profile, delete_userprofile
+from .views import UserRegisterView, UserLoginView, UserLogoutView, profile_view, cv_edit, cv_list, cv_create, cv_delete, cv_clone, generate_cv_pdf, signup_view, dashboard_view, cv_panel_view, edit_profile, delete_userprofile, cv_public_view
 from . import views
 
 
@@ -60,7 +60,9 @@ urlpatterns = [
         
     
     # PDF generation URL
-    path('cvs/<slug:slug>/download/', generate_cv_pdf,name='download_cv_pdf')
+    path('cvs/<slug:slug>/download/', generate_cv_pdf,name='download_cv_pdf'),
+    # Public CV view URL
+    path('cv/<slug:slug>/', cv_public_view, name='cv_public_view'),
 
 ]
 

@@ -1,43 +1,70 @@
+
 {% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Mis CVs personalizados{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+{% endblock %}
+
 {% block content %}
-<div class="container my-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h3 class="text-primary">📁 Mis perfiles de CV</h3>
-    <a href="{% url 'cv_create' %}" class="btn btn-success">
-      <i class="bi bi-plus-lg"></i> Nuevo CV
-    </a>
-  </div>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
 
-  {% if cvs %}
-    <ul class="list-group shadow-sm">
-      {% for cv in cvs %}
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <div>
-          <strong class="h5">{{ cv.title }}</strong><br>
-          <small class="text-muted">Creado el {{ cv.created_at|date:"d M Y" }}</small>
-        </div>
-        <div class="btn-group" role="group" aria-label="Acciones CV">
-          <a href="{% url 'cv_preview' cv.slug %}" class="btn btn-outline-info btn-sm" title="Ver CV">
-            <i class="bi bi-eye"></i> Ver
-          </a>
-          <a href="{% url 'cv_edit' cv.pk %}" class="btn btn-outline-warning btn-sm" title="Editar CV">
-            <i class="bi bi-pencil"></i> Editar
-          </a>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="mb-0">📋 Mis CVs personalizados</h1>
+                <div>
+                    <a href="{% url 'cv_create' %}" class="btn btn-success shadow-sm me-2">
+                        <i class="bi bi-plus-circle-fill"></i> Nuevo CV
+                    </a>
+                    <a href="{% url 'cv_panel' %}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </div>
 
-          <a href="{% url 'cv_clone' cv.pk %}" class="btn btn-outline-secondary btn-sm" title="Clonar CV">
-            <i class="bi bi-files"></i> Clonar
-          </a>
-          <a href="{% url 'cv_delete' cv.pk %}" class="btn btn-outline-danger btn-sm" title="Eliminar CV">
-            <i class="bi bi-trash"></i> Eliminar
-          </a>
+            {% for cv in cvs %}
+            <div class="card mb-4 {{ cv.skin }}-card">
+                <div class="card-body">
+                    <h5 class="card-title {{ cv.skin }}-title">{{ cv.title }}</h5>
+                    <h6 class="card-subtitle mb-2">📅 Creado el {{ cv.created_at|date:"d/m/Y" }}</h6>
+                    <h6 class="card-subtitle mb-2 text-muted">📝 Última modificación: {{ cv.updated_at|date:"d/m/Y H:i" }}</h6>
+
+                    <p class="card-text">
+                        {{ cv.selected_experiences.count }} experiencias ·
+                        {{ cv.selected_educations.count }} educaciones ·
+                        {{ cv.selected_languages.count }} idiomas ·
+                        {{ cv.selected_softskills.count }} soft skills ·
+                        {{ cv.selected_hobbies.count }} hobbies
+                    </p>
+
+                    <div class="btn-group">
+                        <a href="{% url 'cv_public_view' slug=cv.slug %}" target="_blank" class="btn btn-outline-primary btn-sm">
+                            🌐 Ver
+                        </a>
+                        <a href="{% url 'cv_edit' pk=cv.pk %}" class="btn btn-outline-secondary btn-sm">
+                            ✏️ Editar
+                        </a>
+                        <a href="{% url 'cv_clone' pk=cv.pk %}" class="btn btn-outline-warning btn-sm">
+                            📋 Clonar
+                        </a>
+                        <a href="{% url 'cv_delete' pk=cv.pk %}" class="btn btn-outline-danger btn-sm">
+                            🗑️ Eliminar
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="alert alert-info text-center">
+                No has creado ningún CV aún. Haz clic en <strong>Nuevo CV</strong> para comenzar.
+            </div>
+            {% endfor %}
+
         </div>
-      </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <div class="alert alert-info text-center">
-      No tienes perfiles de CV creados aún. ¡Crea uno nuevo!
     </div>
-  {% endif %}
 </div>
 {% endblock %}

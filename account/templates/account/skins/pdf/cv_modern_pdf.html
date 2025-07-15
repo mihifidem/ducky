@@ -48,7 +48,7 @@
   <div class="section primary-bg">
     <h3>📌 Experiencias</h3>
     <ul>
-      {% for exp in cv.experiences.all %}
+      {% for exp in cv.selected_experiences.all %}
       <li>
         <strong>{{ exp.position }}</strong><br>
         {{ exp.company }} | <small>{{ exp.start_date }} - {{ exp.end_date|default:"Actualidad" }}</small>
@@ -62,7 +62,7 @@
   <div class="section light-bg">
     <h3>🎓 Formación</h3>
     <ul>
-      {% for edu in cv.educations.all %}
+      {% for edu in cv.selected_educations.all %}
       <li>
         <strong>{{ edu.title }}</strong><br>
         {{ edu.institution }}
@@ -76,7 +76,7 @@
   <div class="section primary-bg">
     <h3>🌍 Idiomas</h3>
     <ul>
-      {% for lang in cv.languages.all %}
+      {% for lang in cv.selected_languages.all %}
       <li>{{ lang.language.name }} - {{ lang.level }}</li>
       {% empty %}
       <li><em>No hay idiomas registrados.</em></li>
@@ -87,7 +87,7 @@
   <div class="section light-bg">
     <h3>💡 Habilidades Blandas</h3>
     <ul>
-      {% for skill in cv.softskills.all %}
+      {% for skill in cv.selected_softskills.all %}
       <li>{{ skill.skill.name }}</li>
       {% empty %}
       <li><em>No hay habilidades blandas registradas.</em></li>
@@ -98,7 +98,7 @@
   <div class="section primary-bg">
     <h3>🎯 Hobbies</h3>
     <ul>
-      {% for h in cv.hobbies.all %}
+      {% for h in cv.selected_hobbies.all %}
       <li>{{ h.hobby.name }}</li>
       {% empty %}
       <li><em>No hay hobbies registrados.</em></li>
