@@ -13,14 +13,13 @@ class Sector(models.TextChoices):
     MARKETING = 'Marketing', 'Marketing'
     OTRO = 'Otro', 'Otro'
 
-class SectoresProfesionales(models.Model):
 
-    sector = models.CharField(max_length=50, choices=Sector.choices, default=Sector.OTRO) 
+
 
 class Profesional(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     empresa = models.CharField(max_length=100)
-    sector = models.ForeignKey(SectoresProfesionales, on_delete=models.CASCADE)
+    sector = models.CharField(max_length=50, choices=Sector.choices, default=Sector.OTRO)
     email2 = models.EmailField()
     direccion = models.CharField(max_length=100)
     telefono = models.CharField(max_length=100)
@@ -30,13 +29,20 @@ class Profesional(models.Model):
         return self.user.username
 
 
+
 class Pregunta(models.Model):
+    titulo = models.CharField(max_length=200, default='')
     pregunta = models.TextField()
     date_at = models.DateTimeField(auto_now_add=True)
     user_question = models.ForeignKey(User, on_delete=models.CASCADE)
-    professional_user = models.ForeignKey(Profesional, on_delete=models.CASCADE)
+    professional_user = models.ForeignKey(Profesional, on_delete=models.CASCADE, null=True, blank=True)
     is_public = models.BooleanField(default=True)
-    sector = models.ForeignKey(SectoresProfesionales, on_delete=models.CASCADE)
+    sector = models.CharField(max_length=50, choices=Sector.choices, default=Sector.OTRO)
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        if self.is_public == False and not self.professional_user:
+            raise ValidationError("Debe seleccionar un profesional si la pregunta no es pública.")
 
     def __str__(self):
         return self.pregunta
@@ -46,7 +52,7 @@ class Respuesta(models.Model):
     date_at = models.DateTimeField(auto_now_add=True)
     question = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
     user_answer = models.ForeignKey(User, on_delete=models.CASCADE)
-    professional_answer = models.ForeignKey(Profesional, on_delete=models.CASCADE)
+    professional_answer = models.ForeignKey(Profesional, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return self.respuesta

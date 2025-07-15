@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Pregunta - DuckyProject{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <a href="{% url 'forum_home' %}" class="btn btn-link text-decoration-none mb-2">
+        <span class="material-icons align-middle">arrow_back</span> Volver
+    </a>
+    <p><strong>Por:</strong> {{ pregunta.user_question.username }} <small class="text-muted">{{ pregunta.date_at|date:"d/m/Y H:i" }}</small></p>
+    <h1 class="mb-4">{{ pregunta.titulo }}</h1>
+    <div class="card border-primary mb-4">
+        <div class="card-body">
+            <p><strong>Sector:</strong> {{ pregunta.sector }}</p>
+            <hr>
+            <p class="fs-5">{{ pregunta.pregunta }}</p>
+        </div>
+    </div>
+
+    <h3>Respuestas</h3>
+    {% if respuestas %}
+        {% for respuesta in respuestas %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <p>{{ respuesta.respuesta }}</p>
+                    <small class="text-muted">Por: {{ respuesta.user_answer.username }} | Fecha: {{ respuesta.date_at|date:"d/m/Y H:i" }}</small>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-info">No hay respuestas aún.</div>
+    {% endif %}
+
+    <a href="{% url 'respuesta_create' pregunta.id %}" class="btn btn-success mt-3">Responder</a>
+</div>
+{% endblock %}

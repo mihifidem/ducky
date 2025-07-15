@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Foro - DuckyProject{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Foro</h1>
+    <p>Bienvenido al foro de DuckyProject. Aquí puedes ver y participar en las preguntas de la comunidad.</p>
+    {% if user.is_authenticated %}
+    <a href="{% url 'pregunta_create_public' %}" class="btn btn-success mb-3">Preguntar a la comunidad</a>
+    <a href="{% url 'pregunta_create_private' %}" class="btn btn-success mb-3">Preguntar a un profesional</a>
+    {% endif %}
+    <div class="row">
+        {% for pregunta in preguntas %}
+        <div class="col-12 mb-3">
+            <div class="card border-primary">
+                <div class="card-body">
+                    <strong>{{ pregunta.user_question.username }} : 
+                        <a href="{% url 'pregunta_detail' pregunta.id %}" class="text-dark text-decoration-none">{{ pregunta.titulo }}</a>
+                    </strong>
+                    
+                    <br>
+                    {{ pregunta.pregunta|truncatechars:100 }}<br>
+                    <small class="text-muted">Sector: {{ pregunta.sector }} | Fecha: {{ pregunta.date_at|date:"d/m/Y H:i" }} | Respuestas: {{ pregunta.respuesta_set.count }}</small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
