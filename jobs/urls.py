@@ -13,8 +13,9 @@ urlpatterns = [
         name='offer_applications'
     ),
     path(
-    'candidature/<int:candidature_id>/update/',views.update_candidature_status,name='update_candidature_status'),
+    'headhunter/candidature/<int:candidature_id>/update/',views.update_candidature_status,name='update_candidature_status'),
     path('headhunter/candidaturas/', views.candidature_list, name='candidature_list'),
     # Asegúrate de que la vista candidature_list exista
+    path('mensaje/<int:offer_id>', views.message, name='message'),
     
 ]
