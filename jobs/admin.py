@@ -1,6 +1,6 @@
 
 from django.contrib import admin
-from .models import JobOffer, JobApplication, Candidature
+from .models import JobOffer, JobApplication, StatusMessageTemplate, Candidature
 
 @admin.register(JobOffer)
 class JobOfferAdmin(admin.ModelAdmin):
@@ -13,6 +13,11 @@ class JobOfferAdmin(admin.ModelAdmin):
 class JobApplicationAdmin(admin.ModelAdmin):
     list_display = ['offer', 'applicant', 'applied_at']
     search_fields = ['offer__title', 'applicant__username']
+
+@admin.register(StatusMessageTemplate)
+class StatusMessageTemplateAdmin(admin.ModelAdmin):
+    list_display = ['user', 'estado']
+    search_fields = ['user__username', 'estado']
 
 @admin.register(Candidature)
 class CandidatureAdmin(admin.ModelAdmin):

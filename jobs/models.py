@@ -69,6 +69,27 @@ class Candidature(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.offer.title} ({self.estado})"
+    
+class StatusMessageTemplate(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="status_templates"
+    )
+    estado = models.CharField(
+        max_length=20,
+        choices= Candidature.ESTADO_CHOICES,
+        default='pendiente'
+    )
+    mensaje = models.TextField()
+
+    class Meta:
+        unique_together = ('user', 'estado')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.estado}"
+    
+
 
 class AccionOferta(models.Model):
     TIPO_ACCION_CHOICES = [

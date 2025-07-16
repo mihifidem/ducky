@@ -3,9 +3,13 @@ from django.contrib.auth.decorators import login_required
 from .models import JobOffer, JobApplication, Candidature
 from .forms import JobOfferForm, JobApplicationForm, CandidatureStatusForm
 from django.contrib import messages
+from django.core.mail import send_mail
+from .models import StatusMessageTemplate
+from .forms import StatusMessageTemplateForm
 
 
-def create_offer(request): # Agrege el metodo POST porque estaba en GET y no se guardaba la oferta
+@login_required
+def create_offer(request):
     if not request.user.groups.filter(name='headhunter').exists():
         messages.error(request, "Solo los headhunters pueden crear ofertas.")
         return redirect('home')
@@ -17,16 +21,11 @@ def create_offer(request): # Agrege el metodo POST porque estaba en GET y no se 
             offer.created_by = request.user
             offer.save()
             messages.success(request, "Oferta creada correctamente.")
-            return redirect('job_offer_list')  # Cambia esto si tu URL se llama diferente
+            return redirect('job_offer_list')  
     else:
         form = JobOfferForm()
 
     return render(request, 'jobs/create_offer.html', {'form': form})
-
-from django.shortcuts import render
-from .models import JobOffer # Asume que tienes un modelo JobOffer
-# Importa el modelo User si necesitas acceder a él directamente, aunque request.user ya lo proporciona
-# from django.contrib.auth.models import User 
 
 def job_offer_list(request):
 
@@ -41,24 +40,6 @@ def job_offer_list(request):
         'is_headhunter': is_headhunter,
     })
    
-    
-
-    offers = JobOffer.objects.all() # O tu lógica para obtener las ofertas
-
-#     # Agrega esta lógica para verificar si el usuario es un headhunter
-#     is_headhunter = False
-#     if request.user.is_authenticated:
-#         is_headhunter = request.user.groups.filter(name='headhunter').exists()
-
-    context = {
-        'offers': offers,
-        'is_headhunter': is_headhunter, # Pasa esta variable al contexto
-    }
-    return render(request, 'jobs/job_offer_list.html', context)
-# def job_offer_list(request):
-#     offers = JobOffer.objects.filter(is_active=True).order_by('-created_at')
-#     return render(request, 'jobs/job_offer_list.html', {'offers': offers})
-
 
 
 def job_offer_detail(request, offer_id):
@@ -85,10 +66,61 @@ def headhunter_dashboard(request):
         return redirect('home')
 
     offers = JobOffer.objects.filter(created_by=request.user)
-    return render(request, 'jobs/headhunter_dashboard.html', {
-        'offers': offers
-    })
+    candidaturas = Candidature.objects.filter(offer__in=offers).select_related('offer', 'user')
 
+    if request.method == 'POST':
+        candidature_id = request.POST.get('candidature_id')
+        candidatura = Candidature.objects.get(id=candidature_id)
+        form = CandidatureStatusForm(request.POST, instance=candidatura)
+
+        if form.is_valid():
+            form.save()
+
+            # Enviar email al candidato
+            estado_humano = candidatura.get_estado_display()
+            asunto = f"Actualización de tu candidatura a {candidatura.offer.title}"
+            mensaje = f"""
+Hola {candidatura.user.first_name or candidatura.user.username},
+
+Tu candidatura para el puesto '{candidatura.offer.title}' ha sido actualizada al estado: {estado_humano}.
+
+Gracias por usar nuestra plataforma OpenToJob.
+
+Un saludo,  
+El equipo de OpenToJob
+"""
+            send_mail(
+                subject=asunto,
+                message=mensaje,
+                from_email=None,
+                recipient_list=[candidatura.user.email],
+                fail_silently=True,
+            )
+            return redirect('headhunter_dashboard')
+
+    # GET request o POST no válido
+    forms_dict = {c.id: CandidatureStatusForm(instance=c) for c in candidaturas}
+    return render(request, 'jobs/headhunter_dashboard.html', {
+        'offers': offers,
+        'candidaturas': candidaturas,
+        'forms_dict': forms_dict,
+    })
+@login_required
+def editar_plantilla_estado(request, estado):
+    template, created = StatusMessageTemplate.objects.get_or_create(
+        user=request.user,
+        estado=estado
+    )
+    
+    if request.method == 'POST':
+        form = StatusMessageTemplateForm(request.POST, instance=template)
+        if form.is_valid():
+            form.save()
+            return redirect('mis_plantillas_estado')
+    else:
+        form = StatusMessageTemplateForm(instance=template)
+        
+    return render(request, 'grupo4/editar_plantilla.html', {'form': form, 'estado': estado})
 @login_required
 def offer_applications(request, offer_id):
     offer = get_object_or_404(JobOffer, id=offer_id, created_by=request.user)

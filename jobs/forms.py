@@ -1,5 +1,5 @@
 from django import forms
-from .models import JobOffer, JobApplication, User, Candidature
+from .models import JobOffer, JobApplication, User, Candidature, StatusMessageTemplate
 
 
 class JobOfferForm(forms.ModelForm):
@@ -38,4 +38,11 @@ class CandidatureStatusForm(forms.ModelForm):
         fields = ['estado']
         widgets = {
             'status': forms.Select(attrs={'class': 'form-control'}),
+        }
+class StatusMessageTemplateForm(forms.ModelForm):
+    class Meta:
+        model = StatusMessageTemplate
+        fields = ['estado', 'mensaje']
+        widgets = {
+            'mensaje': forms.Textarea(attrs={'rows': 5}),
         }

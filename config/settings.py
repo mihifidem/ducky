@@ -144,3 +144,7 @@ LOGIN_REDIRECT_URL = '/'
 
 # Redirige a login tras cerrar sesión
 LOGOUT_REDIRECT_URL = '/'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' 
+# Para producción, puedes usar SMTP o cualquier otro backend de correo
+DEFAULT_FROM_EMAIL = 'noreply@opentojob.es'
