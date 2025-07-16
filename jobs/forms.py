@@ -36,3 +36,6 @@ class CandidatureStatusForm(forms.ModelForm):
     class Meta:
         model = Candidature
         fields = ['estado']
+        widgets = {
+            'status': forms.Select(attrs={'class': 'form-control'}),
+        }

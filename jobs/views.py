@@ -61,32 +61,21 @@ def job_offer_list(request):
 
 
 
-def job_offer_detail(request, pk):
-    offer = get_object_or_404(JobOffer, pk=pk)
+def job_offer_detail(request, offer_id):
+    offer = get_object_or_404(JobOffer, id=offer_id)
     return render(request, 'jobs/job_offer_detail.html', {'offer': offer})
 
 
 @login_required
-def apply_to_offer(request, pk):
-    offer = get_object_or_404(JobOffer, pk=pk)
+def apply_to_offer(request, offer_id):
+    offer = get_object_or_404(JobOffer, id=offer_id)
+    # Evita duplicados
+    existing = Candidature.objects.filter(offer=offer, user=request.user).exists()
+    if not existing:
+        Candidature.objects.create(offer=offer, user=request.user, status='pendiente')
+    return redirect('job_offer_detail', offer_id=offer.id)
 
-    if JobApplication.objects.filter(offer=offer, applicant=request.user).exists():
-        messages.warning(request, "Ya te has postulado a esta oferta.")
-        return redirect('job_offer_detail', pk=pk)
-
-    if request.method == 'POST':
-        form = JobApplicationForm(request.POST)
-        if form.is_valid():
-            application = form.save(commit=False)
-            application.offer = offer
-            application.applicant = request.user
-            application.save()
-            messages.success(request, "Postulación enviada con éxito.")
-            return redirect('job_offer_list')
-    else:
-        form = JobApplicationForm()
-
-    return render(request, 'jobs/apply_to_offer.html', {'form': form, 'offer': offer})
+    return render(request, 'jobs/apply_to_offer.html', {'offer': offer})
 
 @login_required
 def headhunter_dashboard(request):
@@ -120,7 +109,11 @@ def update_candidature_status(request, candidature_id):
     else:
         form = CandidatureStatusForm(instance=candidature)
 
-    return render(request, 'joboffers/update_candidature_status.html', {
+    return render(request, 'jobs/update_candidature_status.html', {
         'form': form,
         'candidature': candidature
     })
+
+def candidature_list(request):
+    candidatures = JobApplication.objects.all()
+    return render(request, 'jobs/candidature_list.html', {'candidatures': candidatures})

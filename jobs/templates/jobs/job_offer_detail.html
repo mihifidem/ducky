@@ -10,6 +10,13 @@
 <p><strong>Empresa:</strong> {{ offer.company_name }}</p>
 <p><strong>Ubicación:</strong> {{ offer.location }}</p>
 
+
+{% if user.is_authenticated and user != offer.headhunter %}
+    <a href="{% url 'apply_to_offer' offer.id %}" class="btn btn-success">Postular</a>
+{% endif %}
+
+<hr>
+
 {% if offer.applications.all %}
 <h2>Postulaciones</h2>
 <ul>
