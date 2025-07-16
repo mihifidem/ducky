@@ -73,7 +73,8 @@ def apply_to_offer(request, offer_id):
     existing = Candidature.objects.filter(offer=offer, user=request.user).exists()
     if not existing:
         Candidature.objects.create(offer=offer, user=request.user, status='pendiente')
-    return redirect('job_offer_detail', offer_id=offer.id)
+        messages.success(request, 'Has postulado correctamente.')
+        return redirect('job_offer_detail', offer_id=offer.id)
 
     return render(request, 'jobs/apply_to_offer.html', {'offer': offer})
 
@@ -117,3 +118,6 @@ def update_candidature_status(request, candidature_id):
 def candidature_list(request):
     candidatures = JobApplication.objects.all()
     return render(request, 'jobs/candidature_list.html', {'candidatures': candidatures})
+
+def message(request, offer_id):
+    return render(request, 'jobs/message.html' , {'offer_id': offer_id})

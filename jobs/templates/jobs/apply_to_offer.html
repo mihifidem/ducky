@@ -1,3 +1,7 @@
+{% extends "base.html" %}
+
+{% block content %}
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -51,6 +55,10 @@
   </style>
 </head>
 <body>
+  <h2>Formulario de Postulación a la Oferta de Trabajo</h2>
+  <form action="/enviar_postulacion/" method="POST" enctype="multipart/form-data">
+    <!-- CSRF token si estàs en Django -->
+    <!-- {% csrf_token %} -->
 
   <div class="container">
     <h2>Postúlate a la Oferta</h2>
@@ -74,3 +82,4 @@
 
 </body>
 </html>
+{% endblock %}

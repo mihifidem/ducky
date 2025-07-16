@@ -1,12 +1,11 @@
-{% extends 'base.html' %} {# Asegúrate de que 'base.html' exista y contenga los bloques 'title', 'content', 'extra_css' y 'extra_js' #}
-
+{% extends 'base.html' %} 
 {% block title %}Listado de Ofertas de Empleo{% endblock %}
 
 {% block content %}
     <div class="container mt-4">
         <h1 class="mb-4">Ofertas de Empleo Disponibles</h1>
 
-        {# Sección para mostrar mensajes del sistema (ej. éxito, error, advertencia) #}
+        
         {% if messages %}
             {% for message in messages %}
                 {# Los 'message.tags' suelen ser 'success', 'error', 'warning', 'info' y se mapean a clases de Bootstrap #}
@@ -17,9 +16,9 @@
             {% endfor %}
         {% endif %}
 
-        {# Botón para crear una nueva oferta, visible solo si el usuario es un "headhunter" #}
+        
 
-        {# Comprobamos si hay ofertas para mostrar #}
+      
         {% if offers %}
             <div class="row"> {# Usamos una fila de Bootstrap para organizar las tarjetas en columnas #}
                 {% for offer in offers %} {# Iteramos sobre cada oferta en la lista 'offers' #}
@@ -65,6 +64,14 @@
                 No hay ofertas de empleo activas en este momento. ¡Vuelve pronto!
             </div>
         {% endif %}
+
+
+
+
+
+
+
+
     </div>
 {% endblock %}
 
