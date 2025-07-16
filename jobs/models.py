@@ -70,3 +70,54 @@ class Candidature(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.offer.title} ({self.estado})"
 
+class AccionOferta(models.Model):
+    TIPO_ACCION_CHOICES = [
+        ('llamada', 'Llamada'),
+        ('entrevista', 'Entrevista'),
+        ('nota', 'Nota Interna'),
+        ('seguimiento', 'Seguimiento'),
+        ('otro', 'Otro'),
+    ]
+
+   
+    oferta = models.ForeignKey('jobs.JobOffer', on_delete=models.CASCADE, related_name='acciones')
+    fecha = models.DateTimeField()
+    tipo = models.CharField(max_length=20, choices=TIPO_ACCION_CHOICES)
+    descripcion = models.TextField()
+    realizada_por = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class Oferta(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ofertas')
+    titulo = models.CharField(max_length=255)
+    empresa = models.CharField(max_length=255, help_text="Nombre de la empresa asociada")
+    descripcion = models.TextField()
+    fecha_publicacion = models.DateField(auto_now_add=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['user']),
+            models.Index(fields=['fecha_publicacion']),
+        ]
+
+    def __str__(self):
+        return f"{self.titulo} - {self.empresa}"
+
+
+class AgendaAccion(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='acciones')
+    oferta = models.ForeignKey(Oferta, null=True, blank=True, on_delete=models.SET_NULL, related_name='acciones')
+    titulo = models.CharField(max_length=255)
+    descripcion = models.TextField(blank=True)
+    fecha = models.DateField()
+    hora = models.TimeField()
+    duracion_minutos = models.PositiveIntegerField(default=30)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['user']),
+            models.Index(fields=['fecha']),
+            models.Index(fields=['oferta']),
+        ]
+
+    def __str__(self):
+        return f"{self.titulo} ({self.fecha} {self.hora})"
