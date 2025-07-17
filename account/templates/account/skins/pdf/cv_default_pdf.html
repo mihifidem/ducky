@@ -4,9 +4,7 @@
   <meta charset="UTF-8">
   <style>
     body {
-      font-family: Helvetica, sans-serif;
       font-size: 12px;
-      color: #333;
       margin: 30px;
     }
     h1, h2 {
@@ -34,9 +32,18 @@
     .muted {
       color: #777;
     }
+    .header-img {
+      max-width: 100%;
+      height: auto;
+      margin-bottom: 20px;
+    }
   </style>
 </head>
-<body>
+<body style="color: {{ cv.primary_color }}; font-family: {{ cv.font_family }};">
+
+  {% if cv.header_image %}
+    <img src="{{ cv.header_image.url }}" class="header-img" />
+  {% endif %}
 
   <h1 style="text-align: center;">{{ cv.title }}</h1>
 

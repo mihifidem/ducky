@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
-{% block title %}Idioma{% endblock %}
 {% block content %}
-<h2>{% if form.instance.pk %}Editar{% else %}Añadir{% endif %} Idioma</h2>
+<h3>Añadir Idioma</h3>
 <form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit" class="btn btn-primary">Guardar</button>
+    {% csrf_token %}
+    {{ form.as_p }}
+<button type="submit" class="btn btn-success">Guardar</button>
+<a href="{% url 'profile' %}" button type="submit" class="btn btn-secondary"> Cancelar</button></a>
 </form>
 {% endblock %}

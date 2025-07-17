@@ -1,12 +1,22 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.db import models
-from django.contrib.auth.models import User
 from django.utils.text import slugify
 
-# 🔹 1. UserProfile (1-1 con User)
+# 🔹 1. Perfil extendido para el usuario (relación uno a uno)
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    role = models.CharField(
+        max_length=100,
+        choices=[
+            ('user', 'User'),
+            ('premium', 'Premium'),
+            ('admin', 'Admin'),
+            ('teacher', 'Teacher'),
+            ('headhunter', 'Headhunter'),
+            ('professional', 'Professional')
+        ],
+        default='user'
+    )
     avatar = models.ImageField(upload_to="avatars/", null=True, blank=True)
     bio = models.TextField(blank=True)
     phone = models.CharField(max_length=20, blank=True)
@@ -17,7 +27,7 @@ class UserProfile(models.Model):
         return self.user.username
 
 
-# 🔹 2. UserJobExperience (1-N con User)
+# 🔹 2. Experiencia laboral del usuario (relación muchos a uno)
 class UserJobExperience(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     position = models.CharField(max_length=100)
@@ -30,7 +40,7 @@ class UserJobExperience(models.Model):
         return f"{self.position} at {self.company}"
 
 
-# 🔹 3. SoftSkill + UserSoftSkill (N-M)
+# 🔹 3. Habilidades blandas y relación con usuario (N-M)
 class SoftSkill(models.Model):
     name = models.CharField(max_length=100, unique=True)
 
@@ -46,28 +56,43 @@ class UserSoftSkill(models.Model):
         return f"{self.user.username} - {self.skill.name}"
 
 
-# 🔹 4. Language + UserLanguage (N-M)
+# 🔹 4. Idiomas y nivel, con relación usuario-idioma (N-M)
 class Language(models.Model):
     name = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
         return self.name
 
+
 class UserLanguage(models.Model):
+    LEVEL_CHOICES = [
+        ("A1", "A1 – Beginner"),
+        ("A2", "A2 – Elementary"),
+        ("B1", "B1 – Intermediate"),
+        ("B2", "B2 – Upper‑intermediate"),
+        ("C1", "C1 – Advanced"),
+        ("C2", "C2 – Proficient"),
+        ("N", "Native")
+    ]
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     language = models.ForeignKey(Language, on_delete=models.CASCADE)
-    level = models.CharField(max_length=50)  # A1, A2, B1, etc.
+    level = models.CharField(max_length=2, choices=LEVEL_CHOICES, verbose_name="Nivel")
+
+    class Meta:
+        unique_together = ("user", "language")  # Evita idiomas duplicados por usuario
 
     def __str__(self):
-        return f"{self.user.username} - {self.language.name} ({self.level})"
+        return f"{self.language} ({self.level})"
 
 
-# 🔹 5. Hobby + UserHobby (N-M)
+# 🔹 5. Pasatiempos (hobbies) y relación usuario-hobby (N-M)
 class Hobby(models.Model):
     name = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
         return self.name
+
 
 class UserHobby(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -77,7 +102,7 @@ class UserHobby(models.Model):
         return f"{self.user.username} - {self.hobby.name}"
 
 
-# 🔹 6. UserEducation (1-N con User)
+# 🔹 6. Educación del usuario (1-N)
 class UserEducation(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
@@ -90,9 +115,12 @@ class UserEducation(models.Model):
         return f"{self.title} at {self.institution}"
 
 
-# CV Profile Sections
-
+# 🔹 Modelo para perfiles de CV (con personalización y selección de secciones)
 class CVProfile(models.Model):
+    primary_color = models.CharField(max_length=20, default="#000000")
+    font_family = models.CharField(max_length=50, default="sans-serif")
+    header_image = models.ImageField(upload_to='cv_headers/', blank=True, null=True)
+
     SKIN_CHOICES = [
         ('default', 'Clásico'),
         ('modern', 'Moderno'),
@@ -105,18 +133,18 @@ class CVProfile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     skin = models.CharField(max_length=50, choices=SKIN_CHOICES, default='default')
 
-    # Secciones individuales: relaciones M2M con modelos propios del usuario
+    # Relaciones M2M para seleccionar qué datos incluir en el CV
     selected_experiences = models.ManyToManyField(UserJobExperience, blank=True)
-    selected_educations = models.ManyToManyField(UserEducation,blank=True)
-    selected_softskills = models.ManyToManyField(UserSoftSkill,blank=True)
-    selected_languages = models.ManyToManyField(UserLanguage,blank=True)
+    selected_educations = models.ManyToManyField(UserEducation, blank=True)
+    selected_softskills = models.ManyToManyField(UserSoftSkill, blank=True)
+    selected_languages = models.ManyToManyField(UserLanguage, blank=True)
     selected_hobbies = models.ManyToManyField(UserHobby, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.user.username} - {self.title}"
 
     def save(self, *args, **kwargs):
+        # Crear slug único basado en username y título del CV
         if not self.slug:
             base_slug = slugify(f"{self.user.username}-{self.title}")
             count = 1

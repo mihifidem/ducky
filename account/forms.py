@@ -1,23 +1,24 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from .models import UserJobExperience, UserEducation, UserLanguage, UserSoftSkill, UserHobby, UserProfile
-from .models import CVProfile
+from .models import UserJobExperience, UserEducation, UserLanguage, UserSoftSkill, UserHobby, UserProfile, CVProfile
+from django.core.exceptions import ValidationError
 
 
-
+# Formulario para editar solo el nombre de usuario de un User
 class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username']
 
+
+# Formulario personalizado para registro de usuario con email obligatorio
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True, label='Correo electrónico')
 
     class Meta:
         model = User
         fields = ['username', 'email', 'password1', 'password2']
-
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre de usuario'}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
@@ -26,6 +27,7 @@ class CustomUserCreationForm(UserCreationForm):
         }
 
 
+# Formulario personalizado para login con placeholders y clases CSS para mejor UI
 class CustomAuthenticationForm(AuthenticationForm):
     username = forms.CharField(widget=forms.TextInput(attrs={
         'class': 'form-control', 'placeholder': 'Nombre de usuario'
@@ -35,16 +37,18 @@ class CustomAuthenticationForm(AuthenticationForm):
     }))
 
 
+# Formulario para gestionar experiencia laboral de usuario
 class UserJobExperienceForm(forms.ModelForm):
     class Meta:
         model = UserJobExperience
         fields = ['position', 'company', 'start_date', 'end_date', 'description']
         widgets = {
-            'start_date': forms.DateInput(attrs={'type': 'date'}),
+            'start_date': forms.DateInput(attrs={'type': 'date'}),  # Calendario para fechas
             'end_date': forms.DateInput(attrs={'type': 'date'}),
         }
 
 
+# Formulario para gestionar educación del usuario
 class UserEducationForm(forms.ModelForm):
     class Meta:
         model = UserEducation
@@ -55,23 +59,51 @@ class UserEducationForm(forms.ModelForm):
         }
 
 
+# Formulario para agregar idiomas al perfil, con validación para evitar duplicados
 class UserLanguageForm(forms.ModelForm):
     class Meta:
         model = UserLanguage
         fields = ['language', 'level']
+        widgets = {
+            'language': forms.Select(attrs={'class': 'form-control'}),
+            'level': forms.Select(attrs={'class': 'form-control'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        # Recibe el usuario para validar que no duplique idiomas
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        language = cleaned_data.get('language')
+
+        # Verifica si el idioma ya existe para ese usuario, excepto si es la instancia actual (edición)
+        if self.user and language:
+            existing = UserLanguage.objects.filter(user=self.user, language=language)
+            if self.instance.pk:
+                existing = existing.exclude(pk=self.instance.pk)
+            if existing.exists():
+                raise ValidationError("Este idioma ya ha sido añadido.")
+
+        return cleaned_data    
 
 
+# Formulario para habilidades blandas (soft skills)
 class UserSoftSkillForm(forms.ModelForm):
     class Meta:
         model = UserSoftSkill
         fields = ['skill']
 
+
+# Formulario para hobbies
 class UserHobbyForm(forms.ModelForm):
     class Meta:
         model = UserHobby
         fields = ['hobby']
 
 
+# Formulario para editar perfil de usuario, con widgets para mejorar la UI
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
@@ -82,22 +114,33 @@ class UserProfileForm(forms.ModelForm):
             'address': forms.TextInput(attrs={'class': 'form-control'}),
             'bio': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
-        
-        
-# 🔹 CV Profile Form
+
+
+# Formulario para crear o editar perfiles de CV
+# Filtra las opciones de secciones (experiencias, educaciones, etc) para que solo aparezcan las del usuario actual
 class CVProfileForm(forms.ModelForm):
-	class Meta:
-		model = CVProfile
-		fields = [
-			'title', 'skin', 'selected_experiences',
-			'selected_educations',
-			'selected_softskills', 'selected_languages',
-			'selected_hobbies'
-		]
-		widgets = {
-			'selected_experiences': forms.CheckboxSelectMultiple(),
-			'selected_educations': forms.CheckboxSelectMultiple(),
-			'selected_softskills': forms.CheckboxSelectMultiple(),
-			'selected_languages': forms.CheckboxSelectMultiple(),
-			'selected_hobbies': forms.CheckboxSelectMultiple(),
-		}
+    class Meta:
+        model = CVProfile
+        fields = [
+            'title', 'skin', 'selected_experiences',
+            'selected_educations',
+            'selected_softskills', 'selected_languages',
+            'selected_hobbies'
+        ]
+        widgets = {
+            'selected_experiences': forms.CheckboxSelectMultiple(),
+            'selected_educations': forms.CheckboxSelectMultiple(),
+            'selected_softskills': forms.CheckboxSelectMultiple(),
+            'selected_languages': forms.CheckboxSelectMultiple(),
+            'selected_hobbies': forms.CheckboxSelectMultiple(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)  # Captura el usuario para filtrar queryset
+        super().__init__(*args, **kwargs)
+        if user:
+            self.fields['selected_experiences'].queryset = UserJobExperience.objects.filter(user=user)
+            self.fields['selected_educations'].queryset = UserEducation.objects.filter(user=user)
+            self.fields['selected_softskills'].queryset = UserSoftSkill.objects.filter(user=user)
+            self.fields['selected_languages'].queryset = UserLanguage.objects.filter(user=user)
+            self.fields['selected_hobbies'].queryset = UserHobby.objects.filter(user=user)
