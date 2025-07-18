@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Profesional{% endblock %}
+
+{% block content %}
+<!-- Encabezado gris para el dashboard del profesional -->
+<div class="p-4 bg-secondary text-white rounded mb-4">
+  <h1>
+    <span class="material-icons">work</span>
+    Estás en el Dashboard del Profesional
+  </h1>
+  <p>
+    Bienvenido, <strong>{{ user.username }}</strong>. Aquí puedes ver y gestionar tus DuckyTools.
+  </p>
+</div>
+
+<!-- Botón para acceder al panel del CV -->
+<a href="{% url 'cv_panel' %}" class="btn btn-secondary btn-lg">
+  <span class="material-icons align-middle">home</span>
+  Gestionar Mi Perfil
+</a>
+{% endblock %}

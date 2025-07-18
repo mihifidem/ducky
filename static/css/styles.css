@@ -1,0 +1,100 @@
+/* =============================
+   General layout
+============================= */
+body {
+  background-color: #f7f9fb;
+  font-family: 'Roboto', sans-serif;
+  color: #333;
+}
+
+.card {
+  border-radius: 1rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: scale(1.01);
+}
+
+.card-body .btn {
+  margin: 0.3rem 0.4rem 0 0;
+}
+
+.card-subtitle {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* =============================
+   Skins llamativos para los CVs
+============================= */
+
+.default-card {
+  background-color: #d6eaff;
+  border-left: 6px solid #0074d9;
+}
+
+.default-title {
+  color: #0074d9;
+  font-weight: 600;
+}
+
+.modern-card {
+  background-color: #d4f9e2;
+  border-left: 6px solid #28a745;
+}
+
+.modern-title {
+  color: #28a745;
+  font-weight: 600;
+}
+
+.minimal-card {
+  background-color: #fff0e0;
+  border-left: 6px solid #ff6600;
+}
+
+.minimal-title {
+  color: #ff6600;
+  font-weight: 600;
+}
+
+/* =============================
+   Botones personalizados
+============================= */
+
+.btn-outline-primary {
+  border-color: #0074d9;
+  color: #0074d9;
+}
+
+.btn-outline-primary:hover {
+  background-color: #0074d9;
+  color: white;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-outline-warning:hover {
+  background-color: #ffc107;
+  color: black;
+}
+
+.btn-outline-danger:hover {
+  background-color: #dc3545;
+  color: white;
+}
+
+/* =============================
+   Alertas y mensajes
+============================= */
+
+.alert-info {
+  background-color: #eaf7ff;
+  color: #005f99;
+  border: 1px solid #b3e0ff;
+}

@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>🎯 Crear perfil de CV personalizado</h3>
+<form method="post">
+{% csrf_token %}
+{{ form.as_p }}
+<button type="submit" class="btn btn-success">Guardar CV</button>
+<a href="{% url 'cv_list' %}" class="btn btn-secondary"> Cancelar</a>
+</form>
+{% endblock %}

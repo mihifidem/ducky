@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-size: 12px;
+      margin: 30px;
+    }
+    h1, h2 {
+      color: #222;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 4px;
+      margin-top: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 15px;
+    }
+    td, th {
+      padding: 5px;
+      vertical-align: top;
+    }
+    ul {
+      margin: 0;
+      padding-left: 15px;
+    }
+    .section {
+      margin-bottom: 20px;
+    }
+    .muted {
+      color: #777;
+    }
+    .header-img {
+      max-width: 100%;
+      height: auto;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body style="color: {{ cv.primary_color }}; font-family: {{ cv.font_family }};">
+
+  {% if cv.header_image %}
+    <img src="{{ cv.header_image.url }}" class="header-img" />
+  {% endif %}
+
+  <h1 style="text-align: center;">{{ cv.title }}</h1>
+
+  <div class="section">
+    <h2>📌 Experiencias</h2>
+    {% if cv.selected_experiences.all %}
+    <table>
+      {% for exp in cv.selected_experiences.all %}
+      <tr>
+        <td><strong>{{ exp.position }}</strong></td>
+        <td>{{ exp.company }}</td>
+        <td><small>{{ exp.start_date }} – {{ exp.end_date|default:"Actualidad" }}</small></td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+    <p class="muted">No hay experiencias registradas.</p>
+    {% endif %}
+  </div>
+
+  <div class="section">
+    <h2>🎓 Formación</h2>
+    {% if cv.selected_educations.all %}
+    <table>
+      {% for edu in cv.selected_educations.all %}
+      <tr>
+        <td>{{ edu.title }}</td>
+        <td>{{ edu.institution }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+    <p class="muted">No hay formación registrada.</p>
+    {% endif %}
+  </div>
+
+  <div class="section">
+    <h2>🌍 Idiomas</h2>
+    {% if cv.selected_languages.all %}
+    <table>
+      {% for lang in cv.selected_languages.all %}
+      <tr>
+        <td>{{ lang.language.name }}</td>
+        <td>{{ lang.level }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+    <p class="muted">No hay idiomas registrados.</p>
+    {% endif %}
+  </div>
+
+  <div class="section">
+    <h2>💡 Habilidades Blandas</h2>
+    {% if cv.selected_softskills.all %}
+    <ul>
+      {% for skill in cv.selected_softskills.all %}
+      <li>{{ skill.skill.name }}</li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="muted">No hay habilidades blandas registradas.</p>
+    {% endif %}
+  </div>
+
+  <div class="section">
+    <h2>🎯 Hobbies</h2>
+    {% if cv.selected_hobbies.all %}
+    <ul>
+      {% for h in cv.selected_hobbies.all %}
+      <li>{{ h.hobby.name }}</li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="muted">No hay hobbies registrados.</p>
+    {% endif %}
+  </div>
+
+</body>
+</html>

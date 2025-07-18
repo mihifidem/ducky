@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirmar eliminación de habilidad blanda{% endblock %}
+
+{% block content %}
+<h2>¿Eliminar habilidad blanda?</h2>
+
+<p>¿Estás seguro que quieres eliminar la habilidad <strong>{{ soft_skill.name }}</strong>?</p>
+
+<form method="post">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+  <a href="{% url 'cv_panel' %}" class="btn btn-secondary ms-2">Cancelar</a>
+</form>
+{% endblock %}

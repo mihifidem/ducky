@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Premium{% endblock %}
+
+{% block content %}
+<!-- Encabezado con estilo amarillo para usuarios premium -->
+<div class="p-4 bg-warning text-dark rounded mb-4">
+  <h1>
+    <span class="material-icons">star</span>
+    Estás en el Dashboard Premium
+  </h1>
+  <p>
+    Bienvenido, <strong>{{ user.username }}</strong>. Aquí puedes ver y gestionar tus DuckyTools.
+  </p>
+</div>
+
+<!-- Botón de acceso al panel del CV -->
+<a href="{% url 'cv_panel' %}" class="btn btn-warning btn-lg">
+  <span class="material-icons align-middle">home</span>
+  Gestionar Mi Perfil
+</a>
+{% endblock %}

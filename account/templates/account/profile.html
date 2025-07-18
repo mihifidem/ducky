@@ -1,4 +1,20 @@
 {% extends 'base.html' %}
+
 {% block content %}
   <h1>Perfil del usuario</h1>
+
+  <div class="list-group mt-4">
+    <a href="{% url 'add_education' %}" class="list-group-item list-group-item-action">
+      ➕ Añadir Educación
+    </a>
+    <a href="{% url 'add_language' %}" class="list-group-item list-group-item-action">
+      🌐 Añadir Idioma
+    </a>
+    <a href="{% url 'add_softskill' %}" class="list-group-item list-group-item-action">
+      💡 Añadir Habilidad Blanda (Soft Skill)
+    </a>
+    <a href="{% url 'add_hobby' %}" class="list-group-item list-group-item-action">
+      🎯 Añadir Hobby
+    </a>
+  </div>
 {% endblock %}

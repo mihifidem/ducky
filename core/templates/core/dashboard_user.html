@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Usuario{% endblock %}
+
+{% block content %}
+<!-- Encabezado azul para el dashboard de usuario -->
+<div class="p-4 bg-primary text-white rounded mb-4">
+  <h1>
+    <span class="material-icons">school</span>
+    Estás en el Dashboard de Usuario
+  </h1>
+  <p>
+    Bienvenido, <strong>{{ user.username }}</strong>. Aquí puedes ver y gestionar tus DuckyTools.
+  </p>
+</div>
+
+<!-- Botón para gestionar perfil/CV -->
+<a href="{% url 'cv_panel' %}" class="btn btn-primary btn-lg">
+  <span class="material-icons align-middle">home</span>
+  Gestionar Mi Perfil
+</a>
+{% endblock %}

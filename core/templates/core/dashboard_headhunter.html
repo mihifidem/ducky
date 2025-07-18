@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Headhunter{% endblock %}
+
+{% block content %}
+<!-- Encabezado del dashboard con estilo verde -->
+<div class="p-4 bg-success text-white rounded mb-4">
+  <h1>
+    <span class="material-icons">search</span>
+    Estás en el Dashboard del Headhunter
+  </h1>
+  <p>
+    Bienvenido, <strong>{{ user.username }}</strong>. Aquí puedes ver y gestionar tus DuckyTools.
+  </p>
+</div>
+
+<!-- Botón principal de acción -->
+<a href="{% url 'cv_panel' %}" class="btn btn-success btn-lg">
+  <span class="material-icons align-middle">home</span>
+  Gestionar Mi Perfil
+</a>
+{% endblock %}

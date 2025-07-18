@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Profesor{% endblock %}
+
+{% block content %}
+<!-- Encabezado azul claro para el dashboard del profesor -->
+<div class="p-4 bg-info text-white rounded mb-4">
+  <h1>
+    <span class="material-icons">menu_book</span>
+    Estás en el Dashboard del Profesor
+  </h1>
+  <p>
+    Bienvenido, <strong>{{ user.username }}</strong>. Aquí puedes ver y gestionar tus DuckyTools.
+  </p>
+</div>
+
+<!-- Botón para gestionar perfil/CV -->
+<a href="{% url 'cv_panel' %}" class="btn btn-info btn-lg">
+  <span class="material-icons align-middle">home</span>
+  Gestionar Mi Perfil
+</a>
+{% endblock %}
