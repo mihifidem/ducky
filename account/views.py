@@ -15,7 +15,7 @@ def signup_view(request):
             return redirect('login')  # Redirige a login tras registro
     else:
         form = UserCreationForm()
-    return render(request, 'registration/signup.html', {'form': form})
+    return render(request, 'account/register.html', {'form': form})
 
 class UserRegisterView(CreateView):
     template_name = 'account/register.html'
@@ -28,7 +28,6 @@ class UserLoginView(LoginView):
 
 class UserLogoutView(LogoutView):
     next_page = reverse_lazy('login')
-from django.shortcuts import render
 
 def profile_view(request):
-    return render(request, 'accounts/profile.html')
+    return render(request, 'account/profile.html')

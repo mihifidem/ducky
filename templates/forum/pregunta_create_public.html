@@ -8,11 +8,11 @@
     <a href="{% url 'forum_home' %}" class="btn btn-link text-decoration-none mb-2">
         <span class="material-icons align-middle">arrow_back</span> Volver al foro
     </a>
-    <h1 class="mb-4 text-center">Haz una pregunta pública</h1>
+    <h1 class="mb-4 text-center">Haz una pregunta</h1>
     <form method="post" class="customform">
         {% csrf_token %}
         {{ form.as_p }}
-        <a type="submit" class="custombutton">Publicar pregunta</a>
+        <button type="submit" class="custombutton">Publicar pregunta</button>
     </form>
 </div>
 {% endblock %}
