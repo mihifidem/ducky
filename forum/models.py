@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
+import datetime
 
 # Create your models here.
 
@@ -38,6 +40,18 @@ class Pregunta(models.Model):
     professional_user = models.ForeignKey(Profesional, on_delete=models.CASCADE, null=True, blank=True)
     is_public = models.BooleanField(default=True)
     sector = models.CharField(max_length=50, choices=Sector.choices, default=Sector.OTRO)
+    active_until = models.DateTimeField(null=True, blank=True)  
+    
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.active_until = timezone.now() + datetime.timedelta(minutes=1)
+        super().save(*args, **kwargs)
+        
+    
+    def is_active(self):
+        if self.active_until is None:
+            return True  
+        return timezone.now() <= self.active_until
 
     def clean(self):
         from django.core.exceptions import ValidationError

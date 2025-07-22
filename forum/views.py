@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.contrib import messages  
 from .models import Pregunta, Profesional, Respuesta
 from .forms import PreguntaFormPublic, RespuestaForm, PreguntaFormPrivate
 from django.urls import reverse_lazy
@@ -8,12 +9,13 @@ from django.views.generic import UpdateView, DeleteView, DetailView
 def forum_home(request):
     preguntas = Pregunta.objects.filter(is_public=True).order_by('-date_at')
     respuestas = Respuesta.objects.filter(question__in=preguntas).order_by('-date_at')
+    
+    for pregunta in preguntas:
+        pregunta.is_active_status = pregunta.is_active()
+        
     return render(request, 'forum/forum_home.html', {'preguntas': preguntas, 'respuestas': respuestas})
 
-def pregunta_detail(request, pk):
-    pregunta = Pregunta.objects.get(pk=pk)
-    respuestas = Respuesta.objects.filter(question=pregunta).order_by('-date_at')
-    return render(request, 'forum/pregunta_detail.html', {'pregunta': pregunta, 'respuestas': respuestas})
+
 
 def pregunta_create_private(request):
     if request.method == 'POST':
@@ -47,8 +49,24 @@ def pregunta_edit(request, pk):
 def pregunta_delete(request, pk):
     return render(request, 'forum/pregunta_delete.html', {'pk': pk})
 
+class PreguntaDetailView(DetailView):
+    model = Pregunta
+    template_name = 'forum/pregunta_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['respuestas'] = Respuesta.objects.filter(question=self.object).order_by('-date_at')
+
+        context['is_active'] = self.object.is_active()
+        return context
+
 def respuesta_create(request, pk):
     pregunta = Pregunta.objects.get(pk=pk)
+
+    if not pregunta.is_active():
+        messages.error(request, "Esta pregunta ya no acepta respuestas porque ha expirado.")
+        return redirect('pregunta_detail', pk=pregunta.pk)
+        
     if request.method == 'POST':
         form = RespuestaForm(request.POST)
         if form.is_valid():
@@ -67,15 +85,6 @@ def respuesta_edit(request, pk):
 def respuesta_delete(request, pk):  
     return render(request, 'forum/respuesta_delete.html', {'pk': pk})
 
-class PreguntaDetailView(DetailView):
-    model = Pregunta
-    template_name = 'forum/pregunta_detail.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['respuestas'] = Respuesta.objects.filter(question=self.object).order_by('-date_at')
-        return context
-    
 class PreguntaUpadteView(UpdateView):
     model = Pregunta
     form_class = PreguntaFormPublic

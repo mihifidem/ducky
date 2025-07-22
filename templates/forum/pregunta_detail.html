@@ -16,6 +16,7 @@
             <p class="fs-5">{{ pregunta.pregunta }}</p>
 
             {% if user == pregunta.user_question %}
+             {% if is_active %}
             <div>
                 <a 
                 href="{% url 'pregunta_edit' pregunta.id %}" 
@@ -30,13 +31,16 @@
                  <i class="material-icons align-middle">delete</i> Eliminar
                 </a>
             </div>
+             {% else %}
+             {% endif %}
             {% endif %}
         </div>
     
     </div>
 
     <h3>Respuestas</h3>
-    {% if respuestas %}
+    {% if is_active %}
+     {% if respuestas %}
         {% for respuesta in respuestas %}
             <div class="card mb-3">
                 <div class="card-body">
@@ -61,10 +65,15 @@
                 {% endif %}
             </div>
         {% endfor %}
-    {% else %}
+     {% else %}
         <div class="alert alert-info">No hay respuestas aún.</div>
+     {% endif %}
+        <a href="{% url 'respuesta_create' pregunta.id %}" class="btn btn-success mt-3">Responder</a>
+    {% else %}
+        <div class="alert alert-warning mt-3">
+            <i class="material-icons align-middle">access_time</i>
+            Esta pregunta ha expirado y ya no acepta nuevas respuestas.
+        </div>
     {% endif %}
-
-    <a href="{% url 'respuesta_create' pregunta.id %}" class="btn btn-success mt-3">Responder</a>
 </div>
 {% endblock %}

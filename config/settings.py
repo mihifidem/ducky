@@ -13,6 +13,15 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import os
 from decouple import config, Csv
+from django.contrib.messages import constants as messages
+
+MESSAGE_TAGS = {
+    messages.DEBUG: 'alert-info',
+    messages.INFO: 'alert-info',
+    messages.SUCCESS: 'alert-success',
+    messages.WARNING: 'alert-warning',
+    messages.ERROR: 'alert-danger',
+}
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -144,3 +153,5 @@ LOGIN_REDIRECT_URL = '/'
 
 # Redirige a login tras cerrar sesión
 LOGOUT_REDIRECT_URL = '/'
+
+
