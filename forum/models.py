@@ -33,7 +33,7 @@ class Pregunta(DirtyFieldsMixin,models.Model):
     user_question = models.ForeignKey(User, on_delete=models.CASCADE)
     professional_user = models.ForeignKey(Profesional, on_delete=models.CASCADE, null=True, blank=True)
     is_public = models.BooleanField(default=True)
-    sector = models.CharField(max_length=50, choices=Sector.choices, default=Sector.OTRO)
+    sector = models.ForeignKey(Sector, on_delete=models.CASCADE)
     edited = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
