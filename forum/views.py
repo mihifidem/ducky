@@ -3,7 +3,8 @@ from django.contrib import messages
 from .models import Pregunta, Profesional, Respuesta
 from .forms import PreguntaFormPublic, RespuestaForm, PreguntaFormPrivate
 from django.urls import reverse_lazy
-from django.views.generic import UpdateView, DeleteView, DetailView
+from django.views.generic import UpdateView, DeleteView, DetailView, ListView
+from django.http import JsonResponse
 # Create your views here.
 
 def forum_home(request):
@@ -16,6 +17,11 @@ def forum_home(request):
     return render(request, 'forum/forum_home.html', {'preguntas': preguntas, 'respuestas': respuestas})
 
 
+
+def cargar_profesionales(request):
+    sector_id = request.GET.get('sector')
+    profesionales = Profesional.objects.filter(sector=sector_id).values('id', 'nombre')
+    return JsonResponse(list(profesionales), safe=False)
 
 def pregunta_create_private(request):
     if request.method == 'POST':
@@ -133,3 +139,14 @@ class RespuestaDeleteView(DeleteView):
 
     def get_question(self):
         return Respuesta.objects.filter(user_answer=self.request.user)
+    
+
+def mail_list(request):
+    preguntas = Pregunta.objects.filter(is_public=False, user_question=request.user).order_by('-date_at')
+    respuestas = Respuesta.objects.filter(question__in=preguntas).order_by('-date_at')
+    return render(request, 'forum/mail_list.html', {'preguntas': preguntas, 'respuestas': respuestas})
+
+def mail_recibido(request):
+    preguntas = Pregunta.objects.filter(is_public=False, professional_user__user=request.user).order_by('-date_at')
+    respuestas = Respuesta.objects.filter(question__in=preguntas).order_by('-date_at')
+    return render(request, 'forum/mail_recibido.html', {'preguntas': preguntas, 'respuestas': respuestas})
