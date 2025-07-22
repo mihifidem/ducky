@@ -1,10 +1,63 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<h3>🎯 Crear perfil de CV personalizado</h3>
-<form method="post">
-{% csrf_token %}
-{{ form.as_p }}
-<button type="submit" class="btn btn-success">Guardar CV</button>
-<a href="{% url 'cv_list' %}" class="btn btn-secondary"> Cancelar</a>
-</form>
+
+<div class="container mt-4">
+  <div class="card shadow border-0">
+    <div class="card-header bg-primary text-white">
+      <h4 class="mb-0">🎯 Crear perfil de CV personalizado</h4>
+    </div>
+    <div class="card-body">
+
+
+      <!-- Profile -->
+      {% if profile %}
+  <div class="mb-4 border rounded p-3 bg-light">
+    <h5 class="text-secondary mb-3">👤 Datos del Perfil</h5>
+    <div class="row">
+      <div class="col-md-6 mb-2">
+        <strong>Nombre completo:</strong><br>
+        {{ profile.user.first_name }} {{ profile.user.last_name }}
+      </div>
+      <div class="col-md-6 mb-2">
+        <strong>Email:</strong><br>
+        {{ profile.user.email }}
+      </div>
+      <div class="col-md-6 mb-2">
+        <strong>Teléfono:</strong><br>
+        {{ profile.phone|default:"No especificado" }}
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+      <!-- Formulario de creación de CV -->
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="mb-3">
+            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}
+              <div class="form-text">{{ field.help_text }}</div>
+            {% endif %}
+            {% for error in field.errors %}
+              <div class="text-danger small">{{ error }}</div>
+            {% endfor %}
+          </div>
+        {% endfor %}
+
+        <div class="d-flex justify-content-between mt-4">
+          <button type="submit" class="btn btn-success">
+            <i class="bi bi-check-circle"></i> Guardar CV
+          </button>
+          <a href="{% url 'cv_list' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-x-circle"></i> Cancelar
+          </a>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
 {% endblock %}

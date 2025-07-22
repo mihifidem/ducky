@@ -1,10 +1,15 @@
-
 {% extends 'base.html' %}
 {% block title %}Gestión de mi CV{% endblock %}
 {% block content %}
-<h2 class="mb-4">🎓 Gestión de mi CV</h2>
 
-<a href="{% url 'cv_list' %}" class="btn btn-primary mb-3">Ir a Mis CVs</a>
+<h2 class="mb-4">🎓 Gestión de mi CV</h2> <hr>
+
+<div class="d-flex justify-content-between mb-3">
+  <a href="{% url 'cv_list' %}" class="btn btn-primary">Ir a Mis CVs</a>
+  <a href="{% url 'redireccion_dashboard' %}" class="btn btn-secondary">Cancelar</a>
+</div>
+
+
 
 <!-- Perfil -->
 <div class="card mb-3">
@@ -29,7 +34,7 @@
     {% endif %}
 
     <div>
-      <p><strong>Nombre:</strong> {{ profile.user.username }}</p>
+      <p><strong>Nombre:</strong> {{ profile.user.first_name}}</p>
       <p>
         <strong>Teléfono:</strong> {{ profile.phone|default:"No especificado" }}
       </p>

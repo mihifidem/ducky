@@ -5,88 +5,83 @@
 
   {% if cv.header_image %}
     <div class="text-center mb-4">
-      <img src="{{ cv.header_image.url }}" class="img-fluid rounded" alt="Encabezado del CV">
+      <img src="{{ cv.header_image.url }}" class="img-fluid rounded shadow" alt="Imagen de cabecera">
     </div>
   {% endif %}
 
   <div class="d-flex justify-content-between align-items-center my-3">
     <a href="{% url 'download_cv_pdf' slug=cv.slug %}" class="btn btn-success">📄 Descargar PDF</a>
-    <a href="{% url 'cv_public_view' slug=cv.slug %}" class="btn btn-primary" target="_blank">🌐 Ver Online</a>
     <a href="{% url 'cv_list' %}" class="btn btn-danger">❌ Cancelar</a>
   </div>
 
-  <div class="container my-5">
-    <h1 class="mb-4 text-center">{{ cv.title }}</h1>
+  {% if profile %}
+    <div class="border rounded p-4 mb-5" style="background-color: #f0f4ff;">
+      <h4 style="color: {{ cv.primary_color }};">👤 Información del Perfil</h4>
+      <p><strong>Nombre:</strong> {{ profile.user.first_name }} {{ profile.user.last_name }}</p>
+      <p><strong>Email:</strong> {{ profile.user.email }}</p>
+      <p><strong>Teléfono:</strong> {{ profile.phone|default:"No especificado" }}</p>
+    </div>
+  {% endif %}
+
+  <div class="container">
+    <h1 class="text-center mb-5" style="color: {{ cv.primary_color }};">{{ cv.title }}</h1>
+
     <div class="row g-4">
-      
+
       <div class="col-md-6">
-        <div class="bg-primary text-white rounded p-3 shadow">
-          <h3>📌 Experiencias</h3>
-          <ul class="list-unstyled">
-            {% for exp in cv.selected_experiences.all %}
-            <li>
-              <h5>{{ exp.position }}</h5>
-              <p>{{ exp.company }} | <small>{{ exp.start_date }} - {{ exp.end_date|default:"Actualidad" }}</small></p>
-            </li>
-            {% empty %}
-            <li><em>No hay experiencias registradas.</em></li>
-            {% endfor %}
-          </ul>
-        </div>
-      </div>
-      
-      <div class="col-md-6">
-        <div class="bg-light rounded p-3 shadow">
-          <h3>🎓 Formación</h3>
-          <ul class="list-unstyled">
-            {% for edu in cv.selected_educations.all %}
-            <li>
-              <h5>{{ edu.title }}</h5>
-              <p>{{ edu.institution }}</p>
-            </li>
-            {% empty %}
-            <li><em>No hay formación registrada.</em></li>
-            {% endfor %}
-          </ul>
+        <div class="p-3 border rounded shadow-sm" style="background-color: #e8f0ff;">
+          <h5 style="color: {{ cv.primary_color }};">📌 Experiencias</h5>
+          {% for exp in cv.selected_experiences.all %}
+            <p><strong>{{ exp.position }}</strong><br>
+            {{ exp.company }}<br>
+            <small>{{ exp.start_date }} - {{ exp.end_date|default:"Actualidad" }}</small></p>
+          {% empty %}
+            <p class="text-muted">No hay experiencias registradas.</p>
+          {% endfor %}
         </div>
       </div>
 
       <div class="col-md-6">
-        <div class="bg-primary text-white rounded p-3 shadow">
-          <h3>🌍 Idiomas</h3>
-          <ul class="list-unstyled">
-            {% for lang in cv.selected_languages.all %}
-            <li>{{ lang.language.name }} - {{ lang.level }}</li>
-            {% empty %}
-            <li><em>No hay idiomas registrados.</em></li>
-            {% endfor %}
-          </ul>
+        <div class="p-3 border rounded shadow-sm" style="background-color: #fffde7;">
+          <h5 style="color: {{ cv.primary_color }};">🎓 Formación</h5>
+          {% for edu in cv.selected_educations.all %}
+            <p><strong>{{ edu.title }}</strong><br>{{ edu.institution }}</p>
+          {% empty %}
+            <p class="text-muted">No hay formación registrada.</p>
+          {% endfor %}
         </div>
       </div>
 
       <div class="col-md-6">
-        <div class="bg-light rounded p-3 shadow">
-          <h3>💡 Habilidades Blandas</h3>
-          <ul class="list-unstyled">
-            {% for skill in cv.selected_softskills.all %}
-            <li>{{ skill.skill.name }}</li>
-            {% empty %}
-            <li><em>No hay habilidades blandas registradas.</em></li>
-            {% endfor %}
-          </ul>
+        <div class="p-3 border rounded shadow-sm" style="background-color: #f1f8e9;">
+          <h5 style="color: {{ cv.primary_color }};">🌍 Idiomas</h5>
+          {% for lang in cv.selected_languages.all %}
+            <p>{{ lang.language.name }} - {{ lang.level }}</p>
+          {% empty %}
+            <p class="text-muted">No hay idiomas registrados.</p>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="p-3 border rounded shadow-sm" style="background-color: #fce4ec;">
+          <h5 style="color: {{ cv.primary_color }};">💡 Habilidades Blandas</h5>
+          {% for skill in cv.selected_softskills.all %}
+            <p>{{ skill.skill.name }}</p>
+          {% empty %}
+            <p class="text-muted">No hay habilidades blandas registradas.</p>
+          {% endfor %}
         </div>
       </div>
 
       <div class="col-12">
-        <div class="bg-primary text-white rounded p-3 shadow">
-          <h3>🎯 Hobbies</h3>
-          <ul class="list-unstyled">
-            {% for h in cv.selected_hobbies.all %}
-            <li>{{ h.hobby.name }}</li>
-            {% empty %}
-            <li><em>No hay hobbies registrados.</em></li>
-            {% endfor %}
-          </ul>
+        <div class="p-3 border rounded shadow-sm" style="background-color: #e3f2fd;">
+          <h5 style="color: {{ cv.primary_color }};">🎯 Hobbies</h5>
+          {% for h in cv.selected_hobbies.all %}
+            <p>{{ h.hobby.name }}</p>
+          {% empty %}
+            <p class="text-muted">No hay hobbies registrados.</p>
+          {% endfor %}
         </div>
       </div>
 

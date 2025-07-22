@@ -10,16 +10,24 @@
 
   <div class="d-flex justify-content-between align-items-center my-3">
     <a href="{% url 'download_cv_pdf' slug=cv.slug %}" class="btn btn-success">📄 Descargar PDF</a>
-    <a href="{% url 'cv_public_view' slug=cv.slug %}" class="btn btn-primary" target="_blank">🌐 Ver Online</a>
     <a href="{% url 'cv_list' %}" class="btn btn-danger">❌ Cancelar</a>
   </div>
 
-  <h1 style="text-align: center;">{{ cv.title }}</h1>
+  {% if profile %}
+    <div class="border rounded p-3 mb-4 bg-light">
+      <h5 class="text-secondary">👤 Información del Perfil</h5>
+      <p><strong>Nombre:</strong> {{ profile.user.first_name }} {{ profile.user.last_name }}</p>
+      <p><strong>Email:</strong> {{ profile.user.email }}</p>
+      <p><strong>Teléfono:</strong> {{ profile.phone|default:"No especificado" }}</p>
+    </div>
+  {% endif %}
 
-  <div class="section">
+  <h1 class="text-center my-4">{{ cv.title }}</h1>
+
+  <div class="section mb-4">
     <h2>📌 Experiencias</h2>
     {% if cv.selected_experiences.all %}
-    <table class="table">
+    <table class="table table-striped table-sm">
       {% for exp in cv.selected_experiences.all %}
       <tr>
         <td><strong>{{ exp.position }}</strong></td>
@@ -33,10 +41,10 @@
     {% endif %}
   </div>
 
-  <div class="section">
+  <div class="section mb-4">
     <h2>🎓 Formación</h2>
     {% if cv.selected_educations.all %}
-    <table class="table">
+    <table class="table table-bordered table-sm">
       {% for edu in cv.selected_educations.all %}
       <tr>
         <td>{{ edu.title }}</td>
@@ -49,10 +57,10 @@
     {% endif %}
   </div>
 
-  <div class="section">
+  <div class="section mb-4">
     <h2>🌍 Idiomas</h2>
     {% if cv.selected_languages.all %}
-    <table class="table">
+    <table class="table table-hover table-sm">
       {% for lang in cv.selected_languages.all %}
       <tr>
         <td>{{ lang.language.name }}</td>
@@ -65,12 +73,12 @@
     {% endif %}
   </div>
 
-  <div class="section">
+  <div class="section mb-4">
     <h2>💡 Habilidades Blandas</h2>
     {% if cv.selected_softskills.all %}
-    <ul>
+    <ul class="list-unstyled">
       {% for skill in cv.selected_softskills.all %}
-      <li>{{ skill.skill.name }}</li>
+      <li>• {{ skill.skill.name }}</li>
       {% endfor %}
     </ul>
     {% else %}
@@ -78,12 +86,12 @@
     {% endif %}
   </div>
 
-  <div class="section">
+  <div class="section mb-4">
     <h2>🎯 Hobbies</h2>
     {% if cv.selected_hobbies.all %}
-    <ul>
+    <ul class="list-unstyled">
       {% for h in cv.selected_hobbies.all %}
-      <li>{{ h.hobby.name }}</li>
+      <li>• {{ h.hobby.name }}</li>
       {% endfor %}
     </ul>
     {% else %}

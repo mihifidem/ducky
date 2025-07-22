@@ -10,9 +10,14 @@ from django.http import HttpResponse
 from django.template.loader import get_template, render_to_string
 from django.utils.text import slugify
 from django.contrib.auth.forms import UserCreationForm
+from django.conf import settings
+from urllib.parse import urlparse, parse_qs
 
 # External libraries
-import weasyprint
+import pdfkit
+import os
+import zipfile
+from datetime import datetime
 
 # Local app: forms
 from .forms import (
@@ -24,7 +29,7 @@ from .forms import (
 # Local app: models
 from .models import (
     UserProfile, UserJobExperience, UserEducation, UserLanguage,
-    UserSoftSkill, UserHobby, Language, CVProfile
+    UserSoftSkill, UserHobby, Language, CVProfile, Hobby
 )
 
 
@@ -76,7 +81,7 @@ def add_experience(request):
             experience = form.save(commit=False)
             experience.user = request.user
             experience.save()
-            return redirect('dashboard')  
+            return redirect('cv_panel')  
     else:
         form = UserJobExperienceForm()
     return render(request, 'account/experience_form.html', {'form': form})
@@ -90,7 +95,7 @@ def add_education(request):
             education = form.save(commit=False)
             education.user = request.user
             education.save()
-            return redirect('dashboard')  # Igual aquí
+            return redirect('cv_panel')  # Igual aquí
     else:
         form = UserEducationForm()
     return render(request, 'account/education_form.html', {'form': form})
@@ -104,7 +109,7 @@ def add_language(request):
             language = form.save(commit=False)
             language.user = request.user
             language.save()
-            return redirect('dashboard')  # Igual aquí
+            return redirect('cv_panel')  # Igual aquí
     else:
         form = UserLanguageForm()
     return render(request, 'account/language_form.html', {'form': form})
@@ -115,24 +120,21 @@ def add_softskill(request):
     if request.method == 'POST':
         form = UserSoftSkillForm(request.POST)
         if form.is_valid():
-            softskill = form.save(commit=False)
-            softskill.user = request.user
-            softskill.save()
-            return redirect('dashboard')
+            form.save(user=request.user)
+            return redirect('cv_panel')  
     else:
         form = UserSoftSkillForm()
-    return render(request, 'account/softskill_form.html', {'form': form})
 
+    return render(request, 'account/softskill_form.html', {'form': form})
+    
 
 @login_required
 def add_hobby(request):
     if request.method == 'POST':
         form = UserHobbyForm(request.POST)
         if form.is_valid():
-            hobby = form.save(commit=False)
-            hobby.user = request.user
-            hobby.save()
-            return redirect('dashboard')
+            form.save(user=request.user)
+            return redirect('cv_panel') 
     else:
         form = UserHobbyForm()
     return render(request, 'account/hobby_form.html', {'form': form})
@@ -339,15 +341,21 @@ def delete_language(request, pk):
 # Edición y eliminación habilidades blandas
 @login_required
 def edit_softskill(request, pk):
-    softskill = get_object_or_404(UserSoftSkill, pk=pk, user=request.user)
+    user_softskill = get_object_or_404(UserSoftSkill, pk=pk, user=request.user)
+
     if request.method == 'POST':
-        form = UserSoftSkillForm(request.POST, instance=softskill)
+        form = UserSoftSkillForm(request.POST)
         if form.is_valid():
-            form.save()
+            # Borramos la anterior
+            user_softskill.delete()
+            # Creamos la nueva
+            form.save(user=request.user)
             return redirect('cv_panel')
     else:
-        form = UserSoftSkillForm(instance=softskill)
-    return render(request, 'account/edit_softskill.html', {'form': form})
+        form = UserSoftSkillForm(initial={'skill': user_softskill.skill.name})
+
+    return render(request, 'account/edit_softskill.html', {'form': form, 'user_softskill': user_softskill})
+
 
 @login_required
 def delete_softskill(request, pk):
@@ -358,33 +366,46 @@ def delete_softskill(request, pk):
     return render(request, 'account/softskill_confirm_delete.html', {'softskill': softskill})
 
 
+
 # Edición y eliminación hobbies
 @login_required
 def edit_hobby(request, pk):
-    hobby = get_object_or_404(UserHobby, pk=pk, user=request.user)
+    user_hobby = get_object_or_404(UserHobby, pk=pk, user=request.user)
+
     if request.method == 'POST':
-        form = UserHobbyForm(request.POST, instance=hobby)
+        form = UserHobbyForm(request.POST)
         if form.is_valid():
-            form.save()
+            hobby_name = form.cleaned_data['hobby'].strip()
+            hobby = Hobby.objects.filter(name__iexact=hobby_name).first()
+            if not hobby:
+                hobby = Hobby.objects.create(name=hobby_name)
+            user_hobby.hobby = hobby
+            user_hobby.save()
             return redirect('cv_panel')
     else:
-        form = UserHobbyForm(instance=hobby)
+        form = UserHobbyForm(initial={'hobby': user_hobby.hobby.name})
+
     return render(request, 'account/edit_hobby.html', {'form': form})
 
 @login_required
 def delete_hobby(request, pk):
-    hobby = get_object_or_404(UserHobby, pk=pk, user=request.user)
+    hobby_relation = get_object_or_404(UserHobby, pk=pk, user=request.user)
     if request.method == 'POST':
-        hobby.delete()
+        hobby = hobby_relation.hobby
+        hobby_relation.delete()
+        # Verificar si el hobby quedó huérfano (sin usuarios)
+        if not UserHobby.objects.filter(hobby=hobby).exists():
+            hobby.delete()
         return redirect('cv_panel')
-    return render(request, 'account/hobby_confirm_delete.html', {'hobby': hobby})
-
+    return render(request, 'account/hobby_confirm_delete.html', {'hobby': hobby_relation})
 
 
 # CV Management views: crear, listar, editar, eliminar, clonar
 
 @login_required
-def create_cv(request):
+def cv_create(request):
+    profile = UserProfile.objects.filter(user=request.user).first()
+
     if request.method == 'POST':
         form = CVProfileForm(request.POST, user=request.user)
         if form.is_valid():
@@ -395,27 +416,18 @@ def create_cv(request):
             return redirect('cv_list')
     else:
         form = CVProfileForm(user=request.user)
-    return render(request, 'account/cv_form.html', {'form': form})
+
+    return render(request, 'account/cv_form.html', {
+        'form': form,
+        'profile': profile
+    })
+
 
 @login_required
 def cv_list(request):
     cvs = request.user.cv_profiles.all()
     return render(request, 'account/cv_list.html', {'cvs': cvs})
 
-@login_required
-def cv_create(request):
-    if request.method == 'POST':
-        form = CVProfileForm(request.POST, user=request.user)
-        if form.is_valid():
-            cv = form.save(commit=False)
-            cv.user = request.user
-            cv.slug = slugify(f"{request.user.username}_{cv.title}")
-            cv.save()
-            form.save_m2m()
-            return redirect('cv_list')
-    else:
-        form = CVProfileForm(user=request.user)
-    return render(request, 'account/cv_form.html', {'form': form})
 
 @login_required
 def cv_edit(request, pk):
@@ -438,21 +450,40 @@ def cv_delete(request, pk):
         return redirect('cv_list')
     return render(request, 'account/cv_confirm_delete.html', {'cv': cv})
 
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect
+from django.utils.text import slugify
+from .models import CVProfile
+
 @login_required
 def cv_clone(request, pk):
-	cv = get_object_or_404(CVProfile, pk=pk, user=request.user)
-	clone = CVProfile.objects.create(
-		user=request.user,
-		title=cv.title + " (copia)",
-		slug=slugify(f"{cv.slug}_copy"),
-		skin=cv.skin
-	)
-	clone.selected_experiences.set(cv.selected_experiences.all())
-	clone.selected_educations.set(cv.selected_educations.all())
-	clone.selected_softskills.set(cv.selected_softskills.all())
-	clone.selected_languages.set(cv.selected_languages.all())
-	clone.selected_hobbies.set(cv.selected_hobbies.all())
-	return redirect('cv_list')
+    cv = get_object_or_404(CVProfile, pk=pk, user=request.user)
+
+    base_slug = slugify(f"{cv.slug}_copia")
+    new_title = f"{cv.title} (copia)"
+    new_slug = base_slug
+    counter = 1
+
+    while CVProfile.objects.filter(slug=new_slug).exists():
+        counter += 1
+        new_slug = f"{base_slug}_{counter}"
+        new_title = f"{cv.title} (copia {counter})"
+
+    clone = CVProfile.objects.create(
+        user=request.user,
+        title=new_title,
+        slug=new_slug,
+        created_at=cv.created_at,
+        skin=cv.skin
+    )
+
+    clone.selected_experiences.set(cv.selected_experiences.all())
+    clone.selected_educations.set(cv.selected_educations.all())
+    clone.selected_softskills.set(cv.selected_softskills.all())
+    clone.selected_languages.set(cv.selected_languages.all())
+    clone.selected_hobbies.set(cv.selected_hobbies.all())
+
+    return redirect('cv_list')
 
 
 # Vista para previsualizar el CV en formato HTML según el skin seleccionado
@@ -476,9 +507,13 @@ def preview_cv(request, slug):
 # Vista pública para mostrar el CV según su skin
 def cv_public_view(request, slug):
     cv = get_object_or_404(CVProfile, slug=slug)
+    profile = UserProfile.objects.filter(user=cv.user).first()  # Obtener perfil del dueño del CV
 
-    # Renderiza el template directamente con el nombre del skin
-    return render(request, f'account/skins/cv_{cv.skin}.html', {'cv': cv})
+    return render(request, f'account/skins/cv_{cv.skin}.html', {
+        'cv': cv,
+        'profile': profile,  # Pasamos profile para usar en la plantilla
+    })
+
 
 
 # Vista para listar todos los CVs del usuario autenticado
@@ -488,18 +523,123 @@ def cv_list_view(request):
     return render(request, 'account/cv_list.html', {'cvs': cvs})
 
 
-# Vista para exportar el CV como PDF usando WeasyPrint
+
+# Vista para descargar el CV en PDF desde una web publica con pdfkit
+@login_required
 def cv_download_pdf(request, slug):
+    # Obtener el CV del usuario
     cv = get_object_or_404(CVProfile, slug=slug, user=request.user)
 
-    # Usar plantilla solo para PDF, sin botones
-    template_path = f'account/skins/pdf/cv_{cv.skin}_pdf.html'
-    
-    html = render_to_string(template_path, {'cv': cv})
-    pdf = weasyprint.HTML(string=html).write_pdf()
-    
+    # Obtener el perfil del usuario
+    try:
+        profile = request.user.userprofile
+    except UserProfile.DoesNotExist:
+        profile = None
+
+    # Plantillas según el skin
+    template_map = {
+        'default': 'account/skins/pdf/cv_default_pdf.html',
+        'modern': 'account/skins/pdf/cv_modern_pdf.html',
+        'minimal': 'account/skins/pdf/cv_minimal_pdf.html',
+    }
+    template_path = template_map.get(cv.skin, 'account/skins/pdf/cv_default_pdf.html')
+
+    # Renderizar HTML con cv y profile
+    context = {
+        'cv': cv,
+        'profile': profile,
+    }
+    html = render_to_string(template_path, context, request=request)
+
+    # Configurar wkhtmltopdf
+    path_wkhtmltopdf = r'C:\Archivos de programa\wkhtmltopdf\bin\wkhtmltopdf.exe'
+    config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
+
+    # Crear PDF
+    pdf = pdfkit.from_string(html, False, configuration=config)
+
+    # Devolver respuesta PDF
     response = HttpResponse(pdf, content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="{cv.slug}.pdf"'
-    
     return response
 
+
+
+# Vista para descargar los pdf seleccionados en ZIP
+@login_required
+def download_selected_cvs(request):
+    if request.method == 'POST':
+        selected_ids = request.POST.getlist('selected_cvs')
+        cvs = CVProfile.objects.filter(id__in=selected_ids)
+
+        # Ruta wkhtmltopdf en Windows
+        path_wkhtmltopdf = r'C:\Archivos de programa\wkhtmltopdf\bin\wkhtmltopdf.exe'
+        config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
+
+        # Crear carpeta destino para el ZIP
+        zip_dir = os.path.join(settings.MEDIA_ROOT, 'cv_zips')
+        os.makedirs(zip_dir, exist_ok=True)
+
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        zip_filename = f'CVs_Seleccionados_{timestamp}.zip'
+        zip_path = os.path.join(zip_dir, zip_filename)
+
+        # Mapeo de skins a plantillas
+        template_map = {
+            'default': 'account/skins/pdf/cv_default_pdf.html',
+            'modern': 'account/skins/pdf/cv_modern_pdf.html',
+            'minimal': 'account/skins/pdf/cv_minimal_pdf.html',
+        }
+
+        with zipfile.ZipFile(zip_path, 'w') as zip_file:
+            for cv in cvs:
+                # Obtener plantilla correspondiente al skin
+                template_path = template_map.get(cv.skin, template_map['default'])
+
+                # Obtener el perfil del usuario del CV
+                try:
+                    profile = cv.user.userprofile  # o cv.user.profile según tu modelo
+                except UserProfile.DoesNotExist:
+                    profile = None
+
+                context = {
+                    'cv': cv,
+                    'profile': profile,
+                }
+
+                html = render_to_string(template_path, context)
+
+                pdf_file = pdfkit.from_string(html, False, configuration=config)
+
+                safe_title = slugify(cv.title)
+                filename = f"{safe_title}_{cv.user.username}.pdf"
+                zip_file.writestr(filename, pdf_file)
+
+        return redirect(f"{settings.MEDIA_URL}cv_zips/{zip_filename}")
+
+    return HttpResponse("Método no permitido", status=405)
+
+
+# vista error 404
+
+def page_not_found_view(request, exception):
+    return render(request, 'account/404.html', status=404)
+
+# URL desconfigurada
+
+def mi_vista(request):
+    url_completa = request.build_absolute_uri()
+    partes = urlparse(url_completa)
+
+    contexto = {
+        'url_completa': url_completa,
+        'esquema': partes.scheme,
+        'dominio': partes.netloc,
+        'ruta': partes.path,
+        'parametros': partes.params,
+        'query_string': partes.query,
+        'fragmento': partes.fragment,
+        'query_dict': parse_qs(partes.query)
+    }
+
+    return render(request, 'account/info_url.html', contexto)

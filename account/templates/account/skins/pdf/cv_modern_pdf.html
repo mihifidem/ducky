@@ -1,109 +1,121 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
   <meta charset="UTF-8">
+  <title>{{ cv.title }}</title>
+
+  <!-- Bootstrap local en caso de que no se cargue bien desde CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
   <style>
     body {
-      font-family: Helvetica, sans-serif;
-      font-size: 12px;
-      color: #333;
+      font-family: {{ cv.font_family }}, sans-serif;
+      color: {{ cv.primary_color }};
       margin: 30px;
     }
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
+
+    h1, h4, h5 {
+      color: {{ cv.primary_color }};
     }
-    h3 {
-      margin-top: 20px;
-      border-bottom: 1px solid #ccc;
-      padding-bottom: 5px;
+
+    img {
+      max-width: 100%;
+      height: auto;
     }
-    .section {
-      margin-bottom: 25px;
-      padding: 10px;
+
+    .section-box {
       border: 1px solid #ddd;
-      border-radius: 6px;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
     }
-    .primary-bg {
-      background-color: #f0f4ff;
+
+    .shadow-sm {
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
     }
-    .light-bg {
-      background-color: #f9f9f9;
-    }
-    ul {
-      padding-left: 15px;
-    }
-    li {
-      margin-bottom: 10px;
-    }
-    em {
-      color: #888;
+
+    /* Mejora para evitar cortes raros al imprimir en PDF */
+    .page-break {
+      page-break-after: always;
     }
   </style>
 </head>
 <body>
 
-  <h1>{{ cv.title }}</h1>
+  {% if cv.header_image %}
+    <div class="text-center mb-4">
+      <img src="{{ cv.header_image.url }}" class="img-fluid rounded shadow" alt="Imagen de cabecera">
+    </div>
+  {% endif %}
 
-  <div class="section primary-bg">
-    <h3>📌 Experiencias</h3>
-    <ul>
-      {% for exp in cv.selected_experiences.all %}
-      <li>
-        <strong>{{ exp.position }}</strong><br>
-        {{ exp.company }} | <small>{{ exp.start_date }} - {{ exp.end_date|default:"Actualidad" }}</small>
-      </li>
-      {% empty %}
-      <li><em>No hay experiencias registradas.</em></li>
-      {% endfor %}
-    </ul>
-  </div>
+  {% if profile %}
+    <div class="section-box" style="background-color: #f0f4ff;">
+      <h4>👤 Información del Perfil</h4>
+      <p><strong>Nombre:</strong> {{ profile.user.first_name }} {{ profile.user.last_name }}</p>
+      <p><strong>Email:</strong> {{ profile.user.email }}</p>
+      <p><strong>Teléfono:</strong> {{ profile.phone|default:"No especificado" }}</p>
+    </div>
+  {% endif %}
 
-  <div class="section light-bg">
-    <h3>🎓 Formación</h3>
-    <ul>
-      {% for edu in cv.selected_educations.all %}
-      <li>
-        <strong>{{ edu.title }}</strong><br>
-        {{ edu.institution }}
-      </li>
-      {% empty %}
-      <li><em>No hay formación registrada.</em></li>
-      {% endfor %}
-    </ul>
-  </div>
+  <div class="row">
 
-  <div class="section primary-bg">
-    <h3>🌍 Idiomas</h3>
-    <ul>
-      {% for lang in cv.selected_languages.all %}
-      <li>{{ lang.language.name }} - {{ lang.level }}</li>
-      {% empty %}
-      <li><em>No hay idiomas registrados.</em></li>
-      {% endfor %}
-    </ul>
-  </div>
+    <div class="col-12 col-md-6">
+      <div class="section-box shadow-sm" style="background-color: #e8f0ff;">
+        <h5>📌 Experiencias</h5>
+        {% for exp in cv.selected_experiences.all %}
+          <p><strong>{{ exp.position }}</strong><br>
+          {{ exp.company }}<br>
+          <small>{{ exp.start_date }} - {{ exp.end_date|default:"Actualidad" }}</small></p>
+        {% empty %}
+          <p class="text-muted">No hay experiencias registradas.</p>
+        {% endfor %}
+      </div>
+    </div>
 
-  <div class="section light-bg">
-    <h3>💡 Habilidades Blandas</h3>
-    <ul>
-      {% for skill in cv.selected_softskills.all %}
-      <li>{{ skill.skill.name }}</li>
-      {% empty %}
-      <li><em>No hay habilidades blandas registradas.</em></li>
-      {% endfor %}
-    </ul>
-  </div>
+    <div class="col-12 col-md-6">
+      <div class="section-box shadow-sm" style="background-color: #fffde7;">
+        <h5>🎓 Formación</h5>
+        {% for edu in cv.selected_educations.all %}
+          <p><strong>{{ edu.title }}</strong><br>{{ edu.institution }}</p>
+        {% empty %}
+          <p class="text-muted">No hay formación registrada.</p>
+        {% endfor %}
+      </div>
+    </div>
 
-  <div class="section primary-bg">
-    <h3>🎯 Hobbies</h3>
-    <ul>
-      {% for h in cv.selected_hobbies.all %}
-      <li>{{ h.hobby.name }}</li>
-      {% empty %}
-      <li><em>No hay hobbies registrados.</em></li>
-      {% endfor %}
-    </ul>
+    <div class="col-12 col-md-6">
+      <div class="section-box shadow-sm" style="background-color: #f1f8e9;">
+        <h5>🌍 Idiomas</h5>
+        {% for lang in cv.selected_languages.all %}
+          <p>{{ lang.language.name }} - {{ lang.level }}</p>
+        {% empty %}
+          <p class="text-muted">No hay idiomas registrados.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="col-12 col-md-6">
+      <div class="section-box shadow-sm" style="background-color: #fce4ec;">
+        <h5>💡 Habilidades Blandas</h5>
+        {% for skill in cv.selected_softskills.all %}
+          <p>{{ skill.skill.name }}</p>
+        {% empty %}
+          <p class="text-muted">No hay habilidades blandas registradas.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="col-12">
+      <div class="section-box shadow-sm" style="background-color: #e3f2fd;">
+        <h5>🎯 Hobbies</h5>
+        {% for h in cv.selected_hobbies.all %}
+          <p>{{ h.hobby.name }}</p>
+        {% empty %}
+          <p class="text-muted">No hay hobbies registrados.</p>
+        {% endfor %}
+      </div>
+    </div>
+
   </div>
 
 </body>

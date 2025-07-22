@@ -1,16 +1,20 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from .models import UserJobExperience, UserEducation, UserLanguage, UserSoftSkill, UserHobby, UserProfile, CVProfile
+from .models import UserJobExperience, UserEducation, UserLanguage, UserSoftSkill, UserHobby, UserProfile, CVProfile, Hobby, SoftSkill
 from django.core.exceptions import ValidationError
 
 
-# Formulario para editar solo el nombre de usuario de un User
+# Formulario para editar campos básicos de User
 class UserForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['username']
-
+        fields = ['username','first_name', 'last_name', 'email']
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Primer apellido'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Correo electrónico'}),
+        }
 
 # Formulario personalizado para registro de usuario con email obligatorio
 class CustomUserCreationForm(UserCreationForm):
@@ -90,18 +94,47 @@ class UserLanguageForm(forms.ModelForm):
 
 
 # Formulario para habilidades blandas (soft skills)
-class UserSoftSkillForm(forms.ModelForm):
-    class Meta:
-        model = UserSoftSkill
-        fields = ['skill']
+class UserSoftSkillForm(forms.Form):
+    skill = forms.CharField(
+        label="Habilidad blanda",
+        widget=forms.TextInput(attrs={'placeholder': 'Ej: Trabajo en equipo'}),
+        help_text="Escribe una habilidad blanda. Se creará si no existe."
+    )
+
+    def save(self, user):
+        skill_name = self.cleaned_data['skill'].strip()
+
+        # Busca la habilidad (ignorando mayúsculas/minúsculas)
+        skill = SoftSkill.objects.filter(name__iexact=skill_name).first()
+
+        if not skill:
+            skill = SoftSkill.objects.create(name=skill_name)
+
+        # Evita duplicados
+        user_skill, created = UserSoftSkill.objects.get_or_create(user=user, skill=skill)
+        return user_skill
 
 
 # Formulario para hobbies
-class UserHobbyForm(forms.ModelForm):
-    class Meta:
-        model = UserHobby
-        fields = ['hobby']
+class UserHobbyForm(forms.Form):
+    hobby = forms.CharField(
+        label="Hobby",
+        widget=forms.TextInput(attrs={'placeholder': 'Ej: Escalar'}),
+        help_text="Escribe un hobby. Se creará si no existe."
+    )
 
+    def save(self, user):
+        hobby_name = self.cleaned_data['hobby'].strip()
+
+        # Buscar con name__iexact (case-insensitive)
+        hobby = Hobby.objects.filter(name__iexact=hobby_name).first()
+
+        if not hobby:
+            hobby = Hobby.objects.create(name=hobby_name)
+
+        # Evita duplicados
+        user_hobby, created = UserHobby.objects.get_or_create(user=user, hobby=hobby)
+        return user_hobby
 
 # Formulario para editar perfil de usuario, con widgets para mejorar la UI
 class UserProfileForm(forms.ModelForm):

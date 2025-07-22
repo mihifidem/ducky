@@ -53,7 +53,7 @@ class UserSoftSkill(models.Model):
     skill = models.ForeignKey(SoftSkill, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.user.username} - {self.skill.name}"
+        return f"{self.skill.name}"
 
 
 # 🔹 4. Idiomas y nivel, con relación usuario-idioma (N-M)
@@ -99,7 +99,7 @@ class UserHobby(models.Model):
     hobby = models.ForeignKey(Hobby, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.user.username} - {self.hobby.name}"
+        return f"{self.hobby.name}"
 
 
 # 🔹 6. Educación del usuario (1-N)
@@ -131,6 +131,7 @@ class CVProfile(models.Model):
     title = models.CharField(max_length=100)
     slug = models.SlugField(unique=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     skin = models.CharField(max_length=50, choices=SKIN_CHOICES, default='default')
 
     # Relaciones M2M para seleccionar qué datos incluir en el CV

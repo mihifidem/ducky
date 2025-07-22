@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import UserRegisterView, UserLoginView, UserLogoutView, profile_view, cv_edit, cv_list, cv_create, cv_delete, cv_clone, signup_view, dashboard_view, cv_panel_view, edit_profile, delete_userprofile, cv_public_view, cv_list_view, cv_download_pdf
+from .views import UserRegisterView, UserLoginView, UserLogoutView, profile_view, cv_edit, cv_list, cv_create, cv_delete, cv_clone, signup_view, dashboard_view, cv_panel_view, edit_profile, delete_userprofile, cv_public_view, cv_list_view, cv_download_pdf, mi_vista
 from . import views
 
 
@@ -63,6 +63,11 @@ urlpatterns = [
     path('cvs/<slug:slug>/download/', cv_download_pdf,name='download_cv_pdf'),
     # Public CV view URL
     path('cv/<slug:slug>/', cv_public_view, name='cv_public_view'),
+    path('descargar-cvs/', views.download_selected_cvs, name='download_selected_cvs'),
+    # 404
+    path('*', views.page_not_found_view, name='error_404'),
+    # URL 
+    path('probar-url/', mi_vista, name='probar_url'),
 
 ]
 

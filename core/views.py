@@ -8,6 +8,7 @@ def home(request):
         return redirect('redireccion_dashboard')
     else:
         return render(request, 'home.html')
+   
 
 @login_required
 def redireccion_dashboard(request):
