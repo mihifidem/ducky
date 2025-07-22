@@ -5,12 +5,22 @@
     margin: 0;
     padding: 0;
 }
-
+a{
+    text-decoration: none;
+    list-style: none;
+}
+body{
+    height: 100vh;
+    width: 100%;
+}
 .customform{
     max-width: 450px;
     margin: 0 auto;
 }
-
+.flex{
+    display: flex;
+    align-items: center;
+}
 .custombutton{
     background-color: #007BFF;
     color: #fff;
@@ -31,4 +41,41 @@
     margin-top: 2.5rem;
     padding: 1.5rem 0;
     text-align: center;
+}
+.logincontainer{
+    max-width: 550px;
+    margin: 0 auto;
+    box-shadow: 0 0 10px rgb(8, 113, 224, 0.25);
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.logincontainer:hover{
+    box-shadow: 0 0 10px rgb(8, 113, 224, 0.4);
+    transform: translateY(-4px);
+    animation: logincontainerhover 0.3s ease-in-out;    
+}
+.registercontainer{
+    max-width: 600px;
+    margin: 0 auto;
+    box-shadow: 0 0 10px rgb(8, 113, 224, 0.25);
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.question_list{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    padding: 2.5rem 1rem;
+
+    img{
+        width: 50px;
+        border-radius: 50%;
+    }
+
 }

@@ -7,8 +7,7 @@ class PreguntaFormPublic(forms.ModelForm):
         fields = ['titulo', 'pregunta', 'sector']
         widgets = {
             'sector': forms.Select(attrs={
-                'class': 'form-control pattern',
-                'pattern': '[0-9]',}),
+                'class': 'form-control pattern'}),
             'pregunta': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
             'titulo': forms.TextInput(attrs={'class': 'form-control'}),
         }
@@ -18,7 +17,8 @@ class PreguntaFormPrivate(forms.ModelForm):
 
     class Meta:
         model = Pregunta
-        fields = ['titulo', 'pregunta',]
+        fields = ['titulo', 'pregunta', 'sector']
+
 
     sector = forms.ModelChoiceField(queryset=Sector.objects.all(), required=True)
     profesional = forms.ModelChoiceField(queryset=Profesional.objects.none(), required=True)
@@ -34,8 +34,6 @@ class PreguntaFormPrivate(forms.ModelForm):
             except (ValueError, TypeError):
                 pass
     
-
-
 class RespuestaForm(forms.ModelForm):
     class Meta:
         model = Respuesta

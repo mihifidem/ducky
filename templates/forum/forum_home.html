@@ -16,27 +16,51 @@
         <div class="col-12 mb-3">
             <a href="{% url 'pregunta_detail' pregunta.id %}" class="text-decoration-none">
                 <div class="card border-primary">
-                    <div class="card-body">
-                        <strong>{{ pregunta.user_question.username }} :
-                            <span class="text-dark text-decoration-none">{{ pregunta.titulo }}</span>
-                        </strong>
-                        {% if pregunta.edited %} | Editado {% else %} {% endif %}
-                        <br>
-                        {{ pregunta.pregunta|truncatechars:100 }}<br>
-                        <small class="text-muted">
-                            Sector:
-                            {{ pregunta.sector }} |
-                            Fecha:
-                            {{ pregunta.date_at|date:"d/m/Y H:i" }} |
-                            Respuestas:
-                            {{ pregunta.respuesta_set.count }} |
-                            {% if pregunta.is_active_status %}
-                        <span class="badge bg-success">Activa</span>
-                            {% else %}
+
+
+
+
+
+                    <div class="question_list">
+                        <div class="flex">
+                            <img 
+                             src="{% static 'avatars/default.webp' %}" 
+                             alt=""
+                            >
+                            <h3>{{ pregunta.user_question.username }} :</h3>
+                            <strong>
+                                <span class="text-dark text-decoration-none">{{ pregunta.titulo }}</span>
+                            </strong>
+                            {% if pregunta.edited %} | Editado {% else %} {% endif %}
+                        </div>
+
+
+                       <p>
+                           {{ pregunta.pregunta|truncatechars:100 }}
+                       </p>
+                       <div>
+                            <small class="text-muted">
+                                Sector:
+                                {{ pregunta.sector }} |
+                                Fecha:
+                                {{ pregunta.date_at|date:"d/m/Y H:i" }} |
+                                Respuestas:
+                                {{ pregunta.respuesta_set.count }} |
+                                {% if pregunta.is_active_status %}
+                            <span class="badge bg-success">Activa</span>
+                                {% else %}
                         <span class="badge bg-secondary">Cerrada</span>
                             {% endif %}
                         </small>
                     </div>
+
+
+
+
+
+
+
+
                 </div>
             </a>
         </div>
