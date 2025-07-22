@@ -16,7 +16,6 @@
             <p class="fs-5">{{ pregunta.pregunta }}</p>
 
             {% if user == pregunta.user_question %}
-             {% if is_active %}
             <div>
                 <a 
                 href="{% url 'pregunta_edit' pregunta.id %}" 
@@ -31,23 +30,21 @@
                  <i class="material-icons align-middle">delete</i> Eliminar
                 </a>
             </div>
-             {% else %}
-             {% endif %}
             {% endif %}
         </div>
     
     </div>
 
     <h3>Respuestas</h3>
-    {% if is_active %}
-     {% if respuestas %}
+    {% if respuestas %}
         {% for respuesta in respuestas %}
             <div class="card mb-3">
                 <div class="card-body">
                     <p>{{ respuesta.respuesta }}</p>
                     <small class="text-muted">Por: {{ respuesta.user_answer.username }} | Fecha: {{ respuesta.date_at|date:"d/m/Y H:i" }}</small>
                 </div>
-                {% if user == respuesta.user_answer %}
+                {% if user == respuesta.user_answer %}   
+                 {% if is_active %}  
                 <div class="card-footer">
                     <a 
                     href="{% url 'respuesta_edit' respuesta.id %}" 
@@ -62,14 +59,29 @@
                      <i class="material-icons align-middle">delete</i> Eliminar
                     </a>
                 </div>
+                 {% else %}
+                 {% endif %}
                 {% endif %}
             </div>
         {% endfor %}
-     {% else %}
-        <div class="alert alert-info">No hay respuestas aún.</div>
-     {% endif %}
-        <a href="{% url 'respuesta_create' pregunta.id %}" class="btn btn-success mt-3">Responder</a>
     {% else %}
+        <div class="alert alert-info">No hay respuestas aún.</div>
+    {% endif %}
+
+    {% if is_active %}
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="material-icons align-middle">comment</i> Añadir respuesta</h5>
+            </div>
+            <div  iv class="card-body">
+             <form method="post">
+                 {% csrf_token %}
+                    {{ form.as_p }}
+                <button type="submit" class="btn btn-success mt-3">Publicar respuesta</button>
+             </form>
+            </div>
+        </div>
+        {% else %}
         <div class="alert alert-warning mt-3">
             <i class="material-icons align-middle">access_time</i>
             Esta pregunta ha expirado y ya no acepta nuevas respuestas.

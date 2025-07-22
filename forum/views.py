@@ -56,9 +56,24 @@ class PreguntaDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['respuestas'] = Respuesta.objects.filter(question=self.object).order_by('-date_at')
-
         context['is_active'] = self.object.is_active()
+        context['form'] = RespuestaForm()  
         return context
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        
+        if not self.object.is_active():
+            messages.error(request, "Esta pregunta ya no acepta respuestas porque ha expirado.")
+            return redirect('pregunta_detail', pk=self.object.pk)
+        
+        form = RespuestaForm(request.POST)
+        if form.is_valid():
+            respuesta = form.save(commit=False)
+            respuesta.question = self.object
+            respuesta.user_answer = request.user
+            respuesta.save()
+            return redirect('pregunta_detail', pk=self.object.pk)
+
 
 def respuesta_create(request, pk):
     pregunta = Pregunta.objects.get(pk=pk)
