@@ -1,5 +1,5 @@
 from django import forms
-from .models import Pregunta, Respuesta
+from .models import Pregunta, Respuesta, Sector, Profesional
 
 class PreguntaFormPublic(forms.ModelForm):
     class Meta:
@@ -15,9 +15,25 @@ class PreguntaFormPublic(forms.ModelForm):
 
 
 class PreguntaFormPrivate(forms.ModelForm):
+
     class Meta:
         model = Pregunta
-        fields = ['titulo', 'pregunta', 'sector', 'professional_user']
+        fields = ['titulo', 'pregunta',]
+
+    sector = forms.ModelChoiceField(queryset=Sector.objects.all(), required=True)
+    profesional = forms.ModelChoiceField(queryset=Profesional.objects.none(), required=True)
+
+
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'sector' in self.data:
+            try:
+                sector_id = int(self.data.get('sector'))
+                self.fields['profesional'].queryset = Profesional.objects.filter(sector=sector_id)
+            except (ValueError, TypeError):
+                pass
+    
 
 
 class RespuestaForm(forms.ModelForm):

@@ -51,6 +51,11 @@
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'forum_home' %}">Foro</a>
               </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'mail_list' %}">
+                  <img src="{% static 'img/icons8-email-50.png' %}" alt="Mail" style="max-height: 24px; vertical-align: middle;">
+                </a>
+              </li>
             {% else %}
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'login' %}">Iniciar sesión</a>
