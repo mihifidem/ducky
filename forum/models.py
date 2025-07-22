@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from dirtyfields import DirtyFieldsMixin
 
 # Create your models here.
 
@@ -23,14 +24,24 @@ class Profesional(models.Model):
     def __str__(self):
         return self.user.username
 
-class Pregunta(models.Model):
+
+
+class Pregunta(DirtyFieldsMixin,models.Model):
     titulo = models.CharField(max_length=200, default='')
-    pregunta = models.TextField()
+    pregunta = models.TextField(default='')
     date_at = models.DateTimeField(auto_now_add=True)
     user_question = models.ForeignKey(User, on_delete=models.CASCADE)
     professional_user = models.ForeignKey(Profesional, on_delete=models.CASCADE, null=True, blank=True)
     is_public = models.BooleanField(default=True)
-    sector = models.ForeignKey(Sector, on_delete=models.CASCADE)
+    sector = models.CharField(max_length=50, choices=Sector.choices, default=Sector.OTRO)
+    edited = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if self.pk:  # Es edición
+            dirty_fields = self.get_dirty_fields()
+            if dirty_fields:
+                self.edited = True
+        super().save(*args, **kwargs)
 
     def clean(self):
         from django.core.exceptions import ValidationError

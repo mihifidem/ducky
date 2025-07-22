@@ -14,17 +14,17 @@
         {% for pregunta in preguntas %}
         <div class="col-12 mb-3">
             <a href="{% url 'pregunta_detail' pregunta.id %}" class="text-decoration-none">
-            <div class="card border-primary">
-                <div class="card-body">
-                    <strong>{{ pregunta.user_question.username }} : 
-                        <span class="text-dark text-decoration-none">{{ pregunta.titulo }}</span>
-                    </strong>
-                    
-                    <br>
-                    {{ pregunta.pregunta|truncatechars:100 }}<br>
-                    <small class="text-muted">Sector: {{ pregunta.sector }} | Fecha: {{ pregunta.date_at|date:"d/m/Y H:i" }} | Respuestas: {{ pregunta.respuesta_set.count }}</small>
+                <div class="card border-primary">
+                    <div class="card-body">
+                        <strong>{{ pregunta.user_question.username }} :
+                            <span class="text-dark text-decoration-none">{{ pregunta.titulo }}</span>
+                        </strong>
+                        {% if pregunta.edited %} | Editado {% else %} {% endif %}
+                        <br>
+                        {{ pregunta.pregunta|truncatechars:100 }}<br>
+                        <small class="text-muted">Sector: {{ pregunta.sector }} | Fecha: {{ pregunta.date_at|date:"d/m/Y H:i" }} | Respuestas: {{ pregunta.respuesta_set.count }} </small>
+                    </div>
                 </div>
-            </div>
             </a>
         </div>
         {% endfor %}
