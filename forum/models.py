@@ -1,17 +1,16 @@
 from django.db import models
 from django.contrib.auth.models import User
 from dirtyfields import DirtyFieldsMixin
+from django.utils import timezone
+import datetime
 
 # Create your models here.
 
 class Sector(models.Model):
     nombre = models.CharField(max_length=50, unique=True)
-
     def __str__(self):
         return self.nombre
-
-
-
+        
 class Profesional(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     empresa = models.CharField(max_length=100)
@@ -35,6 +34,18 @@ class Pregunta(DirtyFieldsMixin,models.Model):
     is_public = models.BooleanField(default=True)
     sector = models.ForeignKey(Sector, on_delete=models.CASCADE)
     edited = models.BooleanField(default=False)
+    active_until = models.DateTimeField(null=True, blank=True)  
+    
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.active_until = timezone.now() + datetime.timedelta(minutes=1)
+        super().save(*args, **kwargs)
+        
+    
+    def is_active(self):
+        if self.active_until is None:
+            return True  
+        return timezone.now() <= self.active_until
 
     def save(self, *args, **kwargs):
         if self.pk:  # Es edición
