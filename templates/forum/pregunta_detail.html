@@ -40,7 +40,9 @@
         {% for respuesta in respuestas %}
             <div class="card mb-3">
                 <div class="card-body">
-                    <p>{{ respuesta.respuesta }}</p>
+                    <p>{{ respuesta.respuesta }} 
+                    {% if respuesta.edited %} | Editado {% endif %}
+                    </p>
                     <small class="text-muted">Por: {{ respuesta.user_answer.username }} | Fecha: {{ respuesta.date_at|date:"d/m/Y H:i" }}</small>
                 </div>
                 {% if user == respuesta.user_answer %}   

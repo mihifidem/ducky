@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages  
 from .models import Pregunta, Profesional, Respuesta
 from .forms import PreguntaFormPublic, RespuestaForm, PreguntaFormPrivate
@@ -49,12 +49,6 @@ def pregunta_create_public(request):
         form = PreguntaFormPublic()
     return render(request, 'forum/pregunta_create_public.html', {'form': form})
 
-def pregunta_edit(request, pk):
-    return render(request, 'forum/pregunta_edit.html', {'pk': pk})
-
-def pregunta_delete(request, pk):
-    return render(request, 'forum/pregunta_delete.html', {'pk': pk})
-
 class PreguntaDetailView(DetailView):
     model = Pregunta
     template_name = 'forum/pregunta_detail.html'
@@ -100,13 +94,7 @@ def respuesta_create(request, pk):
         form = RespuestaForm()
     return render(request, 'forum/respuesta_create.html', {'pk': pk, 'form': form})
 
-def respuesta_edit(request, pk):
-    return render(request, 'forum/respuesta_edit.html', {'pk': pk})
-
-def respuesta_delete(request, pk):  
-    return render(request, 'forum/respuesta_delete.html', {'pk': pk})
-
-class PreguntaUpadteView(UpdateView):
+class PreguntaUpdateView(UpdateView):
     model = Pregunta
     form_class = PreguntaFormPublic
     template_name = 'forum/pregunta_edit.html'
@@ -123,7 +111,7 @@ class PreguntaDeleteView(DeleteView):
     def get_question(self):
         return Pregunta.objects.filter(user_question=self.request.user)
     
-class RespuestaUpadteView(UpdateView):
+class RespuestaUpdateView(UpdateView):
     model = Respuesta
     form_class = RespuestaForm
     template_name = 'forum/respuesta_edit.html'
@@ -150,3 +138,16 @@ def mail_recibido(request):
     preguntas = Pregunta.objects.filter(is_public=False, professional_user__user=request.user).order_by('-date_at')
     respuestas = Respuesta.objects.filter(question__in=preguntas).order_by('-date_at')
     return render(request, 'forum/mail_recibido.html', {'preguntas': preguntas, 'respuestas': respuestas})
+
+def editar_respuesta(request, respuesta_id):
+    respuesta = get_object_or_404(Respuesta, id=respuesta_id)
+    if request.method == 'POST':
+        form = RespuestaForm(request.POST, instance=respuesta)
+        if form.is_valid():
+            respuesta = form.save(commit=False)
+            respuesta.editado = True  # marcamos que fue editada
+            respuesta.save()
+            return redirect('detalle_pregunta', pk=respuesta.pregunta.id)
+    else:
+        form = RespuestaForm(instance=respuesta)
+    return render(request, 'editar_respuesta.html', {'form': form})
