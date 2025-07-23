@@ -59,6 +59,7 @@ class PreguntaDetailView(DetailView):
         context['is_active'] = self.object.is_active()
         context['form'] = RespuestaForm()  
         return context
+    
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         
@@ -139,15 +140,4 @@ def mail_recibido(request):
     respuestas = Respuesta.objects.filter(question__in=preguntas).order_by('-date_at')
     return render(request, 'forum/mail_recibido.html', {'preguntas': preguntas, 'respuestas': respuestas})
 
-def editar_respuesta(request, respuesta_id):
-    respuesta = get_object_or_404(Respuesta, id=respuesta_id)
-    if request.method == 'POST':
-        form = RespuestaForm(request.POST, instance=respuesta)
-        if form.is_valid():
-            respuesta = form.save(commit=False)
-            respuesta.editado = True  # marcamos que fue editada
-            respuesta.save()
-            return redirect('detalle_pregunta', pk=respuesta.pregunta.id)
-    else:
-        form = RespuestaForm(instance=respuesta)
-    return render(request, 'editar_respuesta.html', {'form': form})
+
