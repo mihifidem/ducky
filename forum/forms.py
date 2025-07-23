@@ -11,6 +11,7 @@ class PreguntaFormPublic(forms.ModelForm):
             'pregunta': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
             'titulo': forms.TextInput(attrs={'class': 'form-control'}),
         }
+        
 
 
 class PreguntaFormPrivate(forms.ModelForm):
@@ -18,6 +19,12 @@ class PreguntaFormPrivate(forms.ModelForm):
     class Meta:
         model = Pregunta
         fields = ['titulo', 'pregunta', 'sector', 'professional_user']
+        widgets = {
+            'sector': forms.Select(attrs={
+                'class': 'form-control pattern'}),
+            'pregunta': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
+            'titulo': forms.TextInput(attrs={'class': 'form-control'}),
+        }
 
     professional_user = forms.ModelChoiceField(queryset=Profesional.objects.none(), required=True, label='Profesional')
 

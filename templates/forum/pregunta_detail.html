@@ -7,85 +7,77 @@
     <a href="{% url 'forum_home' %}" class="btn btn-link text-decoration-none mb-2">
         <span class="material-icons align-middle">arrow_back</span> Volver
     </a>
-    <p><strong>Por:</strong> {{ pregunta.user_question.username }} <small class="text-muted">{{ pregunta.date_at|date:"d/m/Y H:i" }}</small></p>
+    <p><strong>Por:</strong> {{ pregunta.user_question.username }} <small class="text-muted">{{
+            pregunta.date_at|date:"d/m/Y H:i" }}</small></p>
     <h1 class="mb-4">{{ pregunta.titulo }}</h1>
-    <div class="card border-primary mb-4 ">
+    <div class="card mb-4 ">
         <div class="card-body">
             <p><strong>Sector:</strong> {{ pregunta.sector }}</p>
-             <hr>
+            <hr>
             <p class="fs-5">{{ pregunta.pregunta }}</p>
 
             {% if user == pregunta.user_question %}
-            <div>
-                <a 
-                href="{% url 'pregunta_edit' pregunta.id %}" 
-                class="btn btn-sm btn-primary mr-2"
-                >
-                 <i class="material-icons align-middle">edit</i> Editar
-                </a>
-                <a 
-                 href="{% url 'pregunta_delete' pregunta.id %}" 
-                 class="btn btn-sm btn-danger"
-                >
-                 <i class="material-icons align-middle">delete</i> Eliminar
-                </a>
-            </div>
+            <div class="answer-actions">
+            <a href="{% url 'pregunta_edit' pregunta.id %}" class="btn-edit">
+                ✏️ Editar
+            </a>
+            <a href="{% url 'pregunta_delete' pregunta.id %}" class="btn-delete">
+                🗑️ Eliminar
+            </a>
+        </div>
             {% endif %}
         </div>
-    
+
     </div>
 
-    <h3>Respuestas</h3>
+    <h3 class="section-title">Respuestas</h3>
+
     {% if respuestas %}
-        {% for respuesta in respuestas %}
-            <div class="card mb-3">
-                <div class="card-body">
-                    <p>{{ respuesta.respuesta }}</p>
-                    <small class="text-muted">Por: {{ respuesta.user_answer.username }} | Fecha: {{ respuesta.date_at|date:"d/m/Y H:i" }}</small>
-                </div>
-                {% if user == respuesta.user_answer %}   
-                 {% if is_active %}  
-                <div class="card-footer">
-                    <a 
-                    href="{% url 'respuesta_edit' respuesta.id %}" 
-                    class="btn btn-sm btn-primary mr-2"
-                    >
-                     <i class="material-icons align-middle">edit</i> Editar
-                    </a>
-                    <a 
-                     href="{% url 'respuesta_delete' respuesta.id %}" 
-                     class="btn btn-sm btn-danger"
-                    >
-                     <i class="material-icons align-middle">delete</i> Eliminar
-                    </a>
-                </div>
-                 {% else %}
-                 {% endif %}
-                {% endif %}
-            </div>
-        {% endfor %}
+    {% for respuesta in respuestas %}
+    <div class="answer-card">
+        <div class="answer-body">
+            <p class="answer-text">{{ respuesta.respuesta }}</p>
+            <small class="answer-meta">
+                Por: <strong>{{ respuesta.user_answer.username }}</strong> |
+                Fecha: {{ respuesta.date_at|date:"d/m/Y H:i" }}
+            </small>
+        </div>
+
+        {% if user == respuesta.user_answer and is_active %}
+        <div class="answer-actions">
+            <a href="{% url 'respuesta_edit' respuesta.id %}" class="btn-edit">
+                ✏️ Editar
+            </a>
+            <a href="{% url 'respuesta_delete' respuesta.id %}" class="btn-delete">
+                🗑️ Eliminar
+            </a>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
     {% else %}
-        <div class="alert alert-info">No hay respuestas aún.</div>
+    <div class="no-answers">No hay respuestas aún.</div>
     {% endif %}
 
+
     {% if is_active %}
-        <div class="card mt-4">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="material-icons align-middle">comment</i> Añadir respuesta</h5>
-            </div>
-            <div  iv class="card-body">
-             <form method="post">
-                 {% csrf_token %}
-                    {{ form.as_p }}
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="material-icons align-middle">comment</i> Añadir respuesta</h5>
+        </div>
+        <div iv class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
                 <button type="submit" class="btn btn-success mt-3">Publicar respuesta</button>
-             </form>
-            </div>
+            </form>
         </div>
-        {% else %}
-        <div class="alert alert-warning mt-3">
-            <i class="material-icons align-middle">access_time</i>
-            Esta pregunta ha expirado y ya no acepta nuevas respuestas.
-        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-warning mt-3">
+        <i class="material-icons align-middle">access_time</i>
+        Esta pregunta ha expirado y ya no acepta nuevas respuestas.
+    </div>
     {% endif %}
 </div>
 {% endblock %}
