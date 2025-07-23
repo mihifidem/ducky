@@ -4,7 +4,7 @@ from django.urls import path
 urlpatterns = [
     path('', views.forum_home, name='forum_home'),
     path('pregunta/<int:pk>/', views.PreguntaDetailView.as_view(), name='pregunta_detail'),
-    path('ajax/cargar_profesionales/', views.cargar_profesionales, name='ajax_cargar_profesionales'),
+    path('ajax/cargar-profesionales/', views.cargar_profesionales, name='ajax_cargar_profesionales'),
     path('pregunta/create_private/', views.pregunta_create_private, name='pregunta_create_private'),
     path('pregunta/create_public/', views.pregunta_create_public, name='pregunta_create_public'),
     path('pregunta/<int:pk>/edit/', views.PreguntaUpadteView.as_view(), name='pregunta_edit'),

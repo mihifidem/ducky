@@ -17,11 +17,9 @@ class PreguntaFormPrivate(forms.ModelForm):
 
     class Meta:
         model = Pregunta
-        fields = ['titulo', 'pregunta', 'sector']
+        fields = ['titulo', 'pregunta', 'sector', 'professional_user']
 
-
-    sector = forms.ModelChoiceField(queryset=Sector.objects.all(), required=True)
-    profesional = forms.ModelChoiceField(queryset=Profesional.objects.none(), required=True)
+    professional_user = forms.ModelChoiceField(queryset=Profesional.objects.none(), required=True, label='Profesional')
 
 
 
@@ -30,9 +28,11 @@ class PreguntaFormPrivate(forms.ModelForm):
         if 'sector' in self.data:
             try:
                 sector_id = int(self.data.get('sector'))
-                self.fields['profesional'].queryset = Profesional.objects.filter(sector=sector_id)
+                self.fields['professional_user'].queryset = Profesional.objects.filter(sector=sector_id)
             except (ValueError, TypeError):
                 pass
+        elif self.instance.pk and self.instance.sector:
+            self.fields['professional_user'].queryset = Profesional.objects.filter(sector=self.instance.sector)
     
 class RespuestaForm(forms.ModelForm):
     class Meta:

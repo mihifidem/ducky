@@ -3,7 +3,7 @@ from django.contrib import messages
 from .models import Pregunta, Profesional, Respuesta
 from .forms import PreguntaFormPublic, RespuestaForm, PreguntaFormPrivate
 from django.urls import reverse_lazy
-from django.views.generic import UpdateView, DeleteView, DetailView, ListView
+from django.views.generic import UpdateView, DeleteView, DetailView
 from django.http import JsonResponse
 # Create your views here.
 
@@ -19,9 +19,10 @@ def forum_home(request):
 
 
 def cargar_profesionales(request):
-    sector_id = request.GET.get('sector')
-    profesionales = Profesional.objects.filter(sector=sector_id).values('id', 'nombre')
-    return JsonResponse(list(profesionales), safe=False)
+    sector_id = request.GET.get('sector_id')
+    profesionales = Profesional.objects.filter(sector_id=sector_id)
+    data = [{'id': p.id, 'nombre': p.nombre or p.user.username} for p in profesionales]
+    return JsonResponse(data, safe=False)
 
 def pregunta_create_private(request):
     if request.method == 'POST':
@@ -48,12 +49,6 @@ def pregunta_create_public(request):
     else:
         form = PreguntaFormPublic()
     return render(request, 'forum/pregunta_create_public.html', {'form': form})
-
-def pregunta_edit(request, pk):
-    return render(request, 'forum/pregunta_edit.html', {'pk': pk})
-
-def pregunta_delete(request, pk):
-    return render(request, 'forum/pregunta_delete.html', {'pk': pk})
 
 class PreguntaDetailView(DetailView):
     model = Pregunta

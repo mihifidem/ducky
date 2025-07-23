@@ -12,6 +12,7 @@ class Sector(models.Model):
         return self.nombre
         
 class Profesional(models.Model):
+    nombre = models.CharField(max_length=100, unique=True, null=True, blank=False)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     empresa = models.CharField(max_length=100)
     sector = models.ForeignKey(Sector, on_delete=models.CASCADE)
