@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.redireccion_dashboard, name='home'),
+    path('', views.home, name='home'),
     path('dashboard/user/', views.dashboard_user, name='dashboard_user'),
     path('dashboard/premium/', views.dashboard_premium, name='dashboard_premium'),
     path('dashboard/admin/', views.dashboard_admin, name='dashboard_admin'),

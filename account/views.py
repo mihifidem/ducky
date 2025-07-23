@@ -1,6 +1,6 @@
 # Django core imports
 from django.contrib.auth.views import LoginView, LogoutView
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views.generic.edit import CreateView
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
@@ -483,7 +483,8 @@ def cv_clone(request, pk):
     clone.selected_languages.set(cv.selected_languages.all())
     clone.selected_hobbies.set(cv.selected_hobbies.all())
 
-    return redirect('cv_list')
+    messages.success(request, f'CV clonado correctamente como “{new_title}”.')
+    return redirect(f"{reverse('cv_list')}?clonado={clone.pk}&origen={cv.pk}")
 
 
 # Vista para previsualizar el CV en formato HTML según el skin seleccionado

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <title>{{ cv.title }}</title>
@@ -9,13 +10,13 @@
 
   <style>
     body {
-      font-family: {{ cv.font_family }}, sans-serif;
-      color: {{ cv.primary_color }};
+      font-family: {{cv.font_family}}, sans-serif;
+      color: {{cv.primary_color}};
       margin: 30px;
     }
 
     h1, h4, h5 {
-      color: {{ cv.primary_color }};
+      color: {{cv.primary_color}};
     }
 
     img {
@@ -31,7 +32,7 @@
     }
 
     .shadow-sm {
-      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     }
 
     /* Mejora para evitar cortes raros al imprimir en PDF */
@@ -40,83 +41,86 @@
     }
   </style>
 </head>
-<body>
 
+<body>
+  
   {% if cv.header_image %}
-    <div class="text-center mb-4">
-      <img src="{{ cv.header_image.url }}" class="img-fluid rounded shadow" alt="Imagen de cabecera">
-    </div>
+  <div class="text-center mb-4">
+    <img src="{{ cv.header_image.url }}" class="img-fluid rounded shadow" alt="Imagen de cabecera">
+  </div>
   {% endif %}
 
   {% if profile %}
-    <div class="section-box" style="background-color: #f0f4ff;">
-      <h4>👤 Información del Perfil</h4>
-      <p><strong>Nombre:</strong> {{ profile.user.first_name }} {{ profile.user.last_name }}</p>
-      <p><strong>Email:</strong> {{ profile.user.email }}</p>
-      <p><strong>Teléfono:</strong> {{ profile.phone|default:"No especificado" }}</p>
-    </div>
+  <div class="section-box" style="background-color: #f0f4ff;">
+    <h4>👤 Información del Perfil</h4>
+    <p><strong>Nombre:</strong> {{ profile.user.first_name }} {{ profile.user.last_name }}</p>
+    <p><strong>Email:</strong> {{ profile.user.email }}</p>
+    <p><strong>Teléfono:</strong> {{ profile.phone|default:"No especificado" }}</p>
+  </div>
   {% endif %}
 
   <div class="row">
 
+    {% if cv.selected_experiences.all %}
     <div class="col-12 col-md-6">
       <div class="section-box shadow-sm" style="background-color: #e8f0ff;">
         <h5>📌 Experiencias</h5>
         {% for exp in cv.selected_experiences.all %}
-          <p><strong>{{ exp.position }}</strong><br>
+        <p><strong>{{ exp.position }}</strong><br>
           {{ exp.company }}<br>
-          <small>{{ exp.start_date }} - {{ exp.end_date|default:"Actualidad" }}</small></p>
-        {% empty %}
-          <p class="text-muted">No hay experiencias registradas.</p>
+          <small>{{ exp.start_date }} - {{ exp.end_date|default:"Actualidad" }}</small>
+        </p>
         {% endfor %}
       </div>
     </div>
+    {% endif %}
 
+    {% if cv.selected_educations.all %}
     <div class="col-12 col-md-6">
       <div class="section-box shadow-sm" style="background-color: #fffde7;">
         <h5>🎓 Formación</h5>
         {% for edu in cv.selected_educations.all %}
-          <p><strong>{{ edu.title }}</strong><br>{{ edu.institution }}</p>
-        {% empty %}
-          <p class="text-muted">No hay formación registrada.</p>
+        <p><strong>{{ edu.title }}</strong><br>{{ edu.institution }}</p>
         {% endfor %}
       </div>
     </div>
+    {% endif %}
 
+    {% if cv.selected_languages.all %}
     <div class="col-12 col-md-6">
       <div class="section-box shadow-sm" style="background-color: #f1f8e9;">
         <h5>🌍 Idiomas</h5>
         {% for lang in cv.selected_languages.all %}
-          <p>{{ lang.language.name }} - {{ lang.level }}</p>
-        {% empty %}
-          <p class="text-muted">No hay idiomas registrados.</p>
+        <p>{{ lang.language.name }} - {{ lang.level }}</p>
         {% endfor %}
       </div>
     </div>
+    {% endif %}
 
+    {% if cv.selected_softskills.all %}
     <div class="col-12 col-md-6">
       <div class="section-box shadow-sm" style="background-color: #fce4ec;">
         <h5>💡 Habilidades Blandas</h5>
         {% for skill in cv.selected_softskills.all %}
-          <p>{{ skill.skill.name }}</p>
-        {% empty %}
-          <p class="text-muted">No hay habilidades blandas registradas.</p>
+        <p>{{ skill.skill.name }}</p>
         {% endfor %}
       </div>
     </div>
+    {% endif %}
 
+    {% if cv.selected_hobbies.all %}
     <div class="col-12">
       <div class="section-box shadow-sm" style="background-color: #e3f2fd;">
         <h5>🎯 Hobbies</h5>
         {% for h in cv.selected_hobbies.all %}
-          <p>{{ h.hobby.name }}</p>
-        {% empty %}
-          <p class="text-muted">No hay hobbies registrados.</p>
+        <p>{{ h.hobby.name }}</p>
         {% endfor %}
       </div>
     </div>
+    {% endif %}
 
   </div>
 
 </body>
+
 </html>

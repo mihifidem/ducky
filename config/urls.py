@@ -5,11 +5,10 @@ from django.conf.urls.static import static
 from core import views as core_views
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    path('admin/', admin.site.urls),
+    path('', include('core.urls')),
     path('account/', include('account.urls')),
-    path('', core_views.home, name='home'),
     path('account/', include('django.contrib.auth.urls')),
-    path('core/', include('core.urls')),
 ]
 
 if settings.DEBUG:

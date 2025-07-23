@@ -142,5 +142,5 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
-LOGIN_REDIRECT_URL = '/core/'  # tu URL raíz con redirección de dashboards
-LOGOUT_REDIRECT_URL = '/'      # a la página pública o login
+LOGIN_REDIRECT_URL = '/'               # Redirige al home real después de login
+LOGOUT_REDIRECT_URL = '/'             # También al home después de logout

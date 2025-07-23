@@ -28,6 +28,7 @@
 
     <div class="row g-4">
 
+          {% if cv.selected_experiences.all %}
       <div class="col-md-6">
         <div class="p-3 border rounded shadow-sm" style="background-color: #e8f0ff;">
           <h5 style="color: {{ cv.primary_color }};">📌 Experiencias</h5>
@@ -35,55 +36,54 @@
             <p><strong>{{ exp.position }}</strong><br>
             {{ exp.company }}<br>
             <small>{{ exp.start_date }} - {{ exp.end_date|default:"Actualidad" }}</small></p>
-          {% empty %}
-            <p class="text-muted">No hay experiencias registradas.</p>
           {% endfor %}
         </div>
       </div>
+      {% endif %}
 
+      {% if cv.selected_educations.all %}
       <div class="col-md-6">
         <div class="p-3 border rounded shadow-sm" style="background-color: #fffde7;">
           <h5 style="color: {{ cv.primary_color }};">🎓 Formación</h5>
           {% for edu in cv.selected_educations.all %}
             <p><strong>{{ edu.title }}</strong><br>{{ edu.institution }}</p>
-          {% empty %}
-            <p class="text-muted">No hay formación registrada.</p>
           {% endfor %}
         </div>
       </div>
+      {% endif %}
 
+      {% if cv.selected_languages.all %}
       <div class="col-md-6">
         <div class="p-3 border rounded shadow-sm" style="background-color: #f1f8e9;">
           <h5 style="color: {{ cv.primary_color }};">🌍 Idiomas</h5>
           {% for lang in cv.selected_languages.all %}
             <p>{{ lang.language.name }} - {{ lang.level }}</p>
-          {% empty %}
-            <p class="text-muted">No hay idiomas registrados.</p>
           {% endfor %}
         </div>
       </div>
+      {% endif %}
 
+      {% if cv.selected_softskills.all %}
       <div class="col-md-6">
         <div class="p-3 border rounded shadow-sm" style="background-color: #fce4ec;">
           <h5 style="color: {{ cv.primary_color }};">💡 Habilidades Blandas</h5>
           {% for skill in cv.selected_softskills.all %}
             <p>{{ skill.skill.name }}</p>
-          {% empty %}
-            <p class="text-muted">No hay habilidades blandas registradas.</p>
           {% endfor %}
         </div>
       </div>
+      {% endif %}
 
+      {% if cv.selected_hobbies.all %}
       <div class="col-12">
         <div class="p-3 border rounded shadow-sm" style="background-color: #e3f2fd;">
           <h5 style="color: {{ cv.primary_color }};">🎯 Hobbies</h5>
           {% for h in cv.selected_hobbies.all %}
             <p>{{ h.hobby.name }}</p>
-          {% empty %}
-            <p class="text-muted">No hay hobbies registrados.</p>
           {% endfor %}
         </div>
       </div>
+      {% endif %}
 
     </div>
   </div>
