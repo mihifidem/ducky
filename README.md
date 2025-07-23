@@ -1,40 +1,42 @@
+
 # DuckyProject
 
-Un foro de pregunta y respuesta basado en Django donde usuarios pueden preguntar al publico o a profesionales de manera privada depende del sector.
+Un foro de preguntas y respuestas basado en Django, donde los usuarios pueden hacer preguntas al público o a profesionales de manera privada según el sector.
 
-## Features
-- User authentication
-- Public and private questions
-- Professionals filtered by sector
-- Forum with answers and moderation
+## Funcionalidades
+- Autenticación de usuarios  
+- Preguntas públicas y privadas  
+- Profesionales filtrados por sector  
+- Foro con respuestas y moderación  
 
-## Quick Start
-1. Clone the repository.
-2. Install dependencies:
+## Inicio Rápido
+1. Clona el repositorio.  
+2. Instala las dependencias:
    ```bash
-   pip install -r requirements.txt
+   pip install django python-decouple python-dirtyfields
    ```
-3. Apply migrations:
+3. Aplica las migraciones:
    ```bash
    python manage.py migrate
    ```
-4. Run the development server:
+4. Ejecuta el servidor de desarrollo:
    ```bash
    python manage.py runserver
    ```
-5. Access the app at `http://127.0.0.1:8000/`
+5. Accede a la aplicación en `http://127.0.0.1:8000/`
 
-## Folder Structure
-- `account/` - User account management
-- `forum/` - Forum app (questions, answers, professionals)
-- `core/` - Core utilities
-- `config/` - Django project settings
-- `templates/` - HTML templates
-- `static/` - Static files (CSS, images)
+## Estructura de Carpetas
+- `account/` - Gestión de cuentas de usuario  
+- `forum/` - Aplicación del foro (preguntas, respuestas, profesionales)  
+- `core/` - Utilidades principales  
+- `config/` - Configuraciones del proyecto Django  
+- `templates/` - Plantillas HTML  
+- `static/` - Archivos estáticos (CSS, imágenes)  
 
-## Notes
-- To ask a private question, select a sector first, then choose a professional from that sector.
-- For development, use the default SQLite database or configure your own in `config/settings.py`.
+## Notas
+- Para hacer una pregunta privada, selecciona primero un sector y luego elige un profesional de ese sector.  
+- Para desarrollo, puedes usar la base de datos SQLite por defecto o configurar la tuya propia en `config/settings.py`.
 
 ---
-MIT License
+Licencia MIT
+```
