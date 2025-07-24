@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from django.views.generic import TemplateView
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
@@ -60,6 +61,82 @@ class HeadhunterDashboardView(HeadhunterRequiredMixin, ListView):
         candidatura = Candidatura.objects.get(id=candidature_id)
         form = CandidaturaStatusForm(request.POST, instance=candidatura)
         print("ID candidatura:", candidature_id)
+=======
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from .models import JobOffer, JobApplication, Candidature
+from .forms import JobOfferForm, JobApplicationForm, CandidatureStatusForm
+from django.contrib import messages
+from django.core.mail import send_mail
+from .models import StatusMessageTemplate
+from .forms import StatusMessageTemplateForm
+
+
+@login_required
+def create_offer(request):
+    if not request.user.groups.filter(name='headhunter').exists():
+        messages.error(request, "Solo los headhunters pueden crear ofertas.")
+        return redirect('home')
+
+    if request.method == 'POST':
+        form = JobOfferForm(request.POST)
+        if form.is_valid():
+            offer = form.save(commit=False)
+            offer.created_by = request.user
+            offer.save()
+            messages.success(request, "Oferta creada correctamente.")
+            return redirect('job_offer_list')  
+    else:
+        form = JobOfferForm()
+
+    return render(request, 'jobs/create_offer.html', {'form': form})
+
+def job_offer_list(request):
+
+    offers = JobOffer.objects.filter(is_active=True).order_by('-created_at')
+    offers = JobOffer.objects.all()
+
+    # Comprobamos si el usuario es headhunter
+    is_headhunter = request.user.groups.filter(name='headhunter').exists()
+
+    return render(request, 'jobs/job_offer_list.html', {
+        'offers': offers,
+        'is_headhunter': is_headhunter,
+    })
+   
+
+
+def job_offer_detail(request, offer_id):
+    offer = get_object_or_404(JobOffer, id=offer_id)
+    return render(request, 'jobs/job_offer_detail.html', {'offer': offer})
+
+
+@login_required
+def apply_to_offer(request, offer_id):
+    offer = get_object_or_404(JobOffer, id=offer_id)
+    # Evita duplicados
+    existing = Candidature.objects.filter(offer=offer, user=request.user).exists()
+    if not existing:
+        Candidature.objects.create(offer=offer, user=request.user, status='pendiente')
+        messages.success(request, 'Has postulado correctamente.')
+        return redirect('job_offer_detail', offer_id=offer.id)
+
+    return render(request, 'jobs/apply_to_offer.html', {'offer': offer})
+
+@login_required
+def headhunter_dashboard(request):
+    if not request.user.groups.filter(name='headhunter').exists():
+        messages.error(request, "Acceso restringido al rol headhunter.")
+        return redirect('home')
+
+    offers = JobOffer.objects.filter(created_by=request.user)
+    candidaturas = Candidature.objects.filter(offer__in=offers).select_related('offer', 'user')
+
+    if request.method == 'POST':
+        candidature_id = request.POST.get('candidature_id')
+        candidatura = Candidature.objects.get(id=candidature_id)
+        form = CandidatureStatusForm(request.POST, instance=candidatura)
+>>>>>>> e083518c28dbe2d325c3d2683f4c84a9cc6209d7
 
         if form.is_valid():
             form.save()
@@ -74,6 +151,7 @@ Tu candidatura para el puesto '{candidatura.offer.title}' ha sido actualizada al
 
 Gracias por usar nuestra plataforma OpenToJob.
 
+<<<<<<< HEAD
 Un saludo,
 El equipo de OpenToJob
 """         
@@ -421,3 +499,72 @@ class HomeView(LoginRequiredMixin, TemplateView):
             context['rol'] = 'otro'
 
         return context
+=======
+Un saludo,  
+El equipo de OpenToJob
+"""
+            send_mail(
+                subject=asunto,
+                message=mensaje,
+                from_email=None,
+                recipient_list=[candidatura.user.email],
+                fail_silently=True,
+            )
+            return redirect('headhunter_dashboard')
+
+    # GET request o POST no válido
+    forms_dict = {c.id: CandidatureStatusForm(instance=c) for c in candidaturas}
+    return render(request, 'jobs/headhunter_dashboard.html', {
+        'offers': offers,
+        'candidaturas': candidaturas,
+        'forms_dict': forms_dict,
+    })
+@login_required
+def editar_plantilla_estado(request, estado):
+    template, created = StatusMessageTemplate.objects.get_or_create(
+        user=request.user,
+        estado=estado
+    )
+    
+    if request.method == 'POST':
+        form = StatusMessageTemplateForm(request.POST, instance=template)
+        if form.is_valid():
+            form.save()
+            return redirect('mis_plantillas_estado')
+    else:
+        form = StatusMessageTemplateForm(instance=template)
+        
+    return render(request, 'grupo4/editar_plantilla.html', {'form': form, 'estado': estado})
+@login_required
+def offer_applications(request, offer_id):
+    offer = get_object_or_404(JobOffer, id=offer_id, created_by=request.user)
+    applications = offer.applications.all()
+    return render(request, 'jobs/offer_applications.html', {
+        'offer': offer,
+        'applications': applications
+    })
+
+@login_required
+def update_candidature_status(request, candidature_id):
+    candidature = get_object_or_404(Candidature, id=candidature_id)
+
+    if request.method == 'POST':
+        form = CandidatureStatusForm(request.POST, instance=candidature)
+        if form.is_valid():
+            form.save()
+            return redirect('headhunter_dashboard')  # o la ruta deseada
+    else:
+        form = CandidatureStatusForm(instance=candidature)
+
+    return render(request, 'jobs/update_candidature_status.html', {
+        'form': form,
+        'candidature': candidature
+    })
+
+def candidature_list(request):
+    candidatures = JobApplication.objects.all()
+    return render(request, 'jobs/candidature_list.html', {'candidatures': candidatures})
+
+def message(request, offer_id):
+    return render(request, 'jobs/message.html' , {'offer_id': offer_id})
+>>>>>>> e083518c28dbe2d325c3d2683f4c84a9cc6209d7

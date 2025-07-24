@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # jobs/forms.py
 
 from django import forms
@@ -14,6 +15,13 @@ class JobOfferForm(forms.ModelForm):
     """
     Formulario para crear y editar ofertas de empleo.
     """
+=======
+from django import forms
+from .models import JobOffer, JobApplication, User, Candidature, StatusMessageTemplate
+
+
+class JobOfferForm(forms.ModelForm):
+>>>>>>> e083518c28dbe2d325c3d2683f4c84a9cc6209d7
     class Meta:
         model = JobOffer
         fields = [
@@ -28,6 +36,7 @@ class JobOfferForm(forms.ModelForm):
             'benefits',
             'is_active',
         ]
+<<<<<<< HEAD
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Título del puesto'}),
             'company_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre de la empresa'}),
@@ -72,10 +81,36 @@ class StatusMessageTemplateForm(forms.ModelForm):
     """
     Formulario para gestionar plantillas de mensajes de estado.
     """
+=======
+
+
+class JobApplicationForm(forms.ModelForm):
+    class Meta:
+        model = JobApplication
+        fields = ['message']
+        widgets = {
+            'message': forms.Textarea(
+                attrs={
+                    'rows': 4,
+                    'placeholder': 'Puedes incluir un mensaje opcional...'
+                }
+            )
+        }
+
+class CandidatureStatusForm(forms.ModelForm):
+    class Meta:
+        model = Candidature
+        fields = ['estado']
+        widgets = {
+            'status': forms.Select(attrs={'class': 'form-control'}),
+        }
+class StatusMessageTemplateForm(forms.ModelForm):
+>>>>>>> e083518c28dbe2d325c3d2683f4c84a9cc6209d7
     class Meta:
         model = StatusMessageTemplate
         fields = ['estado', 'mensaje']
         widgets = {
+<<<<<<< HEAD
             'estado': forms.Select(attrs={'class': 'form-select'}),
             'mensaje': forms.Textarea(attrs={'rows': 8, 'class': 'form-control', 'placeholder': 'Cuerpo del mensaje...'}),
         }
@@ -165,3 +200,7 @@ class AgendaAccionForm(forms.ModelForm):
 
 
         return cleaned_data
+=======
+            'mensaje': forms.Textarea(attrs={'rows': 5}),
+        }
+>>>>>>> e083518c28dbe2d325c3d2683f4c84a9cc6209d7
