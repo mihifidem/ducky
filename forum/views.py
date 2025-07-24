@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages  
 from .models import Pregunta, Profesional, Respuesta
 from .forms import PreguntaFormPublic, RespuestaForm, PreguntaFormPrivate
@@ -60,6 +60,7 @@ class PreguntaDetailView(DetailView):
         context['is_active'] = self.object.is_active()
         context['form'] = RespuestaForm()  
         return context
+    
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         
@@ -112,7 +113,7 @@ class PreguntaDeleteView(DeleteView):
     def get_question(self):
         return Pregunta.objects.filter(user_question=self.request.user)
     
-class RespuestaUpadteView(UpdateView):
+class RespuestaUpdateView(UpdateView):
     model = Respuesta
     form_class = RespuestaForm
     template_name = 'forum/respuesta_edit.html'
@@ -139,3 +140,5 @@ def mail_recibido(request):
     preguntas = Pregunta.objects.filter(is_public=False, professional_user__user=request.user).order_by('-date_at')
     respuestas = Respuesta.objects.filter(question__in=preguntas).order_by('-date_at')
     return render(request, 'forum/mail_recibido.html', {'preguntas': preguntas, 'respuestas': respuestas})
+
+

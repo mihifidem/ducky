@@ -63,12 +63,20 @@ class Pregunta(DirtyFieldsMixin,models.Model):
     def __str__(self):
         return self.pregunta
     
-class Respuesta(models.Model):
+class Respuesta(models.Model,DirtyFieldsMixin):
     respuesta = models.TextField()
     date_at = models.DateTimeField(auto_now_add=True)
     question = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
     user_answer = models.ForeignKey(User, on_delete=models.CASCADE)
     professional_answer = models.ForeignKey(Profesional, on_delete=models.CASCADE, null=True, blank=True)
+    editado = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if self.pk:  
+            dirty_fields = self.get_dirty_fields()
+            if dirty_fields:
+                self.editado = True
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.respuesta
