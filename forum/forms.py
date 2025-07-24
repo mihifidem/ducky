@@ -26,7 +26,6 @@ class PreguntaFormPrivate(forms.ModelForm):
             'titulo': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
-    professional_user = forms.ModelChoiceField(queryset=Profesional.objects.none(), required=True, label='Profesional')
 
 
 

@@ -7,8 +7,7 @@
     <a href="{% url 'forum_home' %}" class="btn btn-link text-decoration-none mb-2">
         <span class="material-icons align-middle">arrow_back</span> Volver
     </a>
-    <p><strong>Por:</strong> {{ pregunta.user_question.username }} <small class="text-muted">{{
-            pregunta.date_at|date:"d/m/Y H:i" }}</small></p>
+    <p><strong>Por:</strong> {{ pregunta.user_question.username }} <small class="text-muted">{{ pregunta.date_at|date:"d/m/Y H:i" }}</small></p>
     <h1 class="mb-4">{{ pregunta.titulo }}</h1>
     <div class="card mb-4 ">
         <div class="card-body">
