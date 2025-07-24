@@ -7,21 +7,25 @@ class PreguntaFormPublic(forms.ModelForm):
         fields = ['titulo', 'pregunta', 'sector']
         widgets = {
             'sector': forms.Select(attrs={
-                'class': 'form-control pattern',
-                'pattern': '[0-9]',}),
+                'class': 'form-control pattern'}),
             'pregunta': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
             'titulo': forms.TextInput(attrs={'class': 'form-control'}),
         }
+        
 
 
 class PreguntaFormPrivate(forms.ModelForm):
 
     class Meta:
         model = Pregunta
-        fields = ['titulo', 'pregunta',]
+        fields = ['titulo', 'pregunta', 'sector', 'professional_user']
+        widgets = {
+            'sector': forms.Select(attrs={
+                'class': 'form-control pattern'}),
+            'pregunta': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
+            'titulo': forms.TextInput(attrs={'class': 'form-control'}),
+        }
 
-    sector = forms.ModelChoiceField(queryset=Sector.objects.all(), required=True)
-    profesional = forms.ModelChoiceField(queryset=Profesional.objects.none(), required=True)
 
 
 
@@ -30,12 +34,12 @@ class PreguntaFormPrivate(forms.ModelForm):
         if 'sector' in self.data:
             try:
                 sector_id = int(self.data.get('sector'))
-                self.fields['profesional'].queryset = Profesional.objects.filter(sector=sector_id)
+                self.fields['professional_user'].queryset = Profesional.objects.filter(sector=sector_id)
             except (ValueError, TypeError):
                 pass
+        elif self.instance.pk and self.instance.sector:
+            self.fields['professional_user'].queryset = Profesional.objects.filter(sector=self.instance.sector)
     
-
-
 class RespuestaForm(forms.ModelForm):
     class Meta:
         model = Respuesta

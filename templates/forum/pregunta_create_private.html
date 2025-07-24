@@ -7,30 +7,47 @@
     <a href="{% url 'forum_home' %}" class="btn btn-link text-decoration-none mb-2">
         <span class="material-icons align-middle">arrow_back</span> Volver al foro
     </a>
-    <h1 class="mb-4">Pregunta a un Profesional</h1>
-    <form method="post">
+    <h1 class="mb-4 text-center">Pregunta a un Profesional</h1>
+    <form method="post" class="customform">
         {% csrf_token %}
         {{ form.as_p }}
-        {{ from.sector }}
-        {{ form.professional }}
+        <button type="submit" class="custombutton">Publicar pregunta</button>
     </form>
 </div>
 
 {% endblock %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $('#id_sector').change(function () {
-        var sectorId = $(this).val();
-        $.ajax({
-            url: '/ajax/cargar-profesionales/',
-            data: { 'sector': sectorId },
-            success: function (data) {
-                var $profesional = $('#id_profesional');
-                $profesional.empty();
-                $.each(data, function (key, value) {
-                    $profesional.append('<option value="' + value.id + '">' + value.nombre + '</option>');
-                });
-            }
-        });
+    $(document).ready(function(){
+        function updateProfessionals() {
+            var sectorId = $('select[name="sector"]').val();
+            var url = '{% url "ajax_cargar_profesionales" %}';
+            if (!sectorId) return;
+            $.ajax({
+                url: url,
+                data: { 
+                    'sector_id': sectorId 
+                },
+                success: function (data) {
+                    var select = $('select[name="professional_user"]');
+                    var currentVal = select.val();
+                    select.empty();
+                    if (data.length === 0) {
+                        select.append('<option value="">No hay profesionales en este sector</option>');
+                    } else {
+                        select.append('<option value="">Seleccione un profesional</option>');
+                        $.each(data, function (key, value) {
+                            var selected = (currentVal == value.id) ? ' selected' : '';
+                            select.append('<option value="' + value.id + '"' + selected + '>' + value.nombre + '</option>');
+                        });
+                    }
+                }
+            });
+        }
+        $('select[name="sector"]').change(updateProfessionals);
+        // Trigger on page load if sector is pre-selected
+        if ($('select[name="sector"]').val()) {
+            updateProfessionals();
+        }
     });
 </script>
