@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "account",
     'crispy_forms',
     'crispy_bootstrap5',
+    'jobs',
 
 ]
 
@@ -139,7 +140,11 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # Redirige a home tras login exitoso
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = 'home'
 
 # Redirige a login tras cerrar sesión
 LOGOUT_REDIRECT_URL = '/'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' 
+# Para producción, puedes usar SMTP o cualquier otro backend de correo
+DEFAULT_FROM_EMAIL = 'noreply@opentojob.es'
