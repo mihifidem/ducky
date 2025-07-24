@@ -17,6 +17,7 @@
             <span class="question-status text-muted">
                 {% if pregunta.edited %} | Editado {% endif %}
             </span>
+
             {% if user == pregunta.user_question %}
             <div class="answer-actions">
             <a href="{% url 'pregunta_edit' pregunta.id %}" class="btn-edit">
@@ -38,6 +39,9 @@
     <div class="answer-card">
         <div class="answer-body">
             <p class="answer-text">{{ respuesta.respuesta }}</p>
+            <span class="question-status text-muted">
+                {% if respuesta.editado %} | Editado {% endif %}
+            </span>
             <small class="answer-meta">
                 Por: <strong>{{ respuesta.user_answer.username }}</strong> |
                 Fecha: {{ respuesta.date_at|date:"d/m/Y H:i" }}

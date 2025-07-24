@@ -96,7 +96,7 @@ def respuesta_create(request, pk):
         form = RespuestaForm()
     return render(request, 'forum/respuesta_create.html', {'pk': pk, 'form': form})
 
-class PreguntaUpadteView(UpdateView):
+class PreguntaUpdateView(UpdateView):
     model = Pregunta
     form_class = PreguntaFormPublic
     template_name = 'forum/pregunta_edit.html'

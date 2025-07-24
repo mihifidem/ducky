@@ -35,11 +35,16 @@ class Pregunta(DirtyFieldsMixin,models.Model):
     is_public = models.BooleanField(default=True)
     sector = models.ForeignKey(Sector, on_delete=models.CASCADE)
     edited = models.BooleanField(default=False)
-    active_until = models.DateTimeField(null=True, blank=True)  
-    
+    active_until = models.DateTimeField(null=True, blank=True)
+
     def save(self, *args, **kwargs):
         if not self.id:
-            self.active_until = timezone.now() + datetime.timedelta(minutes=1)
+            self.active_until = timezone.now() + datetime.timedelta(seconds=10)
+
+        if self.pk:  # Es edición
+            dirty_fields = self.get_dirty_fields()
+            if dirty_fields:
+                self.edited = True
         super().save(*args, **kwargs)
         
     
@@ -47,13 +52,6 @@ class Pregunta(DirtyFieldsMixin,models.Model):
         if self.active_until is None:
             return True  
         return timezone.now() <= self.active_until
-
-    def save(self, *args, **kwargs):
-        if self.pk:  # Es edición
-            dirty_fields = self.get_dirty_fields()
-            if dirty_fields:
-                self.edited = True
-        super().save(*args, **kwargs)
 
     def clean(self):
         from django.core.exceptions import ValidationError
@@ -63,20 +61,12 @@ class Pregunta(DirtyFieldsMixin,models.Model):
     def __str__(self):
         return self.pregunta
     
-class Respuesta(models.Model,DirtyFieldsMixin):
+class Respuesta(models.Model):
     respuesta = models.TextField()
     date_at = models.DateTimeField(auto_now_add=True)
     question = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
     user_answer = models.ForeignKey(User, on_delete=models.CASCADE)
     professional_answer = models.ForeignKey(Profesional, on_delete=models.CASCADE, null=True, blank=True)
-    editado = models.BooleanField(default=False)
-
-    def save(self, *args, **kwargs):
-        if self.pk:  
-            dirty_fields = self.get_dirty_fields()
-            if dirty_fields:
-                self.editado = True
-        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.respuesta
