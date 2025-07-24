@@ -14,7 +14,9 @@
             <p><strong>Sector:</strong> {{ pregunta.sector }}</p>
             <hr>
             <p class="fs-5">{{ pregunta.pregunta }}</p>
-
+            <span class="question-status text-muted">
+                {% if pregunta.edited %} | Editado {% endif %}
+            </span>
             {% if user == pregunta.user_question %}
             <div class="answer-actions">
             <a href="{% url 'pregunta_edit' pregunta.id %}" class="btn-edit">

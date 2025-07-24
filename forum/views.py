@@ -95,12 +95,6 @@ def respuesta_create(request, pk):
         form = RespuestaForm()
     return render(request, 'forum/respuesta_create.html', {'pk': pk, 'form': form})
 
-def respuesta_edit(request, pk):
-    return render(request, 'forum/respuesta_edit.html', {'pk': pk})
-
-def respuesta_delete(request, pk):  
-    return render(request, 'forum/respuesta_delete.html', {'pk': pk})
-
 class PreguntaUpadteView(UpdateView):
     model = Pregunta
     form_class = PreguntaFormPublic
