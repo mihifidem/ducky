@@ -13,7 +13,7 @@ Un foro de preguntas y respuestas basado en Django, donde los usuarios pueden ha
 1. Clona el repositorio.  
 2. Instala las dependencias:
    ```bash
-   pip install django python-decouple python-dirtyfields
+   pip install django python-decouple python-dirtyfields crispy_bootstrap5 crispy_forms pillow
    ```
 3. Aplica las migraciones:
    ```bash
