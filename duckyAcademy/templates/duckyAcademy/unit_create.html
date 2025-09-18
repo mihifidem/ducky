@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+  <h2>Crear Unidad para el módulo: {{ module.title }}</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <fieldset class="border p-3 mb-3">
+      <legend>Unidad</legend>
+      {{ unit_form.as_p }}
+    </fieldset>
+
+    <fieldset class="border p-3 mb-3">
+      <legend>📄 PDF (opcional)</legend>
+      {{ pdf_form.as_p }}
+    </fieldset>
+
+    <fieldset class="border p-3 mb-3">
+      <legend>📘 Cheatsheet (opcional)</legend>
+      {{ cheatsheet_form.as_p }}
+    </fieldset>
+
+    <fieldset class="border p-3 mb-3">
+      <legend>📑 Documento Extra (opcional)</legend>
+      {{ extra_form.as_p }}
+    </fieldset>
+
+    <fieldset class="border p-3 mb-3">
+      <legend>🖼 Imagen (opcional)</legend>
+      {{ image_form.as_p }}
+    </fieldset>
+
+    <button type="submit" class="btn btn-success">Crear Unidad</button>
+  </form>
+</div>
+{% endblock %}
