@@ -17,12 +17,18 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import render
 from .models import ResultadoTest, ComentariosProfessores
 
+
+# Creamos el decorador de professores
 def es_profesor(user):
     return user.groups.filter(name='Teachers').exists()
 
+
+# Creamos el decorador para alumnos
 def es_alumno(user):
     return user.groups.filter(name='alumnos').exists()
 
+
+# Funcion para que el professor pueda comentar el test del alumno
 @login_required
 @user_passes_test(es_profesor)
 def comentario_professor(request, tests_id):
@@ -47,6 +53,8 @@ def comentario_professor(request, tests_id):
    
 User = get_user_model()
 
+
+# Funcion del dashboard
 @login_required
 @user_passes_test(es_profesor)
 def profesor_vista(request):
@@ -91,6 +99,8 @@ def profesor_vista(request):
 
     return render(request, 'management_test/dashboard_professor.html', datos)
 
+
+# Funcion para la modificacion del comentario del professor
 @login_required
 @user_passes_test(es_profesor)
 def modificar_comentario(request, id):
@@ -113,6 +123,8 @@ def modificar_comentario(request, id):
         'comentario': comentario
     }
     return render(request, 'management_test/formulario_professor.html', contexto)
+
+
 
 def home(request):
     test_dir = os.path.join(settings.BASE_DIR, 'test')
@@ -137,6 +149,8 @@ def home(request):
         'es_teacher': es_teacher,
     })
 
+
+# Funcion que permite al professor modificar el test
 @login_required
 @user_passes_test(es_profesor)
 def modificar_test(request, filename):
@@ -206,6 +220,8 @@ def modificar_test(request, filename):
             'test_data': datos,
         })
 
+
+# Funcion que permite la modificacion del test de inteligiencia
 @login_required
 @user_passes_test(es_profesor)
 def modificar_test_inteligencias(request, filename):
@@ -247,6 +263,8 @@ def modificar_test_inteligencias(request, filename):
             'test_data': datos,
         })
 
+
+# Permite al usuario ver su historial de tests
 @login_required
 def historial_tests(request):
     titulo_query = request.GET.get('titulo', '')
@@ -270,6 +288,8 @@ def historial_tests(request):
         'titulos_unicos': titulos_unicos,
     })
 
+
+# Aqui el alumno puede ver su dashboard
 @login_required
 def dashboard_usuario(request):
     resultados = ResultadoTest.objects.filter(user=request.user)
@@ -304,6 +324,8 @@ def dashboard_usuario(request):
 
     return render(request, 'management_test/dashboard_usuario.html', context)
 
+
+# Funcion que permite al alumno ver cuando acaba el test su resultado detalladamente
 @login_required
 def detalle_resultado_test(request, test_id):
     resultado = get_object_or_404(ResultadoTest, id=test_id)
@@ -356,6 +378,8 @@ def detalle_resultado_test(request, test_id):
 
     return render(request, 'management_test/detalle_test.html', context)
 
+
+
 @login_required
 def evaluar_test(request):
     if request.method == 'POST':
@@ -382,6 +406,8 @@ def evaluar_test(request):
 
     return redirect('tests:test')  # Redirige si entran por GET
 
+
+# Formulario para contestar al professor
 @login_required
 @user_passes_test(es_alumno)
 def formulario_usuario(request, test_id):
@@ -400,6 +426,8 @@ def formulario_usuario(request, test_id):
         'test': resultado,
     })
 
+
+
 @login_required
 def dashboard(request):
     user = request.user
@@ -411,6 +439,8 @@ def dashboard(request):
     else:
         return redirect('home')  # o puedes redirigir a una vista personalizada como "sin_grupo"
 
+
+# Obtener categorias de json
 def obtener_categorias_desde_json(filename):
     ruta_test = os.path.join(settings.BASE_DIR, "test", filename)
     with open(ruta_test, encoding="utf-8") as f:
@@ -422,6 +452,8 @@ def obtener_categorias_desde_json(filename):
             categorias.add(cat)
     return sorted(categorias)
 
+
+# Funcion para que las preguntas esten bien equilibradas
 def seleccionar_preguntas_equilibradas_por_categorias(json_data, categorias_seleccionadas=None, num_preguntas_total=20):
     preguntas = json_data.get("questions", [])
 
@@ -459,6 +491,8 @@ def seleccionar_preguntas_equilibradas_por_categorias(json_data, categorias_sele
     random.shuffle(seleccionadas)
     return seleccionadas
 
+
+# Seleccion de Preguntas
 def seleccionar_preguntas_equilibradas(json_data, max_preguntas=20):
     preguntas_seleccionadas = []
 
@@ -490,6 +524,8 @@ def seleccionar_preguntas_equilibradas(json_data, max_preguntas=20):
     random.shuffle(preguntas_seleccionadas)
     return preguntas_seleccionadas
 
+
+# Resultado de test_inteligencias
 def resultado_test_inteligencias(request):
     respuestas = request.session.get("respuestas", [])
     preguntas = request.session.get("preguntas_inteligencias", [])
@@ -576,6 +612,8 @@ def resultado_test_inteligencias(request):
 
     return render(request, 'management_test/resultado_test.html', context)
 
+
+# Funcion para realizar_test
 @login_required
 @user_passes_test(es_alumno)
 def realizar_test(request, filename):
@@ -699,6 +737,8 @@ def realizar_test(request, filename):
         else:
             return redirect(f"{request.path}?pregunta={siguiente_pregunta}")
 
+
+
 @login_required
 def resultado_test(request):
     respuestas = request.session.get("respuestas", [])
@@ -772,6 +812,8 @@ def resultado_test(request):
     return render(request, 'management_test/resultado_test.html', context)
 
 
+
+
 @login_required
 def realizar_test_inteligencias_pregunta(request, numero):
     preguntas = request.session.get('preguntas_inteligencias')
@@ -817,6 +859,8 @@ def realizar_test_inteligencias_pregunta(request, numero):
     }
     return render(request, 'management_test/realizar_test.html', context)
 
+
+
 @login_required
 def seleccionar_categorias(request, filename):
     path = os.path.join(settings.BASE_DIR, 'test', filename)
@@ -857,6 +901,8 @@ def seleccionar_categorias(request, filename):
         "categorias_seleccionadas": [],
     })
 
+
+# Funcion para crear tests
 @login_required
 @user_passes_test(es_profesor)
 def crear_test(request):
