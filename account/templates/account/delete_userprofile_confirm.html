@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirmar eliminación de perfil{% endblock %}
+
+{% block content %}
+<h2>Confirmar eliminación de tu perfil</h2>
+<p>Esta acción eliminará tu información personal y configuración, pero tu cuenta de usuario permanecerá activa.</p>
+
+<form method="post">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-danger">Eliminar mi perfil</button>
+  <a href="{% url 'cv_panel' %}" class="btn btn-secondary ms-2">Cancelar</a>
+</form>
+{% endblock %}

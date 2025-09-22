@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Resultado Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .correcto { color: green; }
+        .incorrecto { color: red; }
+        .pregunta { margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h2>Resultado del Test: {{ resultado.test_title }}</h2>
+    <p>Aciertos: {{ resultado.aciertos }} / {{ resultado.total_preguntas }}</p>
+    <p>Fallos: {{ resultado.fallos }}</p>
+    <hr>
+    {% for r in resultado.detalle %}
+        <div class="pregunta">
+            <p><strong>Pregunta:</strong> {{ r.pregunta }}</p>
+            <p><strong>Tu respuesta:</strong> {{ r.seleccionadas|join:", " }}</p>
+            <p><strong>Correcta:</strong> {{ r.correctas|join:", " }}</p>
+            <p class="{% if r.es_correcta %}correcto{% else %}incorrecto{% endif %}">
+                {% if r.es_correcta %}✔ Correcto{% else %}✘ Incorrecto{% endif %}
+            </p>
+        </div>
+    {% endfor %}
+</body>
+</html>
