@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h2>{{ unit.title }}</h2>
+  <p>{{ unit.description }}</p>
+
+  <div class="mt-3 d-flex gap-3">
+    {% if unit.pdfs.all %}
+      <div>
+        <a data-bs-toggle="collapse" href="#pdfList" role="button" aria-expanded="false" aria-controls="pdfList">
+          <i class="bi bi-file-earmark-pdf" title="PDFs disponibles"></i>
+        </a>
+      </div>
+    {% endif %}
+    {% if unit.cheatsheets.all %}
+      <div>
+        <a data-bs-toggle="collapse" href="#cheatsheetList" role="button" aria-expanded="false" aria-controls="cheatsheetList">
+          <i class="bi bi-journal-code" title="Chuletas (Cheatsheets) disponibles"></i>
+        </a>
+      </div>
+    {% endif %}
+    {% if unit.extras.all %}
+      <div>
+        <a data-bs-toggle="collapse" href="#extraList" role="button" aria-expanded="false" aria-controls="extraList">
+          <i class="bi bi-file-earmark-richtext" title="Documentos extras disponibles"></i>
+        </a>
+      </div>
+    {% endif %}
+    {% if unit.images.all %}
+      <div>
+        <a data-bs-toggle="collapse" href="#imageList" role="button" aria-expanded="false" aria-controls="imageList">
+          <i class="bi bi-image" title="Imágenes disponibles"></i>
+        </a>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="mt-3">
+    <div class="collapse" id="pdfList">
+      <ul class="list-group">
+        {% for pdf in unit.pdfs.all %}
+          <li class="list-group-item">
+            <a href="{{ pdf.file.url }}" target="_blank">{{ pdf.description|default:"PDF sin descripción" }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="collapse" id="cheatsheetList">
+      <ul class="list-group">
+        {% for cheat in unit.cheatsheets.all %}
+          <li class="list-group-item">
+            <a href="{{ cheat.file.url }}" target="_blank">{{ cheat.description|default:"Chuleta sin descripción" }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="collapse" id="extraList">
+      <ul class="list-group">
+        {% for extra in unit.extras.all %}
+          <li class="list-group-item">
+            <a href="{{ extra.file.url }}" target="_blank">{{ extra.description|default:"Documento sin descripción" }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="collapse" id="imageList">
+      <div class="row">
+        {% for img in unit.images.all %}
+          <div class="col-md-3 mb-3">
+            <img src="{{ img.image.url }}" class="img-fluid rounded shadow-sm" alt="{{ img.description }}">
+            <small class="d-block text-muted">{{ img.description }}</small>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

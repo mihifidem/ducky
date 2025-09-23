@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>{{ cv.title }}</h2>
+<p>Creado por: {{ cv.user.username }}</p>
+<p>Fecha creación: {{ cv.created_at|date:"d M Y" }}</p>
+
+<h3>Experiencias seleccionadas</h3>
+<ul>
+  {% for exp in cv.selected_experiences.all %}
+    <li>{{ exp.position }} en {{ exp.company }} ({{ exp.start_date }} - {{ exp.end_date|default:"Actualidad" }})</li>
+  {% empty %}
+    <li>No hay experiencias añadidas.</li>
+  {% endfor %}
+</ul>
+
+<!-- Puedes agregar más secciones aquí según tus relaciones -->
+
+{% endblock %}

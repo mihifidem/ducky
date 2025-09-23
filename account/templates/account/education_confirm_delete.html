@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}Eliminar Educación{% endblock %}
+{% block content %}
+<h2>¿Seguro que quieres eliminar esta educación?</h2>
+<p><strong>{{ education.title }}</strong> en {{ education.institution }}</p>
+<form method="post">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-danger">Eliminar</button>
+  <a href="{% url 'cv_panel' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}
