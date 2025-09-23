@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="container mt-4">
+  <h2 class="mb-4 text-center">Bienvenido {{ user.first_name|default:user.username }}</h2>
+
+  {% if rol == 'headhunter' %}
+  <a href="{% url 'home_job' %}">Ir a mi panel</a>
+  
+  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                
+                    {# Navegación para Headhunters #}
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'headhunter_dashboard' %}">Dashboard Headhunter</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'agenda' %}">Agenda</a>
+                    </li>
+                    
+                </ul>
+
+    <div class="alert alert-info">Panel Headhunter</div>
+
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <div class="card border-primary">
+          <div class="card-body">
+            <h5 class="card-title">Ofertas creadas</h5>
+            <p class="card-text">{{ ofertas.count }} ofertas activas</p>
+            <a href="{% url 'headhunter_dashboard' %}" class="btn btn-primary">Ver Panel</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card border-success">
+          <div class="card-body">
+            <h5 class="card-title">Candidaturas recibidas</h5>
+            <p class="card-text">{{ total_candidaturas }} en total</p>
+            <a href="{% url 'headhunter_dashboard' %}" class="btn btn-success">Gestionar Candidaturas</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <a href="{% url 'create_offer' %}" class="btn btn-secondary">➕ Crear Nueva Oferta</a>
+
+  {% elif rol == 'candidate' %}
+  <a href="{% url 'home_job' %}">Ir a mi panel</a>
+    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'job_offer_list' %}">Ofertas</a>
+                    </li>
+                    {# Navegación para Candidatos #}
+
+                
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'candidato_dashboard' %}">Mis Candidaturas</a> 
+                    </li> </ul>
+
+    <div class="alert alert-success">Panel Candidato</div>
+
+    {% if candidaturas %}
+      <table class="table table-bordered table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>Oferta</th>
+            <th>Empresa</th>
+            <th>Estado</th>
+            <th>Última actualización</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in candidaturas %}
+          <tr>
+            <td>{{ c.offer.title }}</td>
+            <td>{{ c.offer.company_name }}</td>
+            <td><span class="badge bg-secondary">{{ c.get_estado_display }}</span></td>
+            <td>{{ c.updated_at|date:"d/m/Y H:i" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="text-muted">No tienes candidaturas activas.</p>
+    {% endif %}
+
+    <a href="{% url 'candidato_dashboard' %}" class="btn btn-primary mt-3">Ver todas mis candidaturas</a>
+
+  {% else %}
+    <div class="alert alert-warning">Tu cuenta no tiene un rol asignado.</div>
+    <p class="text-muted">Contacta con el administrador si crees que esto es un error.</p>
+  {% endif %}
+</div>
+
+{% endblock %}
