@@ -82,7 +82,7 @@
                                         <i class="fa fa-angle-down"></i>
                                     </a>
                                     <div class="dropdown-menu animated fadeIn" aria-labelledby="navbarDropdown">
-                                        <a class="dropdown-item nav-link" href="javascript:void(0)">Crea tu CV
+                                        <a class="dropdown-item nav-link" href="{% url 'cv_list' %}">Crea tu CV
                                             multi-talento 🧠</a>
                                         <a class="dropdown-item nav-link" href="javascript:void(0)">Edita sin romper
                                             nada ✏️</a>
@@ -488,18 +488,14 @@
                                 </a>
                                 <ul aria-expanded="false">
                                     <li class="active"> <a href='{%url "account-settings"%}'>My Profile1</a> </li>
-                                    <li class="active"> <a href='{% url 'cv_panel' %}'>My   Profile2</a> </li>
-                                    <li> <a href='index-ecommerce.html'>Job Experiences</a> </li>
-                                    <li> <a href='index-car-dealer.html'>Education</a> </li>
-                                    <li> <a href='index-stock-market.html'>Lenguages
-                                            {% comment %} <span class="nav-label label label-warning">3</span> {% endcomment %}
-                                        </a> </li>
-                                    <li> <a href='index-dating.html'>Soft Skills 
-                                        {% comment %} <span class="nav-label label label-warning">6</span> {% endcomment %}
-                                        </a> </li>
-                                    <li> <a href='index-dating.html'>Hard Skills </a> </li>
-
-                                    <li> <a href='index-dating.html'>Hobbies </a> </li>
+                                    <li class="active"> <a href="{% url 'cv_panel'%}">My   Profile2</a> </li>
+                                    
+                                    <li> <a href= "{% url 'experience_list' %}">Edit Job Experience</a> </li>
+                                    <li> <a href= "{% url 'education_list' %}">Education</a> </li>
+                                    <li> <a href= "{% url 'language_list' %}">Lenguages</a> </li>
+                                    <li> <a href= "{% url 'softskill_list' %}">Soft Skills </a> </li>
+                                    <li> <a href= "{% url 'hardskill_list' %}">Hard Skills </a> </li>
+                                    <li> <a href= "{% url 'hobby_list' %}">Hobbies </a> </li>
 
                                 </ul>
                             </li>
@@ -511,7 +507,7 @@
                                 </a>
                                 <ul aria-expanded="false">
                                     <li class="active"> <a href='{%url "job_offer_list"%}'>Job Listings</a> </li>
-                                    <li class="active"> <a href='{% url 'candidate_dashboard' %}'>Applied Jobs</a> </li>
+                                    <li class="active"> <a href="{%url 'candidate_dashboard'%}">Applied Jobs</a> </li>
                                     <li> <a href='agenda'>Calendar</a> </li>
                                     
                                 </ul>

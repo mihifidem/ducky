@@ -1,0 +1,39 @@
+{% extends 'base2.html' %}
+
+{% block title %}Mis hobbies{% endblock %}
+
+{% block content %}
+<div class="container my-5" style="max-width: 700px;">
+    <div class="card shadow-sm p-4">
+        <h2 class="mb-4 text-center text-primary">🎯 Mis hobbies</h2>
+
+        <div class="mb-3 text-end">
+            <a href="{% url 'add_hobby' %}" class="btn btn-primary">➕ Añadir hobby</a>
+        </div>
+
+        {% if hobbies %}
+        <ul class="list-group">
+            {% for hobby in hobbies %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>{{ hobby.hobby.name }}</strong>
+                    {% if hobby.description %}
+                    <br><small>{{ hobby.description }}</small>
+                    {% endif %}
+                </div>
+                <div>
+                    <a href="{% url 'edit_hobby' pk=hobby.pk %}" class="btn btn-sm btn-outline-success me-2">✏️
+                        Editar</a>
+                    <a href="{% url 'delete_hobby' pk=hobby.pk %}" class="btn btn-sm btn-outline-danger">🗑️
+                        Eliminar</a>
+                </div>
+            </li>
+
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="text-center mt-3">No has añadido hobbies todavía.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

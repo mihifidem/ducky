@@ -26,6 +26,7 @@ from core import views as core_views  # asumimos que home está en app "core"
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('account/', include('account.urls')),
+    path('account/cv/', include('account.cv_manager.urls')),
     path('', include('core.urls')),  # 👈 asegúrate de incluir tu app
 # Página de inicio
     path('account/', include('django.contrib.auth.urls')),  # login/logout

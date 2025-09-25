@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "duckyAcademy",
     "jobs",
     'management_test',
+    'account.cv_manager',
 
 
 ]
@@ -147,3 +148,6 @@ LOGIN_REDIRECT_URL = '/'
 
 # Redirige a login tras cerrar sesión
 LOGOUT_REDIRECT_URL = '/'
+
+# Redirige a login
+LOGIN_URL = '/'
