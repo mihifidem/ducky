@@ -1,0 +1,34 @@
+{% extends 'base2.html' %}
+
+{% block title %}Mi formación académica{% endblock %}
+
+{% block content %}
+<div class="container my-5" style="max-width: 700px;">
+  <div class="card shadow-sm p-4">
+    <h2 class="mb-4 text-center text-primary">🎓 Mi formación académica</h2>
+
+    <div class="mb-3 text-end">
+      <a href="{% url 'add_education' %}" class="btn btn-primary">➕ Añadir formación</a>
+    </div>
+
+    {% if educations %}
+      <ul class="list-group">
+        {% for education in educations %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+              <strong>{{ education.degree }}</strong> en {{ education.institution }}<br>
+              <small>{{ education.start_date }} - {{ education.end_date|default:"Actualidad" }}</small>
+            </div>
+            <div>
+              <a href="{% url 'edit_education' pk=education.pk %}" class="btn btn-sm btn-outline-success me-2">✏️ Editar</a>
+              <a href="{% url 'delete_education' pk=education.pk %}" class="btn btn-sm btn-outline-danger">🗑️ Eliminar</a>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-center mt-3">No tienes formación añadida aún.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
