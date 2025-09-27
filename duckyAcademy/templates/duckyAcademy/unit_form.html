@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container mt-4">
+    <h2>{% if form.instance.pk %}Editar unidad{% else %}Crear unidad{% endif %}</h2>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-primary">Guardar</button>
+    </form>
+    <a href="{% url 'course_list' %}" class="btn btn-secondary mt-2">Volver</a>
+  </div>
+{% endblock %}
