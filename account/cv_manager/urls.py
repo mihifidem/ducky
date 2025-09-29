@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import   (
     cv_edit, cv_list, cv_create, cv_delete, cv_clone, 
-dashboard_view, cv_panel_view, edit_profile, delete_userprofile, 
+dashboard_view, cv_panel_view, 
 cv_public_view, cv_list_view, cv_download_pdf, mi_vista,
 edit_experience, delete_experience, edit_education, delete_education, 
 edit_language, delete_language, edit_softskill, delete_softskill, 
@@ -18,8 +18,7 @@ urlpatterns = [
     path('add-softskill/', views.add_softskill, name='add_softskill'),
     path('add-hardskill/', views.add_hardskill, name='add_hardskill'),
     path('add-hobby/', views.add_hobby, name='add_hobby'),
-    path('crear-perfil/', views.create_profile_view, name='profile_create'),
-    path('eliminar-perfil/', views.delete_userprofile, name='delete_userprofile_confirm'),
+    
     
     # Education management URLs
     path('education/', views.education_list, name='education_list'),
@@ -34,10 +33,7 @@ urlpatterns = [
     # Dashboard and CV panel URLs
     path('cv-panel/', views.cv_panel_view, name='cv_panel'),
     path('dashboard/', views.dashboard_view, name='dashboard'),
-     
-     # User profile management URLs
-    path('editar-perfil/', views.edit_profile, name='profile'),
-    
+             
     # Job experience management URLs
     path('experience/', views.experience_list, name='experience_list'),
     path('experience/edit/<int:pk>/', views.edit_experience, name='edit_experience'),
