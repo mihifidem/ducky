@@ -7,7 +7,7 @@
 
 
 
-from accountcv_manager.models import Language
+from account.cv_manager.models import Language
 
 # Lista de idiomas comunes
 idiomas = [

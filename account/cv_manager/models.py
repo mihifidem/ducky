@@ -54,7 +54,7 @@ class HardSkill(TimeStampedModel):
 
 
 class UserHardSkill(TimeStampedModel):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     skill = models.ForeignKey(HardSkill, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -95,7 +95,7 @@ class UserLanguage(TimeStampedModel):
         ("N", "Native")
     ]
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     language = models.ForeignKey(Language, on_delete=models.CASCADE)
     level = models.CharField(max_length=2, choices=LEVEL_CHOICES, verbose_name="Nivel")
 
