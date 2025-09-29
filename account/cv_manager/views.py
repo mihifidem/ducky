@@ -10,12 +10,14 @@ from django.utils.text import slugify
 from django.conf import settings
 from urllib.parse import urlparse, parse_qs
 from .models import CVProfile
+from account.cv_manager.models import UserJobExperience
 
 # External libraries
 import pdfkit
 import os
 import zipfile
 from datetime import datetime
+from django.db.models import Q
 
 # Formularios
 from .forms import (
@@ -122,11 +124,36 @@ def add_experience(request):
 
 
 # Enlace a Experience_list
+
 @login_required
 def experience_list(request):
-    experiences = UserJobExperience.objects.filter(user=request.user)
-    return render(request, 'cv_manager/experience_list.html', {'experiences': experiences})
+    queryset = UserJobExperience.objects.filter(user=request.user)  # Solo experiencias del usuario logueado
+    
+    # 🔹 Filtro por palabra clave (position, company, role, description)
+    search = request.GET.get('search', '')
+    if search:
+        queryset = queryset.filter(
+            Q(position__icontains=search) |
+            Q(company__icontains=search) |
+            Q(role__icontains=search) |
+            Q(description__icontains=search)
+        )
+    
+    # 🔹 Filtro por fechas
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    if start_date:
+        queryset = queryset.filter(start_date__gte=start_date)
+    if end_date:
+        queryset = queryset.filter(end_date__lte=end_date)
 
+    context = {
+        'experiences': queryset,
+        'search': search,
+        'start_date': start_date,
+        'end_date': end_date,
+    }
+    return render(request, 'cv_manager/experience_list.html', context)
     
 # Manejo de experiencias: añadir, editar, eliminar (muy similar a añadir experiencia anterior)
 @login_required
@@ -174,8 +201,32 @@ def add_education(request):
 # Enlace a Education_list
 @login_required
 def education_list(request):
-    educations = UserEducation.objects.filter(user=request.user)
-    return render(request, 'cv_manager/education_list.html', {'educations': educations})
+    queryset = UserEducation.objects.filter(user=request.user)
+    
+    # 🔹 Búsqueda por palabra clave (title, institution, description)
+    search = request.GET.get('search', '')
+    if search:
+        queryset = queryset.filter(
+            Q(title__icontains=search) |
+            Q(institution__icontains=search) |
+            Q(description__icontains=search)
+        )
+
+    # 🔹 Filtro por fechas
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    if start_date:
+        queryset = queryset.filter(start_date__gte=start_date)
+    if end_date:
+        queryset = queryset.filter(end_date__lte=end_date)
+
+    context = {
+        'educations': queryset,
+        'search': search,
+        'start_date': start_date,
+        'end_date': end_date,
+    }
+    return render(request, 'cv_manager/education_list.html', context)
 
 # Editar educación y eliminar educación
 @login_required
@@ -230,8 +281,27 @@ def add_language(request):
 # Listado de idiomas
 @login_required
 def language_list(request):
-    languages = UserLanguage.objects.filter(user=request.user)
-    return render(request, 'cv_manager/language_list.html', {'languages': languages})
+    # 🔹 Solo los idiomas del usuario logueado
+    queryset = UserLanguage.objects.filter(user=request.user)
+
+    # 🔹 Filtro por palabra clave en el nombre del idioma
+    search = request.GET.get('search', '')
+    if search:
+        queryset = queryset.filter(
+            Q(language__name__icontains=search)
+        )
+
+    # 🔹 Filtro por nivel
+    level = request.GET.get('level', '')
+    if level:
+        queryset = queryset.filter(level=level)
+
+    context = {
+        'languages': queryset,
+        'search': search,
+        'level': level,
+    }
+    return render(request, 'cv_manager/language_list.html', context)
 
 @login_required
 def edit_language(request, pk):
@@ -277,8 +347,21 @@ def add_softskill(request):
 # Listado de habilidades blandas (Soft Skills)
 @login_required
 def softskill_list(request):
-    softskills = UserSoftSkill.objects.filter(user=request.user)
-    return render(request, 'cv_manager/softskill_list.html', {'softskills': softskills})
+    # 🔹 Solo las soft skills del usuario logueado
+    queryset = UserSoftSkill.objects.filter(user=request.user)
+
+    # 🔹 Filtro por palabra clave en el nombre de la habilidad
+    search = request.GET.get('search', '')
+    if search:
+        queryset = queryset.filter(
+            Q(skill__name__icontains=search)
+        )
+
+    context = {
+        'softskills': queryset,
+        'search': search,
+    }
+    return render(request, 'cv_manager/softskill_list.html', context)
 
 # Edición y eliminación habilidades blandas
 @login_required
@@ -327,8 +410,22 @@ def add_hardskill(request):
 # Listado de habilidades fuertes (Hard Skills)
 @login_required
 def hardskill_list(request):
-    hardskills = UserHardSkill.objects.filter(user=request.user)
-    return render(request, 'cv_manager/hardskill_list.html', {'hardskills': hardskills})
+    # 🔹 Solo las habilidades fuertes del usuario
+    queryset = UserHardSkill.objects.filter(user=request.user)
+
+    # 🔹 Filtro por palabra clave en el nombre de la habilidad
+    search = request.GET.get('search', '')
+    if search:
+        queryset = queryset.filter(
+            Q(skill__name__icontains=search)
+        )
+
+    context = {
+        'hardskills': queryset,
+        'search': search,
+    }
+    return render(request, 'cv_manager/hardskill_list.html', context)
+
 
 # Edición y eliminación habilidades fuertes
 def edit_hardskill(request, pk):
@@ -376,8 +473,23 @@ def add_hobby(request):
 # Listado de hobbies
 @login_required
 def hobby_list(request):
-    hobbies = UserHobby.objects.filter(user=request.user)
-    return render(request, 'cv_manager/hobby_list.html', {'hobbies': hobbies})
+    # 🔹 Solo hobbies del usuario logueado
+    queryset = UserHobby.objects.filter(user=request.user)
+
+    # 🔹 Filtro por palabra clave en el nombre del hobby o descripción
+    search = request.GET.get('search', '')
+    if search:
+        queryset = queryset.filter(
+            Q(hobby__name__icontains=search) |
+            Q(description__icontains=search)
+        )
+
+    context = {
+        'hobbies': queryset,
+        'search': search,
+    }
+    return render(request, 'cv_manager/hobby_list.html', context)
+
     
 # Edición y eliminación hobbies
 @login_required
@@ -592,7 +704,11 @@ def cv_download_pdf(request, slug):
 def download_selected_cvs(request):
     if request.method == 'POST':
         selected_ids = request.POST.getlist('selected_cvs')
-        cvs = CVProfile.objects.filter(id__in=selected_ids)
+        # 🔹 Filtrar solo los CVs que pertenecen al usuario logueado
+        cvs = CVProfile.objects.filter(id__in=selected_ids, user=request.user)
+
+        if not cvs.exists():
+            return HttpResponse("No se encontraron CVs propios para descargar.", status=403)
 
         # Ruta wkhtmltopdf en Windows
         path_wkhtmltopdf = r'C:\Archivos de programa\wkhtmltopdf\bin\wkhtmltopdf.exe'

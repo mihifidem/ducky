@@ -1,37 +1,60 @@
 {% extends 'base2.html' %}
 
-{% block title %}Mis idiomas{% endblock %}
+{% block title %}Mis Idiomas{% endblock %}
 
 {% block content %}
-<div class="container my-5" style="max-width: 700px;">
-  <div class="card shadow-sm p-4">
-    <h2 class="mb-4 text-center text-primary">🌐 Mis idiomas</h2>
+<div class="container my-5">
 
-    <div class="mb-3 text-end">
-      <a href="{% url 'language_add' %}" class="btn btn-primary">➕ Añadir idioma</a>
-    </div>
-
-    {% if languages %}
-      <ul class="list-group">
-        {% for user_language in languages %}
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div class="text-dark">
-              <strong>{{ user_language.language.name }}</strong> — Nivel: {{ user_language.get_level_display }}
-            </div>
-            <div class="d-flex">
-              <a href="{% url 'language_edit' pk=user_language.pk %}" class="btn btn-sm btn-outline-success me-2">✏️ Editar</a>
-
-              <form action="{% url 'language_delete' pk=user_language.pk %}" method="post" style="display:inline;">
-                {% csrf_token %}
-                <a href="{% url 'language_delete' pk=user_language.pk %}" class="btn btn-sm btn-outline-danger">🗑️ Eliminar</a>
-              </form>
-            </div>
-          </li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p class="text-center mt-3">No has añadido idiomas todavía.</p>
-    {% endif %}
+  <div class="d-flex justify-content-between mb-3">
+    <h2 class="text-primary">Mis Idiomas</h2>
+    <a href="{% url 'language_add' %}" class="btn btn-success">➕ Añadir Idioma</a>
   </div>
+
+  <!-- 🔹 Filtros -->
+  <form method="get" class="row g-2 mb-4">
+    <div class="col-md-6">
+      <input type="text" name="search" class="form-control" placeholder="Buscar idioma"
+             value="{{ search }}">
+    </div>
+    <div class="col-md-4">
+      <select name="level" class="form-select">
+        <option value="">Todos los niveles</option>
+        {% for code, label in languages.model.LEVEL_CHOICES %}
+          <option value="{{ code }}" {% if level == code %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2 d-flex gap-2">
+      <button type="submit" class="btn btn-primary flex-fill">Filtrar</button>
+      <a href="{% url 'language_list' %}" class="btn btn-outline-secondary flex-fill">Limpiar</a>
+    </div>
+  </form>
+
+  <!-- 🔹 Lista de idiomas -->
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Idioma</th>
+        <th>Nivel</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for lang in languages %}
+      <tr>
+        <td>{{ lang.language.name }}</td>
+        <td>{{ lang.get_level_display }}</td>
+        <td>
+          <a href="{% url 'language_edit' lang.pk %}" class="btn btn-sm btn-warning">✏️ Editar</a>
+          <a href="{% url 'language_delete' lang.pk %}" class="btn btn-sm btn-danger">🗑 Eliminar</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="3" class="text-center">No se encontraron idiomas.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 {% endblock %}

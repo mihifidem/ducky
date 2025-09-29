@@ -1,39 +1,52 @@
 {% extends 'base2.html' %}
 
-{% block title %}Mis hobbies{% endblock %}
+{% block title %}Mis Pasatiempos{% endblock %}
 
 {% block content %}
-<div class="container my-5" style="max-width: 700px;">
-    <div class="card shadow-sm p-4">
-        <h2 class="mb-4 text-center text-primary">🎯 Mis hobbies</h2>
+<div class="container my-5">
 
-        <div class="mb-3 text-end">
-            <a href="{% url 'hobby_add' %}" class="btn btn-primary">➕ Añadir hobby</a>
-        </div>
+  <div class="d-flex justify-content-between mb-3">
+    <h2 class="text-primary">Mis Pasatiempos</h2>
+    <a href="{% url 'hobby_add' %}" class="btn btn-success">➕ Añadir Hobby</a>
+  </div>
 
-        {% if hobbies %}
-        <ul class="list-group">
-            {% for hobby in hobbies %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                <div>
-                    <strong>{{ hobby.hobby.name }}</strong>
-                    {% if hobby.description %}
-                    <br><small>{{ hobby.description }}</small>
-                    {% endif %}
-                </div>
-                <div>
-                    <a href="{% url 'hobby_edit' pk=hobby.pk %}" class="btn btn-sm btn-outline-success me-2">✏️
-                        Editar</a>
-                    <a href="{% url 'hobby_delete' pk=hobby.pk %}" class="btn btn-sm btn-outline-danger">🗑️
-                        Eliminar</a>
-                </div>
-            </li>
-
-            {% endfor %}
-        </ul>
-        {% else %}
-        <p class="text-center mt-3">No has añadido hobbies todavía.</p>
-        {% endif %}
+  <!-- 🔹 Filtro de búsqueda -->
+  <form method="get" class="row g-2 mb-4">
+    <div class="col-md-8">
+      <input type="text" name="search" class="form-control" placeholder="Buscar hobby o descripción"
+             value="{{ search }}">
     </div>
+    <div class="col-md-4 d-flex gap-2">
+      <button type="submit" class="btn btn-primary flex-fill">Filtrar</button>
+      <a href="{% url 'hobby_list' %}" class="btn btn-outline-secondary flex-fill">Limpiar</a>
+    </div>
+  </form>
+
+  <!-- 🔹 Lista de hobbies -->
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Hobby</th>
+        <th>Descripción</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for hobby in hobbies %}
+      <tr>
+        <td>{{ hobby.hobby.name }}</td>
+        <td>{{ hobby.description|default:"-" }}</td>
+        <td>
+          <a href="{% url 'hobby_edit' hobby.pk %}" class="btn btn-sm btn-warning">✏️ Editar</a>
+          <a href="{% url 'hobby_delete' hobby.pk %}" class="btn btn-sm btn-danger">🗑 Eliminar</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="3" class="text-center">No se encontraron hobbies.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 {% endblock %}
