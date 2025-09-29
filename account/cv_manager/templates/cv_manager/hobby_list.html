@@ -8,7 +8,7 @@
         <h2 class="mb-4 text-center text-primary">🎯 Mis hobbies</h2>
 
         <div class="mb-3 text-end">
-            <a href="{% url 'add_hobby' %}" class="btn btn-primary">➕ Añadir hobby</a>
+            <a href="{% url 'hobby_add' %}" class="btn btn-primary">➕ Añadir hobby</a>
         </div>
 
         {% if hobbies %}
@@ -22,9 +22,9 @@
                     {% endif %}
                 </div>
                 <div>
-                    <a href="{% url 'edit_hobby' pk=hobby.pk %}" class="btn btn-sm btn-outline-success me-2">✏️
+                    <a href="{% url 'hobby_edit' pk=hobby.pk %}" class="btn btn-sm btn-outline-success me-2">✏️
                         Editar</a>
-                    <a href="{% url 'delete_hobby' pk=hobby.pk %}" class="btn btn-sm btn-outline-danger">🗑️
+                    <a href="{% url 'hobby_delete' pk=hobby.pk %}" class="btn btn-sm btn-outline-danger">🗑️
                         Eliminar</a>
                 </div>
             </li>

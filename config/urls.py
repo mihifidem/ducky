@@ -36,6 +36,10 @@ urlpatterns = [
 
 
 ]
+
+# Handlers de errores personalizados
+handler404 = "account.cv_manager.views.cv_not_found_handler"
+
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -1,10 +1,26 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.text import slugify
+from django.core.exceptions import ValidationError
+from django.utils import timezone
+
+# clase base de timestamp
+
+class TimeStampedModel(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True) # cuando se crea
+    updated_at = models.DateTimeField(auto_now=True) # cuando se actualiza
+
+    class Meta:
+        abstract = True
+
 
 # 🔹 1. Perfil extendido para el usuario (relación uno a uno)
-class UserProfile(models.Model):
+class UserProfile(TimeStampedModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    full_name = models.CharField(max_length=150, blank=True)
+    gender = models.CharField(max_length=1, choices=[('M', 'Masculino'), ('F', 'Femenino'), ('O', 'Otro')], blank=True)
+    headline = models.CharField(max_length=255, blank=True)
+    location = models.CharField(max_length=100, blank=True)
     role = models.CharField(
         max_length=100,
         choices=[
@@ -27,3 +43,13 @@ class UserProfile(models.Model):
         return self.user.username
 
 
+ # Validaciones
+    # ----------------------------
+    def clean(self):
+        # Validar que la fecha de nacimiento no sea futura
+        if self.birthdate and self.birthdate > timezone.now().date():
+            raise ValidationError({"birthdate": "La fecha de nacimiento no puede ser futura."})
+
+        # Validar longitud mínima de teléfono (opcional)
+        if self.phone and len(self.phone) < 7:
+            raise ValidationError({"phone": "El número de teléfono es demasiado corto."})

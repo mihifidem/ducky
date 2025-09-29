@@ -8,7 +8,7 @@
     <h2 class="mb-4 text-center text-primary">🤝 Mis habilidades blandas</h2>
 
     <div class="mb-3 text-end">
-      <a href="{% url 'add_softskill' %}" class="btn btn-primary">➕ Añadir habilidad</a>
+      <a href="{% url 'softskill_add' %}" class="btn btn-primary">➕ Añadir habilidad</a>
     </div>
 
     {% if softskills %}
@@ -22,8 +22,8 @@
               {% endif %}
             </div>
             <div>
-              <a href="{% url 'edit_softskill' pk=softskill.pk %}" class="btn btn-sm btn-outline-success me-2">✏️ Editar</a>
-              <a href="{% url 'delete_softskill' pk=softskill.pk %}" class="btn btn-sm btn-outline-danger">🗑️ Eliminar</a>
+              <a href="{% url 'softskill_edit' pk=softskill.pk %}" class="btn btn-sm btn-outline-success me-2">✏️ Editar</a>
+              <a href="{% url 'softskill_delete' pk=softskill.pk %}" class="btn btn-sm btn-outline-danger">🗑️ Eliminar</a>
             </div>
           </li>
         {% endfor %}

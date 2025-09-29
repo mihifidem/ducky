@@ -1,6 +1,6 @@
 # Django core imports
 from django.contrib.auth.views import LoginView, LogoutView
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
@@ -14,14 +14,11 @@ from django.conf import settings
 from urllib.parse import urlparse, parse_qs
 
 # External libraries
-import pdfkit
-import os
-import zipfile
 from datetime import datetime
 
 # Local app: forms
 from .forms import (
-    CustomUserCreationForm, CustomAuthenticationForm, UserForm,
+    CustomUserCreationForm, CustomAuthenticationForm, UserProfileForm, UserForm
  
 )
 
@@ -31,8 +28,9 @@ from .models import (
     
 )
 
-
-#------------------------------------------------------------------------------------
+# ----------------------
+# Registro y Autenticación
+# ------------------------
 
 # Vista para registro básico de usuario usando UserCreationForm (default)
 def signup_view(request):
@@ -60,13 +58,63 @@ class UserLoginView(LoginView):
 class UserLogoutView(LogoutView):
     next_page = reverse_lazy('login')
 
+# ------------------------
+# Perfil de Usuario
+# ------------------------
+
 # Vista para mostrar perfil del usuario, solo accesible con login
 @login_required
 def profile_view(request):
     user = request.user
-    # Obtiene perfil del usuario o 404 si no existe
     perfil = get_object_or_404(UserProfile, user=user)
-    # Obtiene CVs asociados al usuario
-    cvs = CVProfile.objects.filter(user=user)
-    return render(request, 'account/profile.html', {'perfil': perfil, 'cvs': cvs})
+    return render(request, 'account/profile.html', {'perfil': perfil})
 
+
+@login_required
+def edit_profile(request):
+    user = request.user
+    profile = user.userprofile
+    if request.method == 'POST':
+        user_form = UserForm(request.POST, instance=user)
+        profile_form = UserProfileForm(request.POST, request.FILES, instance=profile)
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            return redirect('profile')
+    else:
+        user_form = UserForm(instance=user)
+        profile_form = UserProfileForm(instance=profile)
+    return render(request, 'account/edit_profile.html', {
+        'user_form': user_form,
+        'profile_form': profile_form
+    })
+
+@login_required
+def delete_userprofile(request):
+    profile = get_object_or_404(UserProfile, user=request.user)
+    if request.method == 'POST':
+        profile.delete()
+        messages.success(request, "Tu perfil ha sido eliminado correctamente.")
+        return redirect('profile')
+    return render(request, 'account/delete_userprofile_confirm.html', {'profile': profile})
+
+@login_required
+def create_profile_view(request):
+    user = request.user
+    try:
+        if user.userprofile:
+            return redirect('profile')
+    except Exception:
+        pass
+
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, request.FILES)
+        if form.is_valid():
+            profile = form.save(commit=False)
+            profile.user = user
+            profile.save()
+            return redirect('profile')
+    else:
+        form = UserProfileForm()
+
+    return render(request, 'account/create_profile.html', {'form': form})

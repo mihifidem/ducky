@@ -9,7 +9,7 @@
     <h2 class="mb-4 text-center text-primary">💼 Mis experiencias laborales</h2>
 
     <div class="mb-3 text-end">
-      <a href="{% url 'add_experience' %}" class="btn btn-primary">➕ Añadir experiencia</a>
+      <a href="{% url 'experience_add' %}" class="btn btn-primary">➕ Añadir experiencia</a>
     </div>
 
     {% if experiences %}
@@ -21,8 +21,8 @@
               <small>{{ experience.start_date }} - {{ experience.end_date|default:"Actualidad" }}</small>
             </div>
             <div>
-              <a href="{% url 'edit_experience' pk=experience.pk %}" class="btn btn-sm btn-outline-success me-2">✏️ Editar</a>
-              <a href="{% url 'delete_experience' pk=experience.pk %}" class="btn btn-sm btn-outline-danger">🗑️ Eliminar</a>
+              <a href="{% url 'experience_edit' pk=experience.pk %}" class="btn btn-sm btn-outline-success me-2">✏️ Editar</a>
+              <a href="{% url 'experience_delete' pk=experience.pk %}" class="btn btn-sm btn-outline-danger">🗑️ Eliminar</a>
             </div>
           </li>
         {% endfor %}

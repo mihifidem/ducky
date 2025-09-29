@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     "jobs",
     'management_test',
     'account.cv_manager',
-
+    
 
 ]
 

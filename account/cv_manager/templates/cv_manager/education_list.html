@@ -8,7 +8,7 @@
     <h2 class="mb-4 text-center text-primary">🎓 Mi formación académica</h2>
 
     <div class="mb-3 text-end">
-      <a href="{% url 'add_education' %}" class="btn btn-primary">➕ Añadir formación</a>
+      <a href="{% url 'education_add' %}" class="btn btn-primary">➕ Añadir formación</a>
     </div>
 
     {% if educations %}
@@ -20,8 +20,8 @@
               <small>{{ education.start_date }} - {{ education.end_date|default:"Actualidad" }}</small>
             </div>
             <div>
-              <a href="{% url 'edit_education' pk=education.pk %}" class="btn btn-sm btn-outline-success me-2">✏️ Editar</a>
-              <a href="{% url 'delete_education' pk=education.pk %}" class="btn btn-sm btn-outline-danger">🗑️ Eliminar</a>
+              <a href="{% url 'education_edit' pk=education.pk %}" class="btn btn-sm btn-outline-success me-2">✏️ Editar</a>
+              <a href="{% url 'education_delete' pk=education.pk %}" class="btn btn-sm btn-outline-danger">🗑️ Eliminar</a>
             </div>
           </li>
         {% endfor %}

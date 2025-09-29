@@ -1,7 +1,5 @@
 # Django core imports
-from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import reverse_lazy, reverse
-from django.views.generic.edit import CreateView
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
@@ -9,9 +7,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.template.loader import get_template, render_to_string
 from django.utils.text import slugify
-from django.contrib.auth.forms import UserCreationForm
 from django.conf import settings
 from urllib.parse import urlparse, parse_qs
+from .models import CVProfile
 
 # External libraries
 import pdfkit
@@ -19,100 +17,31 @@ import os
 import zipfile
 from datetime import datetime
 
-# Local app: forms
+# Formularios
 from .forms import (
-    UserJobExperienceForm, CVProfileForm, UserProfileForm, 
+    UserJobExperienceForm, CVProfileForm, 
     UserEducationForm, UserLanguageForm, UserSoftSkillForm, 
     UserHardSkillForm, UserHobbyForm,
 )
+
 from account.forms import UserForm
 
-# Local app: models
+# Modelos
 from .models import (
     UserJobExperience, UserEducation, UserLanguage,
     UserSoftSkill, UserHobby, Language, CVProfile, Hobby,
     UserHardSkill
 )
+
 from account.models import UserProfile
 
-# Funciones para añadir experiencias, educación, idiomas, habilidades blandas y hobbies.
+# Función para manejar el error 404
+def cv_not_found_handler(request, exception):
+    return render(request, "cv_manager/404.html", status=404)
 
-@login_required
-def add_experience(request):
-    if request.method == 'POST':
-        form = UserJobExperienceForm(request.POST)
-        if form.is_valid():
-            experience = form.save(commit=False)
-            experience.user = request.user
-            experience.save()
-            return redirect('experience_list')  
-    else:
-        form = UserJobExperienceForm()
-    return render(request, 'cv_manager/experience_form.html', {'form': form})
-
-
-@login_required
-def add_education(request):
-    if request.method == 'POST':
-        form = UserEducationForm(request.POST)
-        if form.is_valid():
-            education = form.save(commit=False)
-            education.user = request.user
-            education.save()
-            return redirect('education_list')  # Igual aquí
-    else:
-        form = UserEducationForm()
-    return render(request, 'cv_manager/education_form.html', {'form': form})
-
-
-@login_required
-def add_language(request):
-    if request.method == 'POST':
-        form = UserLanguageForm(request.POST)
-        if form.is_valid():
-            language = form.save(commit=False)
-            language.user = request.user
-            language.save()
-            return redirect('language_list')  # Igual aquí
-    else:
-        form = UserLanguageForm()
-    return render(request, 'cv_manager/language_form.html', {'form': form})
-
-
-@login_required
-def add_softskill(request):
-    if request.method == 'POST':
-        form = UserSoftSkillForm(request.POST)
-        if form.is_valid():
-            form.save(user=request.user)
-            return redirect('softskill_list')  
-    else:
-        form = UserSoftSkillForm()
-
-    return render(request, 'cv_manager/softskill_form.html', {'form': form})
-
-@login_required
-def add_hardskill(request):
-    if request.method == 'POST':
-        form = UserHardSkillForm(request.POST)
-        if form.is_valid():
-            form.save(user=request.user)
-            return redirect('hardskill_list') 
-    else:
-        form = UserHardSkillForm()
-    return render(request, 'cv_manager/hardskill_form.html', {'form': form})
-    
-
-@login_required
-def add_hobby(request):
-    if request.method == 'POST':
-        form = UserHobbyForm(request.POST)
-        if form.is_valid():
-            form.save(user=request.user)
-            return redirect('hobby_list') 
-    else:
-        form = UserHobbyForm()
-    return render(request, 'cv_manager/hobby_form.html', {'form': form})
+# ------------------------
+# Panel y Dashboard
+# ------------------------
 
 # Vista para mostrar el panel principal de CVs y datos relacionados
 @login_required
@@ -123,6 +52,7 @@ def cv_panel_view(request):
     except ObjectDoesNotExist:
         return redirect('profile_create')
 
+    # Obtener CVs, experiencias, educaciones, idiomas, habilidades blandas y hobbies
     experiences = UserJobExperience.objects.filter(user=user)
     educations = UserEducation.objects.filter(user=user)
     languages = UserLanguage.objects.filter(user=user)
@@ -130,8 +60,15 @@ def cv_panel_view(request):
     hardskills = UserHardSkill.objects.filter(user=user)
     hobbies = UserHobby.objects.filter(user=user)
     
-    # Filtrar solo los CVs del usuario actual
-    cvs = CVProfile.objects.filter(user=user)
+    # Optimizar consultas de CVProfile con relaciones ManyToMany y evitar muchas consultas
+    cvs = CVProfile.objects.filter(user=user).prefetch_related(
+        'selected_experiences',
+        'selected_educations',
+        'selected_languages',
+        'selected_softskills',
+        'selected_hardskills',
+        'selected_hobbies'
+    )
 
     context = {
         'profile': profile,
@@ -145,6 +82,7 @@ def cv_panel_view(request):
     }
 
     return render(request, 'cv_manager/cv_panel.html', context)
+
 
 # Vista para el dashboard, con datos similares al panel pero quizás menos detallado
 @login_required
@@ -163,30 +101,25 @@ def dashboard_view(request):
     }
     return render(request, 'cv_manager/dashboard.html', context)
 
+# ------------------------
+# CRUD Experiencias
+# ------------------------
 
 
-# Vista para editar perfil usuario, incluye edición de User y UserProfile
+# Funciones para añadir experiencias, educación, idiomas, habilidades blandas y hobbies.
 @login_required
-def edit_profile(request):
-    user = request.user
-    profile = user.userprofile
-
+def add_experience(request):
     if request.method == 'POST':
-        user_form = UserForm(request.POST, instance=user)
-        profile_form = UserProfileForm(request.POST, request.FILES, instance=profile)
-
-        if user_form.is_valid() and profile_form.is_valid():
-            user_form.save()
-            profile_form.save()
-            return redirect('cv_panel')
+        form = UserJobExperienceForm(request.POST)
+        if form.is_valid():
+            experience = form.save(commit=False)
+            experience.user = request.user
+            experience.save()
+            return redirect('experience_list')  
     else:
-        user_form = UserForm(instance=user)
-        profile_form = UserProfileForm(instance=profile)
+        form = UserJobExperienceForm()
+    return render(request, 'cv_manager/experience_form.html', {'form': form})
 
-    return render(request, 'cv_manager/edit_profile.html', {
-        'user_form': user_form,
-        'profile_form': profile_form
-    })
 
 # Enlace a Experience_list
 @login_required
@@ -218,41 +151,25 @@ def delete_experience(request, pk):
     return render(request, 'cv_manager/experience_confirm_delete.html', {'experience': experience})
 
 
-# Vista para eliminar el perfil del usuario (solo perfil, no el usuario)
+# ------------------------
+# CRUD Educación
+# ------------------------
+
+
+# Funciones para añadir educación.
 @login_required
-def delete_userprofile(request):
-    profile = get_object_or_404(UserProfile, user=request.user)
-    
+def add_education(request):
     if request.method == 'POST':
-        profile.delete()
-        messages.success(request, "Tu perfil ha sido eliminado correctamente.")
-        return redirect('cv_panel')
-
-    return render(request, 'account/delete_userprofile_confirm.html', {'profile': profile})
-
-
-# Crear nuevo perfil (si no tiene)
-@login_required
-def create_profile_view(request):
-    user = request.user
-    try:
-        # Si ya tiene perfil, redirigir al panel
-        if user.userprofile:
-            return redirect('cv_panel')
-    except Exception:
-        pass
-
-    if request.method == 'POST':
-        form = UserProfileForm(request.POST, request.FILES)
+        form = UserEducationForm(request.POST)
         if form.is_valid():
-            profile = form.save(commit=False)
-            profile.user = user
-            profile.save()
-            return redirect('cv_panel')
+            education = form.save(commit=False)
+            education.user = request.user
+            education.save()
+            return redirect('education_list')  # Igual aquí
     else:
-        form = CVProfileForm(user=request.user)
+        form = UserEducationForm()
+    return render(request, 'cv_manager/education_form.html', {'form': form})
 
-    return render(request, 'account/create_profile.html', {'form': form})
 
 # Enlace a Education_list
 @login_required
@@ -280,6 +197,10 @@ def delete_education(request, pk):
         education.delete()
         return redirect('cv_panel')
     return render(request, 'cv_manager/education_confirm_delete.html', {'education': education})
+
+# ------------------------
+# CRUD Idiomas
+# ------------------------
 
 
 # Manejo idiomas: añadir, editar, eliminar, con control para evitar duplicados y actualizar nivel
@@ -335,6 +256,24 @@ def delete_language(request, pk):
     # Para GET, mostrar página de confirmación
     return render(request, 'cv_manager/language_confirm_delete.html', {'language': language})
 
+# ------------------------
+# CRUD Soft Skills
+# ------------------------
+
+# Funciones para añadir soft skills.
+
+@login_required
+def add_softskill(request):
+    if request.method == 'POST':
+        form = UserSoftSkillForm(request.POST)
+        if form.is_valid():
+            form.save(user=request.user)
+            return redirect('softskill_list')  
+    else:
+        form = UserSoftSkillForm()
+
+    return render(request, 'cv_manager/softskill_form.html', {'form': form})
+
 # Listado de habilidades blandas (Soft Skills)
 @login_required
 def softskill_list(request):
@@ -368,6 +307,23 @@ def delete_softskill(request, pk):
         return redirect('softskill_list')
     return render(request, 'cv_manager/softskill_confirm_delete.html', {'softskill': softskill})
 
+# ------------------------
+# CRUD Hard Skills
+# ------------------------
+
+# Funciones para añadir hardskills.
+@login_required
+def add_hardskill(request):
+    if request.method == 'POST':
+        form = UserHardSkillForm(request.POST)
+        if form.is_valid():
+            form.save(user=request.user)
+            return redirect('hardskill_list') 
+    else:
+        form = UserHardSkillForm()
+    return render(request, 'cv_manager/hardskill_form.html', {'form': form})
+    
+
 # Listado de habilidades fuertes (Hard Skills)
 @login_required
 def hardskill_list(request):
@@ -398,6 +354,24 @@ def delete_hardskill(request, pk):
         hardskill.delete()
         return redirect('hardskill_list')
     return render(request, 'cv_manager/hardskill_confirm_delete.html', {'hardskill': hardskill})
+
+# ------------------------
+# CRUD Hobbies
+# ------------------------
+
+# Funciones para añadir hobbies.
+
+@login_required
+def add_hobby(request):
+    if request.method == 'POST':
+        form = UserHobbyForm(request.POST)
+        if form.is_valid():
+            form.save(user=request.user)
+            return redirect('hobby_list') 
+    else:
+        form = UserHobbyForm()
+    return render(request, 'cv_manager/hobby_form.html', {'form': form})
+
 
 # Listado de hobbies
 @login_required
@@ -437,6 +411,10 @@ def delete_hobby(request, pk):
         return redirect('hobby_list')
     return render(request, 'cv_manager/hobby_confirm_delete.html', {'hobby': hobby_relation})
 
+
+# ------------------------
+# CRUD CVProfile
+# ------------------------
 
 # CV Management views: crear, listar, editar, eliminar, clonar
 
@@ -488,10 +466,7 @@ def cv_delete(request, pk):
         return redirect('cv_list')
     return render(request, 'cv_manager/cv_confirm_delete.html', {'cv': cv})
 
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, redirect
-from django.utils.text import slugify
-from .models import CVProfile
+
 
 @login_required
 def cv_clone(request, pk):
@@ -523,6 +498,10 @@ def cv_clone(request, pk):
 
     messages.success(request, f'CV clonado correctamente como “{new_title}”.')
     return redirect(f"{reverse('cv_list')}?clonado={clone.pk}&origen={cv.pk}")
+
+# ------------------------
+# Previsualización y vista pública
+# ------------------------
 
 
 # Vista para previsualizar el CV en formato HTML según el skin seleccionado
@@ -561,6 +540,10 @@ def cv_list_view(request):
     cvs = CVProfile.objects.filter(user=request.user)
     return render(request, 'cv_manager/cv_list.html', {'cvs': cvs})
 
+
+# ------------------------
+# Descargas PDF / ZIP
+# ------------------------
 
 
 # Vista para descargar el CV en PDF desde una web publica con pdfkit
@@ -658,6 +641,9 @@ def download_selected_cvs(request):
 
     return HttpResponse("Método no permitido", status=405)
 
+# ------------------------
+# ERROR 404 Y URL DESCONFIGURADA
+# ------------------------
 
 # vista error 404
 
