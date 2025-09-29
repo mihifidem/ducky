@@ -121,17 +121,7 @@ class UserHobbyForm(forms.Form):
         user_hobby, created = UserHobby.objects.get_or_create(user=user, hobby=hobby)
         return user_hobby
 
-# Formulario para editar perfil de usuario, con widgets para mejorar la UI
-class UserProfileForm(forms.ModelForm):
-    class Meta:
-        model = UserProfile
-        fields = ['avatar', 'phone', 'birthdate', 'address', 'bio']
-        widgets = {
-            'phone': forms.TextInput(attrs={'class': 'form-control'}),
-            'birthdate': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'address': forms.TextInput(attrs={'class': 'form-control'}),
-            'bio': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
-        }
+
 
 
 # Formulario para crear o editar perfiles de CV

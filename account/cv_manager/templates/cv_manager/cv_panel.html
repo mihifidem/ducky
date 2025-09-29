@@ -42,11 +42,7 @@
           <strong>Dirección:</strong> {{ profile.address|default:"No indicada" }}
         </p>
         <p><strong>Bio:</strong> {{ profile.bio|default:"No hay biografía." }}</p>
-
-        {% if not profile %}
-        <a href="{% url 'create_profile' %}" class="btn btn-sm btn-outline-success mt-2">➕ Crear Perfil</a>
-        {% endif %}
-
+             
         <a href="{% url 'edit_profile' %}" class="btn btn-sm btn-outline-primary mt-2">Editar Perfil</a>
         <a href="{% url 'delete_userprofile_confirm' %}" class="btn btn-sm btn-outline-danger mt-2"
           onclick="return true;">

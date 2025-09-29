@@ -14,7 +14,7 @@ from django.conf import settings
 from urllib.parse import urlparse, parse_qs
 
 from account.cv_manager.models import CVProfile
-from account.cv_manager.forms import UserProfileForm
+from .forms import UserProfileForm
 # External libraries
 import pdfkit
 import os
@@ -120,7 +120,7 @@ def create_profile_view(request):
     user = request.user
     try:
         if user.userprofile:
-            return redirect('cv_panel')
+            return redirect('create_profile')
     except Exception:
         pass
 

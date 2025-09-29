@@ -21,7 +21,7 @@ from datetime import datetime
 
 # Formularios
 from .forms import (
-    UserJobExperienceForm, CVProfileForm, UserProfileForm, 
+    UserJobExperienceForm, CVProfileForm,  
     UserEducationForm, UserLanguageForm, UserSoftSkillForm, 
     UserHardSkillForm, UserHobbyForm,
 )
