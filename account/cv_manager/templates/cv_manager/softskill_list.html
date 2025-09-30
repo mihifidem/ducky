@@ -1,36 +1,36 @@
 {% extends 'base2.html' %}
 
-{% block title %}Mis Habilidades Blandas{% endblock %}
+{% block title %}Mis habilidades blandas{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-  <h2 class="mb-4 text-primary">Mis Habilidades Blandas</h2>
+<div class="container my-5" style="max-width: 700px;">
+  <div class="card shadow-sm p-4">
+    <h2 class="mb-4 text-center text-primary">🤝 Mis habilidades blandas</h2>
 
-  <!-- Formulario de búsqueda -->
-  <form method="get" class="mb-4">
-    <div class="input-group">
-      <input type="text" name="search" class="form-control" placeholder="Buscar habilidad..."
-             value="{{ search }}">
-      <button type="submit" class="btn btn-primary">Buscar</button>
-      <a href="{% url 'softskill_list' %}" class="btn btn-outline-secondary">Limpiar</a>
+    <div class="mb-3 text-end">
+      <a href="{% url 'softskill_add' %}" class="btn btn-primary">➕ Añadir habilidad</a>
     </div>
-  </form>
 
-  {% if softskills %}
-    <ul class="list-group">
-      {% for softskill in softskills %}
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-          {{ softskill.skill.name }}
-          <a href="{% url 'softskill_edit' softskill.pk %}" class="btn btn-sm btn-outline-primary">Editar</a>
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p class="text-muted">No se encontraron habilidades blandas.</p>
-  {% endif %}
-
-  <div class="mt-4">
-    <a href="{% url 'softskill_add' %}" class="btn btn-success">➕ Añadir Habilidad Blana</a>
+    {% if softskills %}
+      <ul class="list-group">
+        {% for softskill in softskills %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+              <strong>{{ softskill.skill.name }}</strong>
+              {% if softskill.description %}
+                <br><small>{{ softskill.description }}</small>
+              {% endif %}
+            </div>
+            <div>
+              <a href="{% url 'softskill_edit' pk=softskill.pk %}" class="btn btn-sm btn-outline-success me-2">✏️ Editar</a>
+              <a href="{% url 'softskill_delete' pk=softskill.pk %}" class="btn btn-sm btn-outline-danger">🗑️ Eliminar</a>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-center mt-3">No has añadido habilidades blandas todavía.</p>
+    {% endif %}
   </div>
 </div>
 {% endblock %}

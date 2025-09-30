@@ -236,7 +236,7 @@ def edit_education(request, pk):
         form = UserEducationForm(request.POST, instance=education)
         if form.is_valid():
             form.save()
-            return redirect('cv_panel')
+            return redirect('education_list')
     else:
         form = UserEducationForm(instance=education)
     return render(request, 'cv_manager/education_form.html', {'form': form})
