@@ -3,11 +3,6 @@
 # copiar el script en la shell y ejecutar
 # salir de la shell con exit
 # apareceran en la tabla languages los idiomas.
-# abrir terminal y ejecutar python manage.py shell   python manage.py shell
-# copiar el script en la shell y ejecutar
-# salir de la shell con exit
-# apareceran en la tabla languages los idiomas.
-
 
 
 from account.cv_manager.models import Language
