@@ -1,6 +1,6 @@
 # Django core imports
 from django.contrib.auth.views import LoginView, LogoutView
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
@@ -12,18 +12,14 @@ from django.utils.text import slugify
 from django.contrib.auth.forms import UserCreationForm
 from django.conf import settings
 from urllib.parse import urlparse, parse_qs
-
 from account.cv_manager.models import CVProfile
-from .forms import UserProfileForm
+
 # External libraries
-import pdfkit
-import os
-import zipfile
 from datetime import datetime
 
 # Local app: forms
 from .forms import (
-    CustomUserCreationForm, CustomAuthenticationForm, UserForm,
+    CustomUserCreationForm, CustomAuthenticationForm, UserProfileForm, UserForm
  
 )
 
@@ -33,13 +29,10 @@ from .models import (
     
 )
 
+# ----------------------
+# Registro y Autenticación
+# ------------------------
 
-#------------------------------------------------------------------------------------
-# Función para manejar el error 404
-def cv_not_found_handler(request, exception):
-    return render(request, "cv_manager/404.html", status=404)
-
-    
 # Vista para registro básico de usuario usando UserCreationForm (default)
 def signup_view(request):
     if request.method == 'POST':
@@ -66,16 +59,11 @@ class UserLoginView(LoginView):
 class UserLogoutView(LogoutView):
     next_page = reverse_lazy('login')
 
-# Vista para mostrar perfil del usuario, solo accesible con login
-# @login_required
-# def profile_view(request):
-#     user = request.user
-#     # Obtiene perfil del usuario o 404 si no existe
-#     perfil = get_object_or_404(UserProfile, user=user)
-#     # Obtiene CVs asociados al usuario
-#     cvs = CVProfile.objects.filter(user=user)
-#     return render(request, 'account/profile.html', {'perfil': perfil, 'cvs': cvs})
+# ------------------------
+# Perfil de Usuario
+# ------------------------
 
+# Vista para mostrar perfil del usuario, solo accesible con login
 @login_required
 def profile_view(request):
     user = request.user
@@ -112,7 +100,7 @@ def delete_userprofile(request):
     if request.method == 'POST':
         profile.delete()
         messages.success(request, "Tu perfil ha sido eliminado correctamente.")
-        return redirect('create_profile')
+        return redirect('profile_create')
     return render(request, 'account/delete_userprofile_confirm.html', {'profile': profile})
 
 @login_required
@@ -120,7 +108,7 @@ def create_profile_view(request):
     user = request.user
     try:
         if user.userprofile:
-            return redirect('create_profile')
+            return redirect('profile_create')
     except Exception:
         pass
 

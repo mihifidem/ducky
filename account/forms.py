@@ -1,21 +1,9 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-
-from django.core.exceptions import ValidationError
 from .models import UserProfile
+from django.core.exceptions import ValidationError
 
-# Formulario para editar perfil de usuario, con widgets para mejorar la UI
-class UserProfileForm(forms.ModelForm):
-    class Meta:
-        model = UserProfile
-        fields = ['avatar', 'phone', 'birthdate', 'address', 'bio']
-        widgets = {
-            'phone': forms.TextInput(attrs={'class': 'form-control'}),
-            'birthdate': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'address': forms.TextInput(attrs={'class': 'form-control'}),
-            'bio': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
-        }
 
 # Formulario para editar campos básicos de User
 class UserForm(forms.ModelForm):
@@ -26,6 +14,19 @@ class UserForm(forms.ModelForm):
             'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Primer apellido'}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Correo electrónico'}),
+        }
+
+
+    # Formulario para editar perfil de usuario, con widgets para mejorar la UI
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['avatar', 'phone', 'birthdate', 'address', 'bio']
+        widgets = {
+            'phone': forms.TextInput(attrs={'class': 'form-control'}),
+            'birthdate': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'address': forms.TextInput(attrs={'class': 'form-control'}),
+            'bio': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
 
 # Formulario personalizado para registro de usuario con email obligatorio

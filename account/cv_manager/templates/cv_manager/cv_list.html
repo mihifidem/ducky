@@ -68,7 +68,7 @@
                 <div class="card mt-5 bg-light border-radius p-2 shadow-lg">
                     <div class="card-body">
                         <h2 class="card-title mb-4">📥 Descargar CVs seleccionados</h2>
-                        <form method="post" action="{% url 'download_selected_cvs' %}">
+                        <form method="post" action="{% url 'cv_download_selected' %}">
                             {% csrf_token %}
                             <ul class="list-group mb-3">
                                 {% for cv in cvs %}

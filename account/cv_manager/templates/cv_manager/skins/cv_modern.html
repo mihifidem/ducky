@@ -10,7 +10,7 @@
   {% endif %}
 
   <div class="d-flex justify-content-between align-items-center my-3">
-    <a href="{% url 'download_cv_pdf' slug=cv.slug %}" class="btn btn-success">📄 Descargar PDF</a>
+    <a href="{% url 'cv_download' slug=cv.slug %}" class="btn btn-success">📄 Descargar PDF</a>
     <a href="{% url 'cv_list' %}" class="btn btn-danger">❌ Cancelar</a>
   </div>
 

@@ -7,12 +7,14 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 
 
-
 # librerias necesarias para el qr
-# from django.core.files.base import ContentFile
+
 # import qrcode
+
 # from io import BytesIO
 
+
+# clase base de timestamp
 class TimeStampedModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True) # cuando se crea
     updated_at = models.DateTimeField(auto_now=True) # cuando se actualiza
@@ -23,7 +25,8 @@ class TimeStampedModel(models.Model):
 
 # 🔹 1. Experiencia laboral del usuario (relación muchos a uno)
 class UserJobExperience(TimeStampedModel):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    role = models.CharField(max_length=100)
     position = models.CharField(max_length=100)
     company = models.CharField(max_length=100)
     start_date = models.DateField()
@@ -51,7 +54,7 @@ class HardSkill(TimeStampedModel):
 
 
 class UserHardSkill(TimeStampedModel):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     skill = models.ForeignKey(HardSkill, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -66,7 +69,7 @@ class SoftSkill(TimeStampedModel):
 
 
 class UserSoftSkill(TimeStampedModel):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     skill = models.ForeignKey(SoftSkill, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -92,7 +95,7 @@ class UserLanguage(TimeStampedModel):
         ("N", "Native")
     ]
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     language = models.ForeignKey(Language, on_delete=models.CASCADE)
     level = models.CharField(max_length=2, choices=LEVEL_CHOICES, verbose_name="Nivel")
 
@@ -112,16 +115,19 @@ class Hobby(TimeStampedModel):
 
 
 class UserHobby(TimeStampedModel):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     hobby = models.ForeignKey(Hobby, on_delete=models.CASCADE)
     description = models.TextField(blank=True)
+    class Meta:
+        unique_together = ('user', 'hobby', 'description')
+
     def __str__(self):
         return f"{self.hobby.name}"
 
 
 # 🔹 6. Educación del usuario (1-N)
 class UserEducation(TimeStampedModel):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     institution = models.CharField(max_length=100)
     start_date = models.DateField()
@@ -141,23 +147,25 @@ class UserEducation(TimeStampedModel):
 
 # 🔹 Modelo para perfiles de CV (con personalización y selección de secciones)
 class CVProfile(TimeStampedModel):
-    primary_color = models.CharField(max_length=20, default="#000000")
-    font_family = models.CharField(max_length=50, default="sans-serif")
-    header_image = models.ImageField(upload_to='cv_headers/', blank=True, null=True)
-
+    
     SKIN_CHOICES = [
         ('default', 'Clásico'),
         ('modern', 'Moderno'),
         ('minimal', 'Minimalista'),
     ]
 
+    
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='cv_profiles')
     title = models.CharField(max_length=100)
     slug = models.SlugField(unique=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     skin = models.CharField(max_length=50, choices=SKIN_CHOICES, default='default')
+    primary_color = models.CharField(max_length=20, default="#000000")
+    font_family = models.CharField(max_length=50, default="sans-serif")
+    header_image = models.ImageField(upload_to='cv_headers/', blank=True, null=True)
     # qr = models.ImageField(upload_to='cv_qr/', blank=True, null=True)
+    # pdf = models.FileField(upload_to='cv_pdfs/', blank=True, null=True)
     
     # Relaciones M2M para seleccionar qué datos incluir en el CV
     selected_experiences = models.ManyToManyField(UserJobExperience, blank=True)

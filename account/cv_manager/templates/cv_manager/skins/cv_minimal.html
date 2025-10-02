@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
-{% block content %}
 
-<div style="color: {{ cv.primary_color }}; font-family: {{ cv.font_family }};">
+{% block content %}
+<div class="cv-container" style="color: {{ cv.primary_color }}; font-family: {{ cv.font_family }};">
 
   {% if cv.header_image %}
   <div class="text-center mb-4">
@@ -10,7 +10,7 @@
   {% endif %}
 
   <div class="d-flex justify-content-between align-items-center my-3">
-    <a href="{% url 'download_cv_pdf' slug=cv.slug %}" class="btn btn-success">📄 Descargar PDF</a>
+    <a href="{% url 'cv_download' slug=cv.slug %}" class="btn btn-success">📄 Descargar PDF</a>
     <a href="{% url 'cv_list' %}" class="btn btn-danger">❌ Cancelar</a>
   </div>
 
@@ -25,7 +25,7 @@
 
   <h2 class="text-center mb-5" style="color: {{ cv.primary_color }};">{{ cv.title }}</h2>
 
-  {% if cv.experiences.all %}
+  {% if cv.selected_experiences.exists %}
   <section class="mb-4">
     <h5 class="border-bottom pb-1">📌 Experiencia</h5>
     {% for exp in cv.selected_experiences.all %}
@@ -33,13 +33,11 @@
       <strong>{{ exp.position }}</strong> – {{ exp.company }}<br>
       <small>{{ exp.start_date }} - {{ exp.end_date|default:"Actualidad" }}</small>
     </p>
-    {% empty %}
-    <p class="text-muted">No hay experiencias registradas.</p>
     {% endfor %}
   </section>
   {% endif %}
 
-  {% if cv.selected_educations.all %}
+  {% if cv.selected_educations.exists %}
   <section class="mb-4">
     <h5 class="border-bottom pb-1">🎓 Educación</h5>
     {% for edu in cv.selected_educations.all %}
@@ -48,50 +46,41 @@
   </section>
   {% endif %}
 
-  {% if cv.selected_languages.all %}
+  {% if cv.selected_languages.exists %}
   <section class="mb-4">
     <h5 class="border-bottom pb-1">🌍 Idiomas</h5>
     {% for lang in cv.selected_languages.all %}
-    <p>{{ lang.language.name }} – {{ lang.level }}</p>
-    {% empty %}
-    <p class="text-muted">No hay idiomas registrados.</p>
+    <p>{{ lang.language.name }} – {{ lang.get_level_display }}</p>
     {% endfor %}
   </section>
   {% endif %}
 
-  {% if cv.selected_softskills.all %}
+  {% if cv.selected_softskills.exists %}
   <section class="mb-4">
     <h5 class="border-bottom pb-1">💡 Habilidades Blandas</h5>
     {% for skill in cv.selected_softskills.all %}
     <p>{{ skill.skill.name }}</p>
-    {% empty %}
-    <p class="text-muted">No hay habilidades blandas registradas.</p>
     {% endfor %}
   </section>
   {% endif %}
 
-  {% if cv.selected_hardskills.all %}
+  {% if cv.selected_hardskills.exists %}
   <section class="mb-4">
     <h5 class="border-bottom pb-1">💡 Habilidades Duras</h5>
     {% for skill in cv.selected_hardskills.all %}
     <p>{{ skill.skill.name }}</p>
-    {% empty %}
-    <p class="text-muted">No hay habilidades duras registradas.</p>
     {% endfor %}
   </section>
   {% endif %}
 
-  {% if cv.selected_hobbies.all %}
+  {% if cv.selected_hobbies.exists %}
   <section class="mb-4">
     <h5 class="border-bottom pb-1">🎯 Hobbies</h5>
     {% for h in cv.selected_hobbies.all %}
     <p>{{ h.hobby.name }}</p>
-    {% empty %}
-    <p class="text-muted">No hay hobbies registrados.</p>
     {% endfor %}
   </section>
   {% endif %}
 
 </div>
-
 {% endblock %}

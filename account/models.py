@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from django.conf import settings
 
 # clase base de timestamp
 
@@ -16,7 +17,11 @@ class TimeStampedModel(models.Model):
 
 # 🔹 1. Perfil extendido para el usuario (relación uno a uno)
 class UserProfile(TimeStampedModel):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    full_name = models.CharField(max_length=150, blank=True)
+    gender = models.CharField(max_length=1, choices=[('M', 'Masculino'), ('F', 'Femenino'), ('O', 'Otro')], blank=True)
+    headline = models.CharField(max_length=255, blank=True)
+    location = models.CharField(max_length=100, blank=True)
     role = models.CharField(
         max_length=100,
         choices=[
