@@ -1,0 +1,52 @@
+{% extends 'base2.html' %}
+
+{% block title %}Mis Pasatiempos{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+
+  <div class="d-flex justify-content-between mb-3">
+    <h2 class="text-primary">Mis Pasatiempos</h2>
+    <a href="{% url 'hobby_add' %}" class="btn btn-success">➕ Añadir Hobby</a>
+  </div>
+
+  <!-- 🔹 Filtro de búsqueda -->
+  <form method="get" class="row g-2 mb-4">
+    <div class="col-md-8">
+      <input type="text" name="search" class="form-control" placeholder="Buscar hobby o descripción"
+             value="{{ search }}">
+    </div>
+    <div class="col-md-4 d-flex gap-2">
+      <button type="submit" class="btn btn-primary flex-fill">Filtrar</button>
+      <a href="{% url 'hobby_list' %}" class="btn btn-outline-secondary flex-fill">Limpiar</a>
+    </div>
+  </form>
+
+  <!-- 🔹 Lista de hobbies -->
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Hobby</th>
+        <th>Descripción</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for hobby in hobbies %}
+      <tr>
+        <td>{{ hobby.hobby.name }}</td>
+        <td>{{ hobby.description|default:"-" }}</td>
+        <td>
+          <a href="{% url 'hobby_edit' hobby.pk %}" class="btn btn-sm btn-warning">✏️ Editar</a>
+          <a href="{% url 'hobby_delete' hobby.pk %}" class="btn btn-sm btn-danger">🗑 Eliminar</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="3" class="text-center">No se encontraron hobbies.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

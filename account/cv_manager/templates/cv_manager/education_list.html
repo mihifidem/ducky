@@ -1,0 +1,49 @@
+{% extends 'base2.html' %}
+
+{% block title %}Mis Estudios{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4 text-primary">Mis Estudios</h2>
+
+    <form method="get" class="mb-3 d-flex gap-2">
+        <input type="text" name="search" placeholder="Buscar..." value="{{ search }}" class="form-control">
+        <input type="date" name="start_date" value="{{ start_date }}" class="form-control">
+        <input type="date" name="end_date" value="{{ end_date }}" class="form-control">
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+        <a href="{% url 'education_list' %}" class="btn btn-outline-secondary">Limpiar</a>
+    </form>
+
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Institución</th>
+                <th>Inicio</th>
+                <th>Fin</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for edu in educations %}
+            <tr>
+                <td>{{ edu.title }}</td>
+                <td>{{ edu.institution }}</td>
+                <td>{{ edu.start_date }}</td>
+                <td>{{ edu.end_date|default:"-" }}</td>
+                <td>
+                    <a href="{% url 'education_edit' edu.pk %}" class="btn btn-sm btn-warning">Editar</a>
+                    <a href="{% url 'education_delete' edu.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center">No se encontraron estudios.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{% url 'education_add' %}" class="btn btn-success mt-3">➕ Añadir Educación</a>
+</div>
+{% endblock %}

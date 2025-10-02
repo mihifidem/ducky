@@ -1,0 +1,94 @@
+{% extends 'base2.html' %}
+
+{% block title %}Mi Dashboard de CV{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">📋 Panel de Gestión de CV</h2>
+
+<div class="row">
+  <!-- Perfil -->
+  <div class="col-md-4">
+    <div class="card mb-3 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">📇 Perfil</h5>
+        <p>{{ profile.bio|truncatechars:100 }}</p>
+        <a href="{% url 'profile' %}" class="btn btn-outline-primary btn-sm">Editar Perfil</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Experiencia -->
+  <div class="col-md-4">
+    <div class="card mb-3 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">💼 Experiencia</h5>
+        <p>{{ experiences.count }} experiencia(s) registrada(s).</p>
+        <a href="{% url 'cv_panel' %}#experiencias" class="btn btn-outline-secondary btn-sm">Ver</a>
+        <a href="{% url 'experience_add' %}" class="btn btn-success btn-sm">Añadir</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Habilidades Tecnicas -->
+  <div class="col-md-4">
+    <div class="card mb-3 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">💻 Habilidades Tecnicas</h5>
+        <p>{{ hardskills.count }} habilidad(es) registrada(s).</p>
+        <a href="{% url 'cv_panel' %}#hardskills" class="btn btn-outline-secondary btn-sm">Ver</a>
+        <a href="{% url 'hardskill_add' %}" class="btn btn-success btn-sm">Añadir</a>
+      </div>
+    </div>
+  </div>
+ 
+
+
+  <!-- Educación -->
+  <div class="col-md-4">
+    <div class="card mb-3 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">🏫 Educación</h5>
+        <p>{{ educations.count }} estudio(s) registrado(s).</p>
+        <a href="{% url 'cv_panel' %}#educacion" class="btn btn-outline-secondary btn-sm">Ver</a>
+        <a href="{% url 'education_add' %}" class="btn btn-success btn-sm">Añadir</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Idiomas -->
+  <div class="col-md-4">
+    <div class="card mb-3 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">🌐 Idiomas</h5>
+        <p>{{ languages.count }} idioma(s) registrado(s).</p>
+        <a href="{% url 'cv_panel' %}#idiomas" class="btn btn-outline-secondary btn-sm">Ver</a>
+        <a href="{% url 'lenguage_add' %}" class="btn btn-success btn-sm">Añadir</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Habilidades -->
+  <div class="col-md-4">
+    <div class="card mb-3 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">🧠 Habilidades</h5>
+        <p>{{ softskills.count }} habilidad(es) registrada(s).</p>
+        <a href="{% url 'cv_panel' %}#habilidades" class="btn btn-outline-secondary btn-sm">Ver</a>
+        <a href="{% url 'softskill_add' %}" class="btn btn-success btn-sm">Añadir</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hobbies -->
+  <div class="col-md-4">
+    <div class="card mb-3 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">🎯 Hobbies</h5>
+        <p>{{ hobbies.count }} hobby(s) registrado(s).</p>
+        <a href="{% url 'cv_panel' %}#hobbies" class="btn btn-outline-secondary btn-sm">Ver</a>
+        <a href="{% url 'hobby_add' %}" class="btn btn-success btn-sm">Añadir</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
