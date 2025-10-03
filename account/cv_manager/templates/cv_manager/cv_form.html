@@ -1,0 +1,126 @@
+{% extends 'base2.html' %}
+{% load static %}
+{% block content %}
+<main class="container mt-4" role="main">
+  <div class="card shadow border-0">
+    <div class="card-header bg-primary text-white">
+      <h4 class="mb-0">
+        <span aria-hidden="true">🎯</span> Crear perfil de CV personalizado
+      </h4>
+    </div>
+    <div class="card-body">
+
+      <!-- Profile -->
+      {% if profile %}
+      <div class="mb-4 border rounded p-3 bg-light">
+        <h5 class="text-secondary mb-3">
+          <span aria-hidden="true">👤</span> Datos del Perfil
+        </h5>
+        <div class="row">
+          <div class="col-md-6 mb-2">
+            <strong>Nombre completo:</strong><br>
+            {{ profile.user.first_name }} {{ profile.user.last_name }}
+          </div>
+          <div class="col-md-6 mb-2">
+            <strong>Email:</strong><br>
+            {{ profile.user.email }}
+          </div>
+          <div class="col-md-6 mb-2">
+            <strong>Teléfono:</strong><br>
+            {{ profile.phone|default:"No especificado" }}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Formulario de creación de CV -->
+      <form method="post" role="form" aria-label="Formulario de creación de CV" novalidate>
+        {% csrf_token %}
+        {% for field in form %} 
+        {% if field.name != 'skin' %} <!-- Campos del formulario excepto skin -->
+          <div class="mb-3">
+            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}
+              <div class="form-text" id="{{ field.id_for_label }}_help">{{ field.help_text }}</div>
+            {% endif %}
+            {% for error in field.errors %}
+              <div class="text-danger small" id="{{ field.id_for_label }}_error" role="alert" aria-live="polite">{{ error }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+        {% endfor %}
+
+      <!-- Selector de skins y botón de previsualización -->
+        <div class="mb-3 d-flex align-items-center">
+          <div class="me-3">
+            <label for="id_skin" class="form-label mb-0">🎨 Elegir diseño del Skin para el CV</label>
+            {{ form.skin }}
+          </div>
+          {% if form.instance.pk %}
+          <div class="mt-4">
+            <a id="preview_btn" href="#" target="_blank" class="btn btn-info">
+              <i class="bi bi-eye"></i> Previsualizar CV
+            </a>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Preview del skin (miniatura) -->
+        <div class="mb-3">
+          <img id="skin_preview" src="{% static 'skins/default.png' %}" alt="Preview del skin"
+            class="img-fluid rounded border" style="max-width:300px;">
+        </div>
+
+
+        <!-- Botones de guardar/cancelar -->
+        <div class="d-flex justify-content-between mt-4">
+          <button type="submit" class="btn btn-success">
+            <i class="bi bi-check-circle"></i> Guardar CV
+          </button>
+          <a href="{% url 'cv_list' %}" class="btn btn-outline-secondary" role="button">
+            <i class="bi bi-x-circle"></i> Cancelar
+          </a>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- Script para actualizar preview -->
+<div 
+  id="cv-data"
+  data-created="{% if form.instance.pk %}true{% else %}false{% endif %}"
+  data-preview-url="{% if form.instance.pk %}{% url 'cv_preview' slug=form.instance.slug %}{% endif %}">
+</div>
+
+<script>
+  const skinMap = {
+    "default": "{% static 'skins/default.png' %}",
+    "modern": "{% static 'skins/modern.png' %}",
+    "minimal": "{% static 'skins/minimal.png' %}",
+  };
+
+  const skinSelect = document.getElementById('id_skin');
+  const skinPreview = document.getElementById('skin_preview');
+  const previewBtn = document.getElementById('preview_btn');
+
+  // Leer datos desde el div
+  const cvData = document.getElementById('cv-data');
+  const cvCreated = cvData.dataset.created === "true";
+  const previewUrl = cvData.dataset.previewUrl;
+
+  function updatePreview() {
+    const selected = skinSelect?.value || "default";
+    skinPreview.src = skinMap[selected] || skinMap["default"];
+
+    if (cvCreated && previewBtn) {
+      previewBtn.href = previewUrl + "?skin=" + selected;
+    }
+  }
+
+  updatePreview();
+  skinSelect?.addEventListener('change', updatePreview);
+</script>
+</main>
+{% endblock %}

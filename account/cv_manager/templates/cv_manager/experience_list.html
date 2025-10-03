@@ -1,0 +1,73 @@
+{% extends 'base2.html' %}
+
+{% block title %}Experiencias{% endblock %}
+
+{% block content %}
+<main role="main" class="container my-5">
+    <h2 class="mb-4 text-primary">Tus Experiencias</h2>
+
+    <!-- Filtro de búsqueda y fechas -->
+    <form method="get" class="row g-2 mb-3" role="search" aria-label="Filtrar experiencias">
+        <div class="col-md-4">
+            <label for="search" class="visually-hidden">Buscar por posición, empresa o rol..</label>
+            <input type="text" id="search" name="search" value="{{ search }}" placeholder="Buscar..." class="form-control">
+        </div>
+        <div class="col-md-3">
+            <label for="start_date" class="visually-hidden">Fecha inicio</label>
+            <input type="date" id="start_date" name="start_date" value="{{ start_date }}" class="form-control">
+        </div>
+        <div class="col-md-3">
+            <label for="end_date" class="visually-hidden">Fecha fin</label>
+            <input type="date" id="end_date" name="end_date" value="{{ end_date }}" class="form-control">
+        </div>
+        <div class="col-md-2 d-flex flex-column gap-2">
+            <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
+            <a href="{% url 'experience_list' %}" class="btn btn-outline-secondary btn-sm" role="button">Limpiar</a>
+        </div>
+
+    </form>
+
+    <a href="{% url 'experience_add' %}" class="btn btn-success mb-3">➕ Añadir Experiencia</a>
+
+    {% if experiences %}
+    <table class="table table-hover" role="table">
+        <caption>Listado de tus experiencias </caption>
+        <thead>
+            <tr>
+                <th scope="col">Rol</th>
+                <th scope="col">Empresa</th>
+                <th scope="col">Posición</th>
+                <th scope="col">Fechas</th>
+                <th scope="col">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for exp in experiences %}
+            <tr>
+                <td>{{ exp.role }}</td>
+                <td>{{ exp.company }}</td>
+                <td>{{ exp.position }}</td>
+                <td>
+                    {{ exp.start_date|date:"d/m/Y" }} 
+                    {% if exp.end_date %} - {{ exp.end_date|date:"d/m/Y" }} {% else %} - Actual {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'experience_edit' exp.pk %}" class="btn btn-sm btn-warning">Editar</a>
+                    <a href="{% url 'experience_delete' exp.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p>No tienes experiencias registradas.</p>
+    {% endif %}
+</main>
+
+<style>
+  a:focus-visible, button:focus-visible {
+    outline: 3px solid #0d6efd;
+    outline-offset: 2px;
+  }
+</style>
+{% endblock %}

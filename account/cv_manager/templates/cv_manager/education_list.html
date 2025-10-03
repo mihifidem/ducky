@@ -1,0 +1,72 @@
+{% extends 'base2.html' %}
+
+{% block title %}Mis Estudios{% endblock %}
+
+{% block content %}
+<main role="main" class="container my-5">
+  <h2 class="mb-4 text-primary">Mis Estudios</h2>
+
+  <!-- Filtro de búsqueda y fechas -->
+  <form method="get" class="mb-3 row g-2 align-items-end" role="search" aria-label="Filtrar estudios">
+    <div class="col-md-4">
+      <label for="search" class="visually-hidden">Buscar por título o institución</label>
+      <input type="text" id="search" name="search" value="{{ search }}" placeholder="Buscar..." class="form-control">
+    </div>
+
+    <div class="col-md-3">
+      <label for="start_date" class="visually-hidden">Fecha de inicio</label>
+      <input type="date" id="start_date" name="start_date" value="{{ start_date }}" class="form-control">
+    </div>
+
+    <div class="col-md-3">
+      <label for="end_date" class="visually-hidden">Fecha de fin</label>
+      <input type="date" id="end_date" name="end_date" value="{{ end_date }}" class="form-control">
+    </div>
+
+    <div class="col-md-2 d-flex flex-column gap-2">
+      <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
+      <a href="{% url 'education_list' %}" class="btn btn-outline-secondary btn-sm" role="button">Limpiar</a>
+    </div>
+  </form>
+
+  <table class="table table-hover">
+    <caption>Listado de estudios del usuario</caption>
+    <thead>
+      <tr>
+        <th scope="col">Título</th>
+        <th scope="col">Institución</th>
+        <th scope="col">Inicio</th>
+        <th scope="col">Fin</th>
+        <th scope="col">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for edu in educations %}
+      <tr>
+        <td>{{ edu.title }}</td>
+        <td>{{ edu.institution }}</td>
+        <td>{{ edu.start_date }}</td>
+        <td>{{ edu.end_date|default:"-" }}</td>
+        <td>
+          <a href="{% url 'education_edit' edu.pk %}" class="btn btn-sm btn-warning" role="button">Editar</a>
+          <a href="{% url 'education_delete' edu.pk %}" class="btn btn-sm btn-danger" role="button">Eliminar</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="5" class="text-center" role="alert">No se encontraron estudios.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <a href="{% url 'education_add' %}" class="btn btn-success mt-3" role="button">➕ Añadir Educación</a>
+</main>
+
+<style>
+  button:focus-visible, a:focus-visible {
+    outline: 3px solid #0d6efd;
+    outline-offset: 2px;
+  }
+</style>
+{% endblock %}

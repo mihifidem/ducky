@@ -1,20 +1,22 @@
-{% extends 'base.html' %}
+{% extends 'base2.html' %}
 
 {% block content %}
+<main class="container mt-4" role="main">
   <h1>Perfil del usuario</h1>
 
-  <div class="list-group mt-4">
-    <a href="{% url 'add_education' %}" class="list-group-item list-group-item-action">
+  <div class="list-group mt-4" role="list">
+    <a href="{% url 'education_add' %}" class="list-group-item list-group-item-action" role="listitem" aria-label="Añadir Educación">
       ➕ Añadir Educación
     </a>
-    <a href="{% url 'add_language' %}" class="list-group-item list-group-item-action">
+    <a href="{% url 'language_add' %}" class="list-group-item list-group-item-action" role="listitem" aria-label="Añadir Idioma">
       🌐 Añadir Idioma
     </a>
-    <a href="{% url 'add_softskill' %}" class="list-group-item list-group-item-action">
+    <a href="{% url 'softskill_add' %}" class="list-group-item list-group-item-action" role="listitem" aria-label="Añadir Habilidad Blanda">
       💡 Añadir Habilidad Blanda (Soft Skill)
     </a>
-    <a href="{% url 'add_hobby' %}" class="list-group-item list-group-item-action">
+    <a href="{% url 'hobby_add' %}" class="list-group-item list-group-item-action" role="listitem" aria-label="Añadir Hobby">
       🎯 Añadir Hobby
     </a>
   </div>
+</main>
 {% endblock %}

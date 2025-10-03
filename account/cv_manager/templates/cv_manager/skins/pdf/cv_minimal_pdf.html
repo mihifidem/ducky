@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <title>{{ cv.title }}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+
+<body>
+  <main role="main" class="container my-4" style="color: {{ cv.primary_color }}; font-family: {{ cv.font_family }}; max-width: 850px;">
+
+    {% if cv.header_image %}
+    <div class="text-center mb-4">
+      <img src="{{ cv.header_image.url }}" class="img-fluid rounded" alt="Imagen de cabecera del CV">
+    </div>
+    {% endif %}
+
+    {% if profile %}
+    <section class="mb-4" aria-labelledby="profile-section">
+      <h2 id="profile-section" class="border-bottom pb-1">👤 Información del Perfil</h2>
+      <p><strong>Nombre:</strong> {{ profile.user.first_name }} {{ profile.user.last_name }}</p>
+      <p><strong>Email:</strong> {{ profile.user.email }}</p>
+      <p><strong>Teléfono:</strong> {{ profile.phone|default:"No especificado" }}</p>
+    </section>
+    {% endif %}
+
+    {% if cv.selected_experiences.all %}
+    <section class="mb-4" aria-labelledby="experience-section">
+      <h3 id="experience-section" class="border-bottom pb-1">📌 Experiencia</h3>
+      {% for exp in cv.selected_experiences.all %}
+      <p><strong>{{ exp.position }}</strong> – {{ exp.company }}<br>
+        <small>{{ exp.start_date }} – {{ exp.end_date|default:"Actualidad" }}</small>
+      </p>
+      {% endfor %}
+    </section>
+    {% endif %}
+
+    {% if cv.selected_educations.all %}
+    <section class="mb-4" aria-labelledby="education-section">
+      <h3 id="education-section" class="border-bottom pb-1">🎓 Educación</h3>
+      {% for edu in cv.selected_educations.all %}
+      <p><strong>{{ edu.title }}</strong> – {{ edu.institution }}</p>
+      {% endfor %}
+    </section>
+    {% endif %}
+
+    {% if cv.selected_languages.all %}
+    <section class="mb-4" aria-labelledby="languages-section">
+      <h3 id="languages-section" class="border-bottom pb-1">🌍 Idiomas</h3>
+      {% for lang in cv.selected_languages.all %}
+      <p>{{ lang.language.name }} – {{ lang.level }}</p>
+      {% endfor %}
+    </section>
+    {% endif %}
+
+    {% if cv.selected_softskills.all %}
+    <section class="mb-4" aria-labelledby="softskills-section">
+      <h3 id="softskills-section" class="border-bottom pb-1">💡 Habilidades Blandas</h3>
+      <ul class="list-unstyled">
+        {% for skill in cv.selected_softskills.all %}
+        <li>{{ skill.skill.name }}</li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
+    {% if cv.selected_hardskills.all %}
+    <section class="mb-4" aria-labelledby="hardskills-section">
+      <h3 id="hardskills-section" class="border-bottom pb-1">💡 Habilidades Duras</h3>
+      <ul class="list-unstyled">
+        {% for skill in cv.selected_hardskills.all %}
+        <li>{{ skill.skill.name }}</li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
+    {% if cv.selected_hobbies.all %}
+    <section class="mb-4" aria-labelledby="hobbies-section">
+      <h3 id="hobbies-section" class="border-bottom pb-1">🎯 Hobbies</h3>
+      <ul class="list-unstyled">
+        {% for h in cv.selected_hobbies.all %}
+        <li>{{ h.hobby.name }}</li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
+  </main>
+</body>
+
+</html>

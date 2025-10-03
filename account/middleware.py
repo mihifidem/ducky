@@ -9,5 +9,5 @@ class Custom404Middleware:
     def __call__(self, request):
         response = self.get_response(request)
         if response.status_code == 404 and settings.DEBUG:
-            return render(request, 'account/404.html', status=404)
+            return render(request, 'cv_manager/404.html', status=404)
         return response

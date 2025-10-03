@@ -3,14 +3,20 @@
 {% block title %}Editar Perfil{% endblock %}
 
 {% block content %}
-<div class="container py-4">
-  <h2 class="mb-4 text-primary"><i class="bi bi-pencil-square"></i> Editar Perfil</h2>
+<main class="container py-4" role="main">
+  <h2 id="edit-profile-title" class="mb-4 text-primary">
+    <i class="bi bi-pencil-square" aria-hidden="true"></i>
+    Editar Perfil
+  </h2>
 
-  <form method="post" enctype="multipart/form-data" class="card shadow-sm p-4 border-0 bg-light">
+  <form method="post" enctype="multipart/form-data" 
+        class="card shadow-sm p-4 border-0 bg-light"
+        aria-labelledby="edit-profile-title">
+
     {% csrf_token %}
 
     {% if user_form.errors or profile_form.errors %}
-      <div class="alert alert-danger">
+      <div class="alert alert-danger" role="alert" aria-live="assertive">
         <h5 class="alert-heading">Errores en el formulario</h5>
         <ul class="mb-0">
           {% for field in user_form %}
@@ -39,14 +45,13 @@
     </div>
 
     <div class="mt-4 d-flex justify-content-between">
-      <button type="submit" class="btn btn-success">
-        <i class="bi bi-save"></i> Guardar cambios
+      <button type="submit" class="btn btn-success" aria-label="Guardar cambios en el perfil">
+        <i class="bi bi-save" aria-hidden="true"></i> Guardar cambios
       </button>
-      <a href="{% url 'cv_panel' %}" class="btn btn-secondary">
-        <i class="bi bi-x-circle"></i> Cancelar
+      <a href="{% url 'cv_panel' %}" class="btn btn-secondary" role="button" aria-label="Cancelar y volver al panel">
+        <i class="bi bi-x-circle" aria-hidden="true"></i> Cancelar
       </a>
-      
     </div>
   </form>
-</div>
+</main>
 {% endblock %}
