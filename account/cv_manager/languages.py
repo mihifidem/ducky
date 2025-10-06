@@ -3,6 +3,7 @@
 # copiar el script en la shell y ejecutar
 # salir de la shell con exit
 # apareceran en la tabla languages los idiomas
+# cambio aladidio para hacer un commit
 
 
 
