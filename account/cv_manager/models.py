@@ -164,10 +164,7 @@ class CVProfile(TimeStampedModel):
     primary_color = models.CharField(max_length=20, default="#000000")
     font_family = models.CharField(max_length=50, default="sans-serif")
     header_image = models.ImageField(upload_to='cv_headers/', blank=True, null=True)
-<<<<<<< HEAD
     is_public = models.BooleanField(default=False)
-=======
->>>>>>> 78438da6d053703b29f2e02b43b21d9641085c10
     # qr = models.ImageField(upload_to='cv_qr/', blank=True, null=True)
     # pdf = models.FileField(upload_to='cv_pdfs/', blank=True, null=True)
     
