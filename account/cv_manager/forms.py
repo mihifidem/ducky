@@ -133,7 +133,6 @@ class UserHobbyForm(forms.Form):
 
 
 
-
 # Formulario para crear o editar perfiles de CV
 # Filtra las opciones de secciones (experiencias, educaciones, etc) para que solo aparezcan las del usuario actual
 class CVProfileForm(forms.ModelForm):
