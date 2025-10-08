@@ -12,7 +12,8 @@ from datetime import timedelta # Necesario para calcular 'end' en eventos de cal
 from django.views.decorators.http import require_GET, require_POST # Importar para decoradores de método HTTP
 from jobs.models import JobOffer, Candidatura
 from django.core.mail import send_mail
-
+from django.views.generic import DetailView #T42 comentario guia para saber que voy cambiando 
+from django.core.paginator import Paginator  # Cambio T43: import Paginator
 
 # Importa tus modelos y formularios
 from .models import JobOffer, Candidatura, AgendaAccion, StatusMessageTemplate
@@ -35,25 +36,29 @@ class HeadhunterDashboardView(HeadhunterRequiredMixin, ListView):
     model = Candidatura
     template_name = 'jobs/headhunter_dashboard.html'
     context_object_name = 'candidaturas'
+    paginate_by = 5 #Ejemplo de paginacion 5 por pagina
 
     def get_queryset(self):
-        # Filtra candidaturas de ofertas creadas por el headhunter actual
-        return Candidatura.objects.filter(offer__created_by=self.request.user).order_by('-updated_at')
+        qs = Candidatura.objects.filter(offer__created_by=self.request.user).order_by('-updated_at')
+        estado = self.request.GET.get('estado')
+        if estado:
+            qs = qs.filter(estado=estado)
+        return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['is_headhunter'] = True
-
+         # Cambio T42: Preparamos items con form para actualizar estado
         candidaturas = context['candidaturas']
         context['items'] = [
-        {
-            'candidatura': c,
-            'form': CandidaturaStatusForm(instance=c)
-        }
-        for c in candidaturas
-    ]
+            {
+                'candidatura': c,
+                'form': CandidaturaStatusForm(instance=c)
+            }
+            for c in context['page_obj'].object_list
+        ]
         return context
-    
+
     def post(self, request, *args, **kwargs):
         print("POST recibido")
         candidature_id = request.POST.get('candidature_id')
@@ -148,7 +153,7 @@ class JobOfferList(ListView):
     model = JobOffer
     context_object_name = 'offers'
     queryset = JobOffer.objects.filter(is_active=True).order_by('-created_at')
-
+    paginate_by = 5 # Mostrar 5 ofertas por página
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['is_headhunter'] = self.request.user.is_authenticated and \
@@ -216,48 +221,85 @@ def apply_to_offer(request, offer_id):
     }
     return render(request, 'jobs/apply_to_offer.html', context)
 
-class OfferApplicationsView(HeadhunterRequiredMixin, DetailView): # Usamos el Mixin
+
+class OfferApplicationsView(HeadhunterRequiredMixin, DetailView):
     """
     Muestra las postulaciones para una oferta específica de un headhunter.
     """
     model = JobOffer
-    template_name = 'jobs/offer_applications.html'
+    template_name = 'jobs/offer_applications.html'  # <-- Aquí usamos la plantilla
     context_object_name = 'offer'
     pk_url_kwarg = 'offer_id'
 
     def get_queryset(self):
+        # Solo el headhunter creador puede ver sus ofertas
         return super().get_queryset().filter(created_by=self.request.user)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # Obtenemos todas las candidaturas de esta oferta ordenadas por fecha de postulación
         context['applications'] = self.object.applications.all().order_by('-fecha_aplicacion')
         context['is_headhunter'] = True
         return context
 
-@headhunter_required 
+
+@headhunter_required # ALGO AQUI NO FUNCIONA NO SE MUESTRA EL ENVIO DE MAIL EN LA CONSOLA 
 def cambiar_estado_candidatura(request, candidature_id):
-    """
-    Permite a un headhunter cambiar el estado de una candidatura.
-    """
-    # Usar get_object_or_404 en lugar de get_object_or_204 si no está importado, o importar get_object_or_204
-    candidatura = get_object_or_404(Candidatura, id=candidature_id, offer__created_by=request.user)
+    # Obtener la candidatura
+    candidatura = get_object_or_404(
+        Candidatura, 
+        id=candidature_id, 
+        offer__created_by=request.user
+    )
 
     if request.method == 'POST':
+        print(f"[DEBUG] Llegamos al POST de la candidatura {candidature_id}")  # Debug
         form = CandidaturaStatusForm(request.POST, instance=candidatura)
+        
         if form.is_valid():
+            print(f"[DEBUG] Formulario válido, estado: {form.instance.estado}")  # Debug
             form.save()
-            messages.success(request, f'Estado de la candidatura de {candidatura.user.username} actualizado a "{candidatura.get_estado_display()}".')
+
+            # --- ENVÍO EMAIL A CONSOLA ---
+            estado_humano = candidatura.get_estado_display()
+            asunto = f"Actualización de tu candidatura a {candidatura.offer.title}"
+            mensaje = f"""
+Hola {candidatura.user.first_name or candidatura.user.username},
+
+Tu candidatura para el puesto '{candidatura.offer.title}' ha sido actualizada al estado: {estado_humano}.
+
+Gracias por usar nuestra plataforma OpenToJob.
+
+Un saludo,
+El equipo de OpenToJob
+"""
+            send_mail(
+                subject=asunto,
+                message=mensaje,
+                from_email='no-reply@opentojob.com',
+                recipient_list=[candidatura.user.email],
+                fail_silently=False,  # Importante: muestra errores si algo falla
+            )
+            print("[DEBUG] Email enviado correctamente")  # Debug
+
+            messages.success(
+                request, 
+                f'Estado de la candidatura de {candidatura.user.username} actualizado a "{estado_humano}" y correo enviado.'
+            )
             return redirect('offer_applications', offer_id=candidatura.offer.id)
+        else:
+            # Si el formulario no es válido, mostrar errores en consola
+            print("[DEBUG] Formulario inválido:", form.errors)
+
     else:
         form = CandidaturaStatusForm(instance=candidatura)
-    
+
     context = {
         'candidatura': candidatura,
         'form': form,
         'is_headhunter': True,
     }
     return render(request, 'jobs/cambiar_estado_candidatura.html', context)
-
 # --- Vistas de Agenda (Solo para Headhunters) ---
 
 @headhunter_required
@@ -421,3 +463,26 @@ class HomeView(LoginRequiredMixin, TemplateView):
             context['rol'] = 'otro'
 
         return context
+
+
+@login_required
+def withdraw_application(request, candidature_id):
+    """
+    Permite a un candidato retirar su candidatura.
+    """
+    candidatura = get_object_or_404(Candidatura, id=candidature_id, user=request.user)
+
+    if request.method == 'POST':
+        candidatura.delete()
+        messages.success(request, 'Tu candidatura ha sido retirada correctamente.')
+        return redirect('candidate_dashboard')
+
+    # Si por algún motivo se accede por GET, redirigimos al dashboard
+    messages.warning(request, 'No se pudo retirar la candidatura.')
+    return redirect('candidate_dashboard')
+
+
+class CandidaturaDetailView(DetailView):
+    model = Candidatura
+    template_name = 'jobs/candidatura_detail.html'
+    context_object_name = 'candidature'

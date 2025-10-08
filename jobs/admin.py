@@ -1,7 +1,7 @@
 # jobs/admin.py
 from django.contrib import admin
 from .models import JobOffer, StatusMessageTemplate, Candidatura, AgendaAccion # Asegúrate de importar todos tus modelos
-from django.contrib.auth.models import User # esto lo he scrito para poder entrar al admin
+
 # Inline para ver Candidaturas directamente en la página de JobOffer
 class CandidaturaInline(admin.TabularInline): # admin.StackedInline ofrece un layout diferente
     model = Candidatura

@@ -34,7 +34,10 @@
             {% endif %}
         </div>
         
+        {# INICIO DE LA CONDICIÓN PRINCIPAL: ¿Hay ofertas? #}
         {% if offers %}
+            
+            {# BLOQUE DE TARJETAS DE OFERTAS #}
             <div class="row">
                 {% for offer in offers %}
                     <div class="col-md-6 col-lg-4 mb-4">
@@ -68,10 +71,61 @@
                     </div>
                 {% endfor %}
             </div>
+            
+            {# INICIO DEL BLOQUE DE PAGINACIÓN: Correctamente ubicado después de la lista #}
+            {% if is_paginated %}
+            <nav aria-label="Page navigation for job offers" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    
+                    {# Enlace ANTERIOR #}
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Anterior">
+                            <span aria-hidden="true">&laquo;</span> Anterior
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled"><span class="page-link"><span aria-hidden="true">&laquo;</span> Anterior</span></li>
+                    {% endif %}
+
+                    {# Números de página #}
+                    {% for num in page_obj.paginator.page_range %}
+                        {# Lógica para mostrar solo las páginas cercanas a la actual (más elegante) #}
+                        {% with current=page_obj.number|add:"0" %}
+                        {% if num == current or num == 1 or num == page_obj.paginator.num_pages or num|add:"-1" == current or num|add:"1" == current %}
+                            <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                        {# Puntos suspensivos #}
+                        {% elif num == 2 and current > 3 or num == page_obj.paginator.num_pages|add:"-1" and current < page_obj.paginator.num_pages|add:"-2" %}
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                        {% endif %}
+                        {% endwith %}
+                    {% endfor %}
+
+                    {# Enlace SIGUIENTE #}
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Siguiente">
+                            Siguiente <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled"><span class="page-link">Siguiente <span aria-hidden="true">&raquo;</span></span></li>
+                    {% endif %}
+
+                </ul>
+            </nav>
+            {% endif %}
+            {# FIN DEL BLOQUE DE PAGINACIÓN #}
+
         {% else %}
+            {# ALTERNATIVA: No hay ofertas #}
             <div class="alert alert-info" role="alert">
                 <i class="fas fa-info-circle me-2"></i> No hay ofertas de empleo activas en este momento. ¡Vuelve pronto!
             </div>
         {% endif %}
+        {# FIN DE LA CONDICIÓN PRINCIPAL #}
+
     </div>
 {% endblock %}

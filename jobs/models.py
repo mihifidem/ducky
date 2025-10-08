@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone # Importar para usar timezone.now() o manejar TimeZone
 
 
+
 # Oferta de empleo creada por un headhunter
 class JobOffer(models.Model):
     created_by = models.ForeignKey(

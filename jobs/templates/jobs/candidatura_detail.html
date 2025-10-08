@@ -1,0 +1,13 @@
+{# Cambio T42: template para detalle de candidatura #}
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+  <h2>Detalle de Candidatura</h2>
+  <p><strong>Oferta:</strong> {{ candidatura.offer.title }} en {{ candidatura.offer.company_name }}</p>
+  <p><strong>Candidato:</strong> {{ candidatura.user.username }}</p>
+  <p><strong>Fecha de aplicación:</strong> {{ candidatura.fecha_aplicacion }}</p>
+  <p><strong>Estado:</strong> {{ candidatura.get_estado_display }}</p>
+  <p><strong>Mensaje:</strong> {{ candidatura.mensaje_personalizado|default:"(Sin mensaje)" }}</p>
+</div>
+{% endblock %}
