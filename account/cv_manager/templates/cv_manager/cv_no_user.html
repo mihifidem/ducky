@@ -1,0 +1,31 @@
+{% extends "base2.html" %}
+
+{% block content %}
+<div style="text-align:center; margin-top:50px;">
+    <h1>Error de usuario</h1>
+    <p>Este CV no tiene un usuario asociado. Por favor contacta al administrador.</p>
+    <a href="{% url 'cv_list' %}" class="btn-return">Volver a CVs Personalizados</a>
+
+<style>
+.btn-return {
+    display: inline-block;          /* Para poder aplicar padding y tamaño */
+    padding: 12px 25px;             /* Espaciado interno */
+    background-color: #3498db;      /* Color de fondo inicial */
+    color: white;                   /* Color del texto */
+    text-decoration: none;          /* Quita subrayado */
+    border-radius: 8px;             /* Bordes redondeados */
+    font-weight: bold;              /* Texto en negrita */
+    transition: background-color 0.3s ease;  /* Animación suave */
+}
+
+.btn-return:hover {
+    background-color: #29b948;      /* Color al pasar el ratón */
+    color: rgb(246, 248, 250);                   /* Color del texto */
+    cursor: pointer;                 /* Cambia el cursor a puntero */
+
+}
+</style>
+</div>
+{% endblock %}
+</div>
+{% endblock %}

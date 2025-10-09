@@ -1,0 +1,29 @@
+{% extends 'base2.html' %}
+{% load static %}
+
+{% block title %}Detalles de la URL - Dagfor{% endblock %}
+
+{% block content %}
+
+<main class="container mt-5" role="main">
+  <section style="max-width: 800px; margin: auto; padding: 50px; text-align: left;">
+    <h1 style="color: #2c3e50; margin-bottom: 30px;">Detalles de la URL</h1>
+
+    <ul style="font-size: 18px; line-height: 1.6;">
+        <li><strong>URL completa:</strong> <span>{{ url_completa|escape }}</span></li>
+        <li><strong>Esquema:</strong> <span>{{ esquema }}</span></li>
+        <li><strong>Dominio:</strong> <span>{{ dominio }}</span></li>
+        <li><strong>Ruta:</strong> <span>{{ ruta }}</span></li>
+        <li><strong>Parámetros:</strong> <span>{{ parametros }}</span></li>
+        <li><strong>Query string:</strong> <span>{{ query_string|escape }}</span></li>
+        <li><strong>Fragmento:</strong> <span>{{ fragmento }}</span></li>
+        <li><strong>Query dict:</strong> <span>{{ query_dict }}</span></li>
+    </ul>
+
+    <a href="/core/dashboard/" class="btn btn-primary mt-3" role="button">
+        Volver al Dashboard
+    </a>
+  </section>
+</main>
+
+{% endblock %}

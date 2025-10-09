@@ -1,0 +1,103 @@
+{% extends 'base2.html' %}
+
+{% block title %}Mi Dashboard de CV{% endblock %}
+
+{% block content %}
+<main class="container my-4" role="main">
+  <h2 class="mb-4"><span aria-hidden="true">📋</span> Panel de Gestión de CV</h2>
+
+  <div class="row">
+    <!-- Perfil -->
+    <section class="col-md-4" role="region" aria-labelledby="profile-header">
+      <div class="card mb-3 shadow-sm">
+        <div class="card-body">
+          <h5 id="profile-header" class="card-title"><span aria-hidden="true">📇</span> Perfil</h5>
+          <p>{{ profile.bio|truncatechars:100|escape }}</p>
+          <a href="{% url 'profile' %}" class="btn btn-outline-primary btn-sm" role="button">Editar Perfil</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Experiencia -->
+    <section class="col-md-4" role="region" aria-labelledby="experience-header">
+      <div class="card mb-3 shadow-sm">
+        <div class="card-body">
+          <h5 id="experience-header" class="card-title"><span aria-hidden="true">💼</span> Experiencia</h5>
+          <p>{{ experiences.count }} experiencia(s) registrada(s).</p>
+          <a href="{% url 'cv_panel' %}#experiencias" class="btn btn-outline-secondary btn-sm" role="button">Ver</a>
+          <a href="{% url 'experience_add' %}" class="btn btn-success btn-sm" role="button">Añadir</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Habilidades Técnicas -->
+    <section class="col-md-4" role="region" aria-labelledby="hardskills-header">
+      <div class="card mb-3 shadow-sm">
+        <div class="card-body">
+          <h5 id="hardskills-header" class="card-title"><span aria-hidden="true">💻</span> Habilidades Técnicas</h5>
+          <p>{{ hardskills.count }} habilidad(es) registrada(s).</p>
+          <a href="{% url 'cv_panel' %}#hardskills" class="btn btn-outline-secondary btn-sm" role="button">Ver</a>
+          <a href="{% url 'hardskill_add' %}" class="btn btn-success btn-sm" role="button">Añadir</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Educación -->
+    <section class="col-md-4" role="region" aria-labelledby="education-header">
+      <div class="card mb-3 shadow-sm">
+        <div class="card-body">
+          <h5 id="education-header" class="card-title"><span aria-hidden="true">🏫</span> Educación</h5>
+          <p>{{ educations.count }} estudio(s) registrado(s).</p>
+          <a href="{% url 'cv_panel' %}#educacion" class="btn btn-outline-secondary btn-sm" role="button">Ver</a>
+          <a href="{% url 'education_add' %}" class="btn btn-success btn-sm" role="button">Añadir</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Idiomas -->
+    <section class="col-md-4" role="region" aria-labelledby="languages-header">
+      <div class="card mb-3 shadow-sm">
+        <div class="card-body">
+          <h5 id="languages-header" class="card-title"><span aria-hidden="true">🌐</span> Idiomas</h5>
+          <p>{{ languages.count }} idioma(s) registrado(s).</p>
+          <a href="{% url 'cv_panel' %}#idiomas" class="btn btn-outline-secondary btn-sm" role="button">Ver</a>
+          <a href="{% url 'lenguage_add' %}" class="btn btn-success btn-sm" role="button">Añadir</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Habilidades Blandas -->
+    <section class="col-md-4" role="region" aria-labelledby="softskills-header">
+      <div class="card mb-3 shadow-sm">
+        <div class="card-body">
+          <h5 id="softskills-header" class="card-title"><span aria-hidden="true">🧠</span> Habilidades</h5>
+          <p>{{ softskills.count }} habilidad(es) registrada(s).</p>
+          <a href="{% url 'cv_panel' %}#habilidades" class="btn btn-outline-secondary btn-sm" role="button">Ver</a>
+          <a href="{% url 'softskill_add' %}" class="btn btn-success btn-sm" role="button">Añadir</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Hobbies -->
+    <section class="col-md-4" role="region" aria-labelledby="hobbies-header">
+      <div class="card mb-3 shadow-sm">
+        <div class="card-body">
+          <h5 id="hobbies-header" class="card-title"><span aria-hidden="true">🎯</span> Hobbies</h5>
+          <p>{{ hobbies.count }} hobby(s) registrado(s).</p>
+          <a href="{% url 'cv_panel' %}#hobbies" class="btn btn-outline-secondary btn-sm" role="button">Ver</a>
+          <a href="{% url 'hobby_add' %}" class="btn btn-success btn-sm" role="button">Añadir</a>
+        </div>
+      </div>
+    </section>
+  </div>
+
+</main>
+
+<style>
+  a:focus-visible, button:focus-visible {
+    outline: 3px solid #0d6efd;
+    outline-offset: 2px;
+  }
+</style>
+
+{% endblock %}

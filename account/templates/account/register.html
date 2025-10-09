@@ -1,64 +1,66 @@
 {% extends 'base2.html' %}
 {% load crispy_forms_tags %}
 {% load static %}
-{%block title_modul%}       <h1 class="mb-2">You will be a Duckyer</h1>
- {%endblock%}
+{% block title_modul %}
+<h1 class="mb-2">You will be a Duckyer</h1>
+{% endblock %}
 {% block content %}
-             
 
-<div class="container col-12">
+<main class="container col-12" role="main">
 
-<!-- begin app -->
-    <div class="app">
-        <!-- begin app-wrap -->
-        <div class="app-wrap">
-            <!-- begin pre-loader -->
-            <div class="loader">
-                <div class="h-100 d-flex justify-content-center">
-                    <div class="align-self-center">
-                        <img src="assets/img/loader/loader.svg" alt="loader">
-                    </div>
-                </div>
-            </div>
-            <!-- end pre-loader -->
+  <!-- begin app -->
+  <div class="app">
+    <div class="app-wrap">
 
-            <!--start login contant-->
-            <div class="app-contant">
-                <div class="bg-white">
-                                        
-                        <div class="row no-gutters">
-                            
-                            <div class="col-sm-6 col-lg-5 col-xxl-3  align-self-center order-2 order-sm-1">
-                                <div class="d-flex align-items-center h-100-vh">
-                                    <div class="register p-5">
-                                        
-                                        <p>Welcome, Please create your account.</p>
-
-                                                <form method="post">
-                                                    {% csrf_token %}
-                                                    {{ form|crispy }}
-                                                    <button type="submit" class="btn btn-primary">Registrarse</button>
-                                                </form>
-                                                    <p>Already have an account ?<a href="a{% url 'login' %}"> Sign In</a></p>
-                                           
-                                        
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-6 col-xxl-9 col-lg-7 bg-gradient o-hidden order-1 order-sm-2">
-                                <div class="row align-items-center h-100">
-                                    <div class="col-7 mx-auto ">
-                                        <img class="img-fluid" src="{% static 'img/ducky/register.png' %}" alt="">
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                </div>
-            </div>
+      <!-- begin pre-loader -->
+      <div class="loader" aria-busy="true" aria-label="Cargando contenido, por favor espere">
+        <div class="h-100 d-flex justify-content-center">
+          <div class="align-self-center">
+            <img src="assets/img/loader/loader.svg" alt="Cargando...">
+          </div>
         </div>
-        <!-- end app-wrap -->
+      </div>
+      <!-- end pre-loader -->
+
+      <!--start login content-->
+      <div class="app-contant">
+        <div class="bg-white">
+          <div class="row no-gutters">
+
+            <!-- Formulario -->
+            <div class="col-sm-6 col-lg-5 col-xxl-3 align-self-center order-2 order-sm-1">
+              <div class="d-flex align-items-center h-100-vh">
+                <div class="register p-5">
+                  <p>Welcome, Please create your account.</p>
+
+                  <form method="post" role="form" aria-label="Formulario de registro">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <button type="submit" class="btn btn-primary">Registrarse</button>
+                  </form>
+
+                  <p>Already have an account? <a href="{% url 'login' %}" aria-label="Iniciar sesión">Sign In</a></p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Imagen decorativa -->
+            <div class="col-sm-6 col-xxl-9 col-lg-7 bg-gradient o-hidden order-1 order-sm-2">
+              <div class="row align-items-center h-100">
+                <div class="col-7 mx-auto">
+                  <img class="img-fluid" src="{% static 'img/ducky/register.png' %}" alt="" aria-hidden="true">
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
     </div>
-    <!-- end app -->
-</div>
+    <!-- end app-wrap -->
+  </div>
+  <!-- end app -->
+
+</main>
 {% endblock %}

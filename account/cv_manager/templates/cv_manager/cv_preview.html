@@ -1,0 +1,26 @@
+{% extends 'base2.html' %}
+
+{% block content %}
+<main role="main" class="container my-4">
+
+  <section aria-labelledby="cv-title">
+    <h2 id="cv-title">{{ cv.title|escape }}</h2>
+    <p><strong>Creado por:</strong> {{ cv.user.username|escape }}</p>
+    <p><strong>Fecha creación:</strong> {{ cv.created_at|date:"d M Y" }}</p>
+  </section>
+
+  <section aria-labelledby="cv-exp-title">
+    <h3 id="cv-exp-title">Experiencias seleccionadas</h3>
+    <ul>
+      {% for exp in cv.selected_experiences.all %}
+        <li>{{ exp.position|escape }} en {{ exp.company|escape }} ({{ exp.start_date }} - {{ exp.end_date|default:"Actualidad" }})</li>
+      {% empty %}
+        <li role="alert">No hay experiencias añadidas.</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <!-- Más secciones de CV podrían agregarse aquí, usando la misma estructura -->
+  
+</main>
+{% endblock %}

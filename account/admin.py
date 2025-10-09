@@ -1,13 +1,20 @@
 from django.contrib import admin
-from .models import UserProfile, UserJobExperience, SoftSkill, UserSoftSkill, Language, UserLanguage, Hobby, UserHobby
+from .models import UserProfile
 
-admin.site.register(UserProfile)
-admin.site.register(UserJobExperience)
-admin.site.register(SoftSkill)
-admin.site.register(UserSoftSkill)
-admin.site.register(Language)
-admin.site.register(UserLanguage)
-admin.site.register(Hobby)
-admin.site.register(UserHobby)
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ['user', 'role', 'birthdate', 'phone']
+    search_fields = ['user__username', 'role', 'phone']
+    list_filter = ['role', 'birthdate']
+    autocomplete_fields = ['user']
 
+    # Solo admin puede eliminar
+    def has_delete_permission(self, request, obj=None):
+        return request.user.is_superuser
+
+    # Staff puede ver pero no editar
+    def has_change_permission(self, request, obj=None):
+        if request.user.is_staff and not request.user.is_superuser:
+            return False
+        return True
 

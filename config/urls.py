@@ -26,6 +26,7 @@ from core import views as core_views  # asumimos que home está en app "core"
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('account/', include('account.urls')),
+    path('account/cv/', include('account.cv_manager.urls')),
     path('', include('core.urls')),  # 👈 asegúrate de incluir tu app
 # Página de inicio
     path('account/', include('django.contrib.auth.urls')),  # login/logout
@@ -35,6 +36,10 @@ urlpatterns = [
 
 
 ]
+
+# Handlers de errores personalizados
+handler404 = "account.cv_manager.views.cv_not_found_handler"
+
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

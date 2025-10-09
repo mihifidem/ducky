@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<main class="cv-container" role="main" style="color: {{ cv.primary_color }}; font-family: {{ cv.font_family }};">
+
+  {% if cv.header_image %}
+  <div class="text-center mb-4">
+    <img src="{{ cv.header_image.url }}" class="img-fluid rounded shadow" alt="Imagen de cabecera del CV">
+  </div>
+  {% endif %}
+
+  <div class="d-flex justify-content-between align-items-center my-3">
+    <a href="{% url 'cv_download' slug=cv.slug %}" class="btn btn-success" role="button">📄 Descargar PDF</a>
+    <a href="{% url 'cv_list' %}" class="btn btn-danger" role="button">❌ Cancelar</a>
+  </div>
+
+  {% if profile %}
+  <section class="border rounded p-4 mb-5" style="background-color: #f0f4ff;" aria-labelledby="profile-section">
+    <h2 id="profile-section" style="color: {{ cv.primary_color }};">👤 Información del Perfil</h2>
+    <p><strong>Nombre:</strong> {{ profile.user.first_name }} {{ profile.user.last_name }}</p>
+    <p><strong>Email:</strong> {{ profile.user.email }}</p>
+    <p><strong>Teléfono:</strong> {{ profile.phone|default:"No especificado" }}</p>
+  </section>
+  {% endif %}
+
+  <h1 class="text-center mb-5" style="color: {{ cv.primary_color }};">{{ cv.title }}</h1>
+
+  <div class="container">
+    <div class="row g-4">
+
+      {% if cv.selected_experiences.all %}
+      <div class="col-md-6">
+        <section class="p-3 border rounded shadow-sm" style="background-color: #e8f0ff;" aria-labelledby="experiences-section">
+          <h3 id="experiences-section" style="color: {{ cv.primary_color }};">📌 Experiencias</h3>
+          {% for exp in cv.selected_experiences.all %}
+            <p><strong>{{ exp.position }}</strong><br>
+            {{ exp.company }}<br>
+            <small>{{ exp.start_date }} - {{ exp.end_date|default:"Actualidad" }}</small></p>
+          {% endfor %}
+        </section>
+      </div>
+      {% endif %}
+
+      {% if cv.selected_educations.all %}
+      <div class="col-md-6">
+        <section class="p-3 border rounded shadow-sm" style="background-color: #fffde7;" aria-labelledby="education-section">
+          <h3 id="education-section" style="color: {{ cv.primary_color }};">🎓 Formación</h3>
+          {% for edu in cv.selected_educations.all %}
+            <p><strong>{{ edu.title }}</strong><br>{{ edu.institution }}</p>
+          {% endfor %}
+        </section>
+      </div>
+      {% endif %}
+
+      {% if cv.selected_languages.all %}
+      <div class="col-md-6">
+        <section class="p-3 border rounded shadow-sm" style="background-color: #f1f8e9;" aria-labelledby="languages-section">
+          <h3 id="languages-section" style="color: {{ cv.primary_color }};">🌍 Idiomas</h3>
+          {% for lang in cv.selected_languages.all %}
+            <p>{{ lang.language.name }} - {{ lang.level }}</p>
+          {% endfor %}
+        </section>
+      </div>
+      {% endif %}
+
+      {% if cv.selected_softskills.all %}
+      <div class="col-md-6">
+        <section class="p-3 border rounded shadow-sm" style="background-color: #fce4ec;" aria-labelledby="softskills-section">
+          <h3 id="softskills-section" style="color: {{ cv.primary_color }};">💡 Habilidades Blandas</h3>
+          {% for skill in cv.selected_softskills.all %}
+            <p>{{ skill.skill.name }}</p>
+          {% endfor %}
+        </section>
+      </div>
+      {% endif %}
+
+      {% if cv.selected_hardskills.all %}
+      <div class="col-md-6">
+        <section class="p-3 border rounded shadow-sm" style="background-color: #fce4ec;" aria-labelledby="hardskills-section">
+          <h3 id="hardskills-section" style="color: {{ cv.primary_color }};">💡 Habilidades Duras</h3>
+          {% for skill in cv.selected_hardskills.all %}
+            <p>{{ skill.skill.name }}</p>
+          {% endfor %}
+        </section>
+      </div>
+      {% endif %}
+
+      {% if cv.selected_hobbies.all %}
+      <div class="col-12">
+        <section class="p-3 border rounded shadow-sm" style="background-color: #e3f2fd;" aria-labelledby="hobbies-section">
+          <h3 id="hobbies-section" style="color: {{ cv.primary_color }};">🎯 Hobbies</h3>
+          {% for h in cv.selected_hobbies.all %}
+            <p>{{ h.hobby.name }}</p>
+          {% endfor %}
+        </section>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+
+</main>
+{% endblock %}

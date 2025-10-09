@@ -1,0 +1,39 @@
+{% extends 'base2.html' %}
+
+{% block title %}Editar Idioma{% endblock %}
+
+{% block content %}
+<main role="main" class="container my-5" style="max-width: 500px;">
+  <div class="card shadow-sm p-4">
+    <h2 class="mb-4 text-center text-primary">Editar Idioma</h2>
+
+    <form method="POST" novalidate role="form">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="mb-3">
+          <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}
+            <div class="form-text">{{ field.help_text }}</div>
+          {% endif %}
+          {% for error in field.errors %}
+            <div class="text-danger small" role="alert">{{ error }}</div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+
+      <div class="d-flex justify-content-between mt-4">
+        <button type="submit" class="btn btn-success">Guardar Cambios</button>
+        <a href="{% url 'language_list' %}" class="btn btn-secondary" role="button">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</main>
+
+<style>
+  button:focus-visible, a:focus-visible {
+    outline: 3px solid #0d6efd;
+    outline-offset: 2px;
+  }
+</style>
+{% endblock %}

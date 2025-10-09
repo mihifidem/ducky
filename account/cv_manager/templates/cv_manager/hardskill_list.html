@@ -1,0 +1,39 @@
+{% extends 'base2.html' %}
+
+{% block title %}Mis habilidades técnicas{% endblock %}
+
+{% block content %}
+<main class="container my-5" role="main" style="max-width: 700px;">
+  <div class="card shadow-sm p-4">
+    <h2 class="mb-4 text-center text-primary">💻 Mis habilidades Duras</h2>
+
+    <div class="mb-3 text-end">
+      <a href="{% url 'hardskill_add' %}" class="btn btn-primary" role="button">➕ Añadir habilidad dura</a>
+    </div>
+
+    {% if hardskills %}
+      <ul class="list-group" role="list" aria-label="Listado de habilidades técnicas">
+        {% for hardskill in hardskills %}
+          <li class="list-group-item d-flex justify-content-between align-items-center" role="listitem">
+            <div>
+              <strong>{{ hardskill.skill.name|escape }}</strong>
+              {% if hardskill.level %}
+                <br><small>Nivel: {{ hardskill.level|escape }}</small>
+              {% endif %}
+              {% if hardskill.description %}
+                <br><small class="text-muted">{{ hardskill.description|escape }}</small>
+              {% endif %}
+            </div>
+            <div class="d-flex gap-2">
+              <a href="{% url 'hardskill_edit' pk=hardskill.pk %}" class="btn btn-sm btn-outline-success" role="button">✏️ Editar</a>
+              <a href="{% url 'hardskill_delete' pk=hardskill.pk %}" class="btn btn-sm btn-outline-danger" role="button">🗑️ Eliminar</a>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-center mt-3" role="status">No has añadido habilidades técnicas todavía.</p>
+    {% endif %}
+  </div>
+</main>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends 'base2.html' %}
+
+{% block title %}Mis Pasatiempos{% endblock %}
+
+{% block content %}
+<main role="main" class="container my-5">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="text-primary">Mis Pasatiempos</h2>
+    <a href="{% url 'hobby_add' %}" class="btn btn-success btn-sm">➕ Añadir Hobby</a>
+  </div>
+
+<!-- Filtro de búsqueda -->
+<form method="get" class="row g-2 mb-4" role="search" aria-label="Filtrar hobbies">
+  <div class="col-md-8">
+    <label for="search" class="visually-hidden">Buscar hobby o descripción</label>
+    <input type="text" id="search" name="search" class="form-control" placeholder="Buscar..." value="{{ search }}">
+  </div>
+
+   <div class="col-md-2 d-flex flex-column gap-2">
+      <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
+      <a href="{% url 'hobby_list' %}" class="btn btn-outline-secondary btn-sm" role="button">Limpiar</a>
+    </div>
+  </form>
+
+
+
+  <!-- Lista de hobbies -->
+  {% if hobbies %}
+  <table class="table table-hover" role="table">
+    <caption>Listado de hobbies</caption>
+    <thead>
+      <tr>
+        <th scope="col">Hobby</th>
+        <th scope="col">Descripción</th>
+        <th scope="col">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for hobby in hobbies %}
+      <tr>
+        <td>{{ hobby.hobby.name|escape }}</td>
+        <td>{{ hobby.description|default:"-"|escape }}</td>
+        <td class="d-flex gap-1">
+          <a href="{% url 'hobby_edit' hobby.pk %}" class="btn btn-sm btn-warning">✏️ Editar</a>
+          <a href="{% url 'hobby_delete' hobby.pk %}" class="btn btn-sm btn-danger">🗑 Eliminar</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p class="text-center" role="alert">No se encontraron hobbies.</p>
+  {% endif %}
+</main>
+
+<style>
+  button:focus-visible, a:focus-visible {
+    outline: 3px solid #0d6efd;
+    outline-offset: 2px;
+  }
+</style>
+{% endblock %}
