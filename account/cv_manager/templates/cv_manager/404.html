@@ -8,20 +8,28 @@
     body {
         background-color: rgb(29,37,37);
     }
+    a:focus-visible {
+        outline: 3px solid #2980b9;
+        outline-offset: 2px;
+    }
 </style>
 
-<div style="text-align: center; padding: 50px;">
+<main role="main" style="text-align: center; padding: 50px;">
+
     <!-- Imagen de error 404 -->
-    <img src="{% static 'img/404BR.png' %}" alt="Error 404" style="max-width: 400px; margin-bottom: 30px;">
+    <img src="{% static 'img/404BR.png' %}" 
+         alt="Ilustración de error 404, página no encontrada" 
+         style="max-width: 400px; margin-bottom: 30px;">
 
     <!-- Mensaje de error -->
-    <h1 style="font-size: 48px; color: #e74c3c;">¡Error 404!</h1>
+    <h1 role="alert" style="font-size: 48px; color: #e74c3c;">¡Error 404!</h1>
     <p style="font-size: 18px; color: #ccc;">La página que buscas no se encuentra.</p>
 
     <!-- Botón para volver al dashboard -->
     <a href="{% url 'redireccion_dashboard' %}" 
+       role="button"
        style="display: inline-block; margin-top: 30px; padding: 10px 20px; font-size: 16px; background-color: #3498db; color: white; border-radius: 5px; text-decoration: none;">
         Volver al Dashboard
     </a>
-</div>
+</main>
 {% endblock %}

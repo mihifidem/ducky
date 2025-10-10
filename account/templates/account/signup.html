@@ -2,12 +2,19 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="container mt-5">
+<main class="container mt-5" role="main">
   <h2>Crear cuenta</h2>
-  <form method="post">
+
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger" role="alert">
+      {{ form.non_field_errors }}
+    </div>
+  {% endif %}
+
+  <form method="post" role="form" aria-label="Formulario de registro">
     {% csrf_token %}
     {{ form|crispy }}
     <button type="submit" class="btn btn-success">Registrarse</button>
   </form>
-</div>
+</main>
 {% endblock %}

@@ -1,15 +1,26 @@
 {% extends 'base2.html' %}
 
-{% block title %}Confirmar Eliminar idioma{% endblock %}
+{% block title %}Confirmar Eliminar Idioma{% endblock %}
 
 {% block content %}
-<h2>Eliminar Idioma</h2>
 
-<p>¿Estás seguro que deseas eliminar el idioma <strong>{{ language.language.name }}</strong>?</p>
+<main class="container mt-4" role="main">
+  <div class="card border-danger" role="alertdialog" aria-labelledby="delete-lang-title" aria-describedby="delete-lang-desc">
+    <div class="card-header bg-danger text-white">
+      <h2 id="delete-lang-title" class="mb-0">¿Estás seguro que deseas eliminar este idioma?</h2>
+    </div>
+    <div class="card-body">
+      <p id="delete-lang-desc" class="lead" role="alert" aria-live="assertive">
+        Esta acción eliminará permanentemente el idioma <strong>{{ language.language.name }}</strong>.
+      </p>
 
-<form method="post">
-  {% csrf_token %}
-  <button type="submit" class="btn btn-danger">Sí, eliminar</button>
-  <a href="{% url 'language_list' %}" class="btn btn-secondary ms-2">Cancelar</a>
-</form>
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+        <a href="{% url 'language_list' %}" class="btn btn-secondary ms-2" role="button">Cancelar</a>
+      </form>
+    </div>
+  </div>
+</main>
+
 {% endblock %}

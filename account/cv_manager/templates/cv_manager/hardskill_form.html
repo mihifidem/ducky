@@ -1,10 +1,43 @@
 {% extends 'base2.html' %}
+<<<<<<<< HEAD:account/cv_manager/templates/cv_manager/education_form.html
+{% block title %}Formulario de Educación{% endblock %}
+========
+
+{% block title %}
+{% if form.instance.pk %}Editar Habilidad Fuerte{% else %}Añadir Habilidad Fuerte{% endif %}
+{% endblock %}
+>>>>>>>> jordi:account/cv_manager/templates/cv_manager/hardskill_form.html
+
 {% block content %}
-<h3>Añadir Habilidad Dura</h3>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit" class="btn btn-success">Guardar</button>
-  <a href="{% url 'cv_panel' %}" class="btn btn-secondary ms-2">Cancelar</a>
-</form>
+<main class="container my-5" role="main" style="max-width: 600px;">
+  <div class="card shadow-sm p-4">
+    <h2 class="mb-4 text-center text-primary">
+      {% if form.instance.pk %}✏️ Editar{% else %}➕ Añadir{% endif %} Habilidad Fuerte
+    </h2>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      {% if form.errors %}
+        <div class="alert alert-danger" role="alert">
+          <ul class="mb-0">
+            {% for field in form %}
+              {% for error in field.errors %}
+                <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+              {% endfor %}
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      {{ form.as_p }}
+
+      <div class="d-flex justify-content-between mt-4">
+        <button type="submit" class="btn btn-success px-4">Guardar</button>
+        <a href="{% url 'hardskill_list' %}" class="btn btn-outline-secondary px-4" role="button">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</main>
+
 {% endblock %}

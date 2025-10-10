@@ -1,37 +1,63 @@
 {% extends 'base2.html' %}
 
-{% block title %}Mis idiomas{% endblock %}
+{% block title %}Mis Idiomas{% endblock %}
 
 {% block content %}
-<div class="container my-5" style="max-width: 700px;">
-  <div class="card shadow-sm p-4">
-    <h2 class="mb-4 text-center text-primary">🌐 Mis idiomas</h2>
+<main class="container my-5" role="main">
 
-    <div class="mb-3 text-end">
-      <a href="{% url 'language_add' %}" class="btn btn-primary">➕ Añadir idioma</a>
-    </div>
-
-    {% if languages %}
-      <ul class="list-group">
-        {% for user_language in languages %}
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div class="text-dark">
-              <strong>{{ user_language.language.name }}</strong> — Nivel: {{ user_language.get_level_display }}
-            </div>
-            <div class="d-flex">
-              <a href="{% url 'language_edit' pk=user_language.pk %}" class="btn btn-sm btn-outline-success me-2">✏️ Editar</a>
-
-              <form action="{% url 'language_delete' pk=user_language.pk %}" method="post" style="display:inline;">
-                {% csrf_token %}
-                <a href="{% url 'language_delete' pk=user_language.pk %}" class="btn btn-sm btn-outline-danger">🗑️ Eliminar</a>
-              </form>
-            </div>
-          </li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p class="text-center mt-3">No has añadido idiomas todavía.</p>
-    {% endif %}
+  <div class="d-flex justify-content-between mb-3 align-items-center">
+    <h2 class="text-primary">Mis Idiomas</h2>
+    <a href="{% url 'language_add' %}" class="btn btn-success" role="button">➕ Añadir Idioma</a>
   </div>
-</div>
+
+  <!-- 🔹 Filtros -->
+  <form method="get" class="row g-2 mb-4" aria-label="Filtrar idiomas">
+    <div class="col-md-6">
+      <label for="search" class="visually-hidden">Buscar idioma</label>
+      <input type="text" id="search" name="search" class="form-control" placeholder="Buscar..."
+             value="{{ search }}">
+    </div>
+    <div class="col-md-4">
+      <label for="level" class="visually-hidden">Filtrar por nivel</label>
+      <select id="level" name="level" class="form-select">
+        <option value="">Todos los niveles</option>
+        {% for code, label in languages.model.LEVEL_CHOICES %}
+          <option value="{{ code }}" {% if level == code %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2 d-flex flex-column gap-2">
+      <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
+      <a href="{% url 'language_list' %}" class="btn btn-outline-secondary btn-sm" role="button">Limpiar</a>
+    </div>
+  </form>
+
+  <!-- 🔹 Lista de idiomas -->
+  <table class="table table-striped" aria-label="Lista de idiomas">
+    <thead>
+      <tr>
+        <th scope="col">Idioma</th>
+        <th scope="col">Nivel</th>
+        <th scope="col">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for lang in languages %}
+      <tr>
+        <td>{{ lang.language.name|escape }}</td>
+        <td>{{ lang.get_level_display|escape }}</td>
+        <td>
+          <a href="{% url 'language_edit' lang.pk %}" class="btn btn-sm btn-warning" role="button">✏️ Editar</a>
+          <a href="{% url 'language_delete' lang.pk %}" class="btn btn-sm btn-danger" role="button">🗑 Eliminar</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="3" class="text-center">No se encontraron idiomas.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+</main>
 {% endblock %}

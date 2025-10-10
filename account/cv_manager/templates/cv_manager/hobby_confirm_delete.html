@@ -1,15 +1,24 @@
 {% extends 'base2.html' %}
 
-{% block title %}Confirmar eliminación de hobby{% endblock %}
+{% block title %}Eliminar Hobby{% endblock %}
 
 {% block content %}
-<h2>¿Eliminar hobby?</h2>
+<main class="container mt-4" role="main">
+  <div class="card border-danger" role="alertdialog" aria-labelledby="delete-hobby-title">
+    <div class="card-header bg-danger text-white">
+      <h2 id="delete-hobby-title" class="mb-0">¿Estás seguro que deseas eliminar este hobby?</h2>
+    </div>
+    <div class="card-body">
+      <p class="lead" role="alert" aria-live="assertive">
+        Esta acción eliminará permanentemente el hobby <strong>{{ hobby.nombre }}</strong>.
+      </p>
 
-<p>¿Estás seguro que quieres eliminar el hobby <strong>{{ hobby.nombre }}</strong>?</p>
-
-<form method="post">
-  {% csrf_token %}
-  <button type="submit" class="btn btn-danger">Sí, eliminar</button>
-  <a href="{% url 'cv_panel' %}" class="btn btn-secondary ms-2">Cancelar</a>
-</form>
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+        <a href="{% url 'hobby_list' %}" class="btn btn-secondary ms-2" role="button">Cancelar</a>
+      </form>
+    </div>
+  </div>
+</main>
 {% endblock %}

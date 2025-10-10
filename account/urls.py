@@ -1,6 +1,6 @@
 from django.urls import path
 from django.urls import path
-from .views import UserRegisterView, UserLoginView, UserLogoutView, signup_view, profile_view, edit_profile, delete_userprofile
+from .views import UserRegisterView, UserLoginView, UserLogoutView, signup_view, profile_view, edit_profile, delete_userprofile, create_profile_view
 
 
 urlpatterns = [
@@ -13,8 +13,10 @@ urlpatterns = [
 
      # Profile management
     path('profile/', profile_view, name='profile'),
+    path('profile/create/', create_profile_view, name='profile_create'),
     path('profile/edit/', edit_profile, name='profile_edit'),
     path('profile/delete/', delete_userprofile, name='userprofile_delete_confirm'),
+    
 
     
 ]

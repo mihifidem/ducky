@@ -12,6 +12,7 @@ from django.utils.text import slugify
 from django.contrib.auth.forms import UserCreationForm
 from django.conf import settings
 from urllib.parse import urlparse, parse_qs
+from account.cv_manager.models import CVProfile
 
 # External libraries
 from datetime import datetime
@@ -66,8 +67,12 @@ class UserLogoutView(LogoutView):
 @login_required
 def profile_view(request):
     user = request.user
-    perfil = get_object_or_404(UserProfile, user=user)
-    return render(request, 'account/profile.html', {'perfil': perfil})
+    # ✅ Si existe, devuelve el perfil; si no, devuelve None (sin error)
+    perfil = UserProfile.objects.filter(user=user).first()
+
+    cvs = CVProfile.objects.filter(user=user)
+
+    return render(request, 'account/profile.html', {'perfil': perfil, 'cvs': cvs})
 
 
 @login_required
@@ -95,7 +100,7 @@ def delete_userprofile(request):
     if request.method == 'POST':
         profile.delete()
         messages.success(request, "Tu perfil ha sido eliminado correctamente.")
-        return redirect('profile')
+        return redirect('profile_create')
     return render(request, 'account/delete_userprofile_confirm.html', {'profile': profile})
 
 @login_required
@@ -103,7 +108,7 @@ def create_profile_view(request):
     user = request.user
     try:
         if user.userprofile:
-            return redirect('profile')
+            return redirect('profile_create')
     except Exception:
         pass
 

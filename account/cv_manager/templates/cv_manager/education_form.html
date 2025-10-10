@@ -1,17 +1,20 @@
 {% extends 'base2.html' %}
+
 {% block title %}Formulario de Educación{% endblock %}
 
 {% block content %}
-<div class="container my-5" style="max-width: 600px;">
+<main role="main" class="container my-5" style="max-width: 600px;">
   <div class="card shadow-sm p-4">
     <h2 class="mb-4 text-center text-primary">
-      {% if form.instance.pk %}✏️ Editar{% else %}➕ Añadir{% endif %} Educación
+      <span aria-hidden="true">{% if form.instance.pk %}✏️{% else %}➕{% endif %}</span>
+      {% if form.instance.pk %}Editar{% else %}Añadir{% endif %} Educación
     </h2>
-    <form method="post" novalidate>
+
+    <form method="post" novalidate role="form">
       {% csrf_token %}
 
       {% if form.errors %}
-        <div class="alert alert-danger">
+        <div class="alert alert-danger" role="alert">
           <ul class="mb-0">
             {% for field in form %}
               {% for error in field.errors %}
@@ -22,13 +25,31 @@
         </div>
       {% endif %}
 
-      {{ form.as_p }}
+      {% for field in form %}
+        <div class="mb-3">
+          <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}
+            <div class="form-text">{{ field.help_text }}</div>
+          {% endif %}
+          {% for error in field.errors %}
+            <div class="text-danger small" role="alert">{{ error }}</div>
+          {% endfor %}
+        </div>
+      {% endfor %}
 
       <div class="mt-4 text-center">
         <button type="submit" class="btn btn-success px-4">Guardar</button>
-        <a href="{% url 'cv_panel' %}" class="btn btn-secondary ms-2">Cancelar</a>
+        <a href="{% url 'education_list' %}" class="btn btn-secondary ms-2" role="button">Cancelar</a>
       </div>
     </form>
   </div>
-</div>
+</main>
+
+<style>
+  button:focus-visible, a:focus-visible {
+    outline: 3px solid #0d6efd;
+    outline-offset: 2px;
+  }
+</style>
 {% endblock %}

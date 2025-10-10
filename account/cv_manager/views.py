@@ -10,12 +10,15 @@ from django.utils.text import slugify
 from django.conf import settings
 from urllib.parse import urlparse, parse_qs
 from .models import CVProfile
+from account.cv_manager.models import UserJobExperience
+from django.http import Http404
 
 # External libraries
 import pdfkit
 import os
-import zipfile
+import io, zipfile
 from datetime import datetime
+from django.db.models import Q
 
 # Formularios
 from .forms import (
@@ -35,9 +38,17 @@ from .models import (
 
 from account.models import UserProfile
 
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from rest_framework.pagination import PageNumberPagination
+from .serializers import CVProfileSerializer
+
 # Función para manejar el error 404
 def cv_not_found_handler(request, exception):
     return render(request, "cv_manager/404.html", status=404)
+
+
 
 # ------------------------
 # Panel y Dashboard
@@ -122,11 +133,36 @@ def add_experience(request):
 
 
 # Enlace a Experience_list
+
 @login_required
 def experience_list(request):
-    experiences = UserJobExperience.objects.filter(user=request.user)
-    return render(request, 'cv_manager/experience_list.html', {'experiences': experiences})
+    queryset = UserJobExperience.objects.filter(user=request.user)  # Solo experiencias del usuario logueado
+    
+    # 🔹 Filtro por palabra clave (position, company, role, description)
+    search = request.GET.get('search', '')
+    if search:
+        queryset = queryset.filter(
+            Q(position__icontains=search) |
+            Q(company__icontains=search) |
+            Q(role__icontains=search) |
+            Q(description__icontains=search)
+        )
+    
+    # 🔹 Filtro por fechas
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    if start_date:
+        queryset = queryset.filter(start_date__gte=start_date)
+    if end_date:
+        queryset = queryset.filter(end_date__lte=end_date)
 
+    context = {
+        'experiences': queryset,
+        'search': search,
+        'start_date': start_date,
+        'end_date': end_date,
+    }
+    return render(request, 'cv_manager/experience_list.html', context)
     
 # Manejo de experiencias: añadir, editar, eliminar (muy similar a añadir experiencia anterior)
 @login_required
@@ -174,8 +210,32 @@ def add_education(request):
 # Enlace a Education_list
 @login_required
 def education_list(request):
-    educations = UserEducation.objects.filter(user=request.user)
-    return render(request, 'cv_manager/education_list.html', {'educations': educations})
+    queryset = UserEducation.objects.filter(user=request.user)
+    
+    # 🔹 Búsqueda por palabra clave (title, institution, description)
+    search = request.GET.get('search', '')
+    if search:
+        queryset = queryset.filter(
+            Q(title__icontains=search) |
+            Q(institution__icontains=search) |
+            Q(description__icontains=search)
+        )
+
+    # 🔹 Filtro por fechas
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    if start_date:
+        queryset = queryset.filter(start_date__gte=start_date)
+    if end_date:
+        queryset = queryset.filter(end_date__lte=end_date)
+
+    context = {
+        'educations': queryset,
+        'search': search,
+        'start_date': start_date,
+        'end_date': end_date,
+    }
+    return render(request, 'cv_manager/education_list.html', context)
 
 # Editar educación y eliminar educación
 @login_required
@@ -185,7 +245,7 @@ def edit_education(request, pk):
         form = UserEducationForm(request.POST, instance=education)
         if form.is_valid():
             form.save()
-            return redirect('cv_panel')
+            return redirect('education_list')
     else:
         form = UserEducationForm(instance=education)
     return render(request, 'cv_manager/education_form.html', {'form': form})
@@ -230,12 +290,31 @@ def add_language(request):
 # Listado de idiomas
 @login_required
 def language_list(request):
-    languages = UserLanguage.objects.filter(user=request.user)
-    return render(request, 'cv_manager/language_list.html', {'languages': languages})
+    # 🔹 Solo los idiomas del usuario logueado
+    queryset = UserLanguage.objects.filter(user=request.user)
+
+    # 🔹 Filtro por palabra clave en el nombre del idioma
+    search = request.GET.get('search', '')
+    if search:
+        queryset = queryset.filter(
+            Q(language__name__icontains=search)
+        )
+
+    # 🔹 Filtro por nivel
+    level = request.GET.get('level', '')
+    if level:
+        queryset = queryset.filter(level=level)
+
+    context = {
+        'languages': queryset,
+        'search': search,
+        'level': level,
+    }
+    return render(request, 'cv_manager/language_list.html', context)
 
 @login_required
 def edit_language(request, pk):
-    language_instance = get_object_or_404(UserLanguage, pk=pk)
+    language_instance = get_object_or_404(UserLanguage, pk=pk, user=request.user)
     if request.method == 'POST':
         form = UserLanguageForm(request.POST, instance=language_instance, user=request.user)
         if form.is_valid():
@@ -247,7 +326,7 @@ def edit_language(request, pk):
 
 @login_required
 def delete_language(request, pk):
-    language = get_object_or_404(UserLanguage, pk=pk)  # definir siempre
+    language = get_object_or_404(UserLanguage, pk=pk, user=request.user)  # definir siempre
 
     if request.method == "POST":
         language.delete()
@@ -277,8 +356,21 @@ def add_softskill(request):
 # Listado de habilidades blandas (Soft Skills)
 @login_required
 def softskill_list(request):
-    softskills = UserSoftSkill.objects.filter(user=request.user)
-    return render(request, 'cv_manager/softskill_list.html', {'softskills': softskills})
+    # 🔹 Solo las soft skills del usuario logueado
+    queryset = UserSoftSkill.objects.filter(user=request.user)
+
+    # 🔹 Filtro por palabra clave en el nombre de la habilidad
+    search = request.GET.get('search', '')
+    if search:
+        queryset = queryset.filter(
+            Q(skill__name__icontains=search)
+        )
+
+    context = {
+        'softskills': queryset,
+        'search': search,
+    }
+    return render(request, 'cv_manager/softskill_list.html', context)
 
 # Edición y eliminación habilidades blandas
 @login_required
@@ -327,10 +419,25 @@ def add_hardskill(request):
 # Listado de habilidades fuertes (Hard Skills)
 @login_required
 def hardskill_list(request):
-    hardskills = UserHardSkill.objects.filter(user=request.user)
-    return render(request, 'cv_manager/hardskill_list.html', {'hardskills': hardskills})
+    # 🔹 Solo las habilidades fuertes del usuario
+    queryset = UserHardSkill.objects.filter(user=request.user)
+
+    # 🔹 Filtro por palabra clave en el nombre de la habilidad
+    search = request.GET.get('search', '')
+    if search:
+        queryset = queryset.filter(
+            Q(skill__name__icontains=search)
+        )
+
+    context = {
+        'hardskills': queryset,
+        'search': search,
+    }
+    return render(request, 'cv_manager/hardskill_list.html', context)
+
 
 # Edición y eliminación habilidades fuertes
+@login_required
 def edit_hardskill(request, pk):
     user_hardskill = get_object_or_404(UserHardSkill, pk=pk, user=request.user)
 
@@ -376,8 +483,23 @@ def add_hobby(request):
 # Listado de hobbies
 @login_required
 def hobby_list(request):
-    hobbies = UserHobby.objects.filter(user=request.user)
-    return render(request, 'cv_manager/hobby_list.html', {'hobbies': hobbies})
+    # 🔹 Solo hobbies del usuario logueado
+    queryset = UserHobby.objects.filter(user=request.user)
+
+    # 🔹 Filtro por palabra clave en el nombre del hobby o descripción
+    search = request.GET.get('search', '')
+    if search:
+        queryset = queryset.filter(
+            Q(hobby__name__icontains=search) |
+            Q(description__icontains=search)
+        )
+
+    context = {
+        'hobbies': queryset,
+        'search': search,
+    }
+    return render(request, 'cv_manager/hobby_list.html', context)
+
     
 # Edición y eliminación hobbies
 @login_required
@@ -385,19 +507,15 @@ def edit_hobby(request, pk):
     user_hobby = get_object_or_404(UserHobby, pk=pk, user=request.user)
 
     if request.method == 'POST':
-        form = UserHobbyForm(request.POST)
+        form = UserHobbyForm(request.POST, instance=user_hobby)
         if form.is_valid():
-            hobby_name = form.cleaned_data['hobby'].strip()
-            hobby = Hobby.objects.filter(name__iexact=hobby_name).first()
-            if not hobby:
-                hobby = Hobby.objects.create(name=hobby_name)
-            user_hobby.hobby = hobby
-            user_hobby.save()
+            form.save(user=request.user)
             return redirect('hobby_list')
     else:
-        form = UserHobbyForm(initial={'hobby': user_hobby.hobby.name})
+        form = UserHobbyForm(instance=user_hobby)
 
     return render(request, 'cv_manager/edit_hobby.html', {'form': form})
+
 
 @login_required
 def delete_hobby(request, pk):
@@ -472,7 +590,11 @@ def cv_delete(request, pk):
 def cv_clone(request, pk):
     cv = get_object_or_404(CVProfile, pk=pk, user=request.user)
 
-    base_slug = slugify(f"{cv.slug}_copia")
+    # Eliminar sufijos "_copia" del slug existente
+    import re
+    original_slug = re.sub(r'(_copia(_\d+)?)$', '', cv.slug)
+
+    base_slug = slugify(f"{original_slug}_copia")
     new_title = f"{cv.title} (copia)"
     new_slug = base_slug
     counter = 1
@@ -482,14 +604,17 @@ def cv_clone(request, pk):
         new_slug = f"{base_slug}_{counter}"
         new_title = f"{cv.title} (copia {counter})"
 
+    # Crear clon
     clone = CVProfile.objects.create(
         user=request.user,
         title=new_title,
         slug=new_slug,
         created_at=cv.created_at,
-        skin=cv.skin
+        skin=cv.skin,
+        is_public=cv.is_public
     )
 
+    # Clonar relaciones
     clone.selected_experiences.set(cv.selected_experiences.all())
     clone.selected_educations.set(cv.selected_educations.all())
     clone.selected_softskills.set(cv.selected_softskills.all())
@@ -505,8 +630,9 @@ def cv_clone(request, pk):
 
 
 # Vista para previsualizar el CV en formato HTML según el skin seleccionado
+@login_required
 def preview_cv(request, slug):
-    cv = get_object_or_404(CVProfile, slug=slug)
+    cv = get_object_or_404(CVProfile, slug=slug, user=request.user)
 
     # Diccionario para mapear el tipo de skin con su template correspondiente
     template_map = {
@@ -524,14 +650,39 @@ def preview_cv(request, slug):
 
 # Vista pública para mostrar el CV según su skin
 def cv_public_view(request, slug):
-    cv = get_object_or_404(CVProfile, slug=slug)
-    profile = UserProfile.objects.filter(user=cv.user).first()  # Obtener perfil del dueño del CV
+    """
+    Vista pública para mostrar el CV según su skin.
+    Maneja CVs inexistentes, privados, sin usuario o sin perfil.
+    """
 
-    return render(request, f'cv_manager/skins/cv_{cv.skin}.html', {
+    # Intentamos obtener el CV que sea público
+    cv = CVProfile.objects.filter(slug=slug, is_public=True).first()
+
+    # Si no existe o no es público, mostramos mensaje amigable
+    if not cv:
+        return render(request, 'cv_manager/cv_not_public.html', status=404)
+
+    # Verificamos que el CV tenga un usuario asociado
+    if not cv.user:
+        return render(request, 'cv_manager/cv_no_user.html', status=404)
+
+    # Obtenemos el perfil del usuario
+    profile = UserProfile.objects.filter(user=cv.user).first()
+    if not profile:
+        return render(request, 'cv_manager/cv_no_profile.html', status=404)
+
+    # Mapear skins a plantillas
+    template_map = {
+        'default': 'cv_manager/skins/cv_default.html',
+        'modern': 'cv_manager/skins/cv_modern.html',
+        'minimal': 'cv_manager/skins/cv_minimal.html',
+    }
+    template_path = template_map.get(cv.skin, 'cv_manager/skins/cv_default.html')
+
+    return render(request, template_path, {
         'cv': cv,
-        'profile': profile,  # Pasamos profile para usar en la plantilla
+        'profile': profile,
     })
-
 
 
 # Vista para listar todos los CVs del usuario autenticado
@@ -590,54 +741,53 @@ def cv_download_pdf(request, slug):
 # Vista para descargar los pdf seleccionados en ZIP
 @login_required
 def download_selected_cvs(request):
-    if request.method == 'POST':
-        selected_ids = request.POST.getlist('selected_cvs')
-        cvs = CVProfile.objects.filter(id__in=selected_ids)
+    if request.method == "POST":
+        selected_ids = request.POST.getlist("selected_cvs")
 
-        # Ruta wkhtmltopdf en Windows
-        path_wkhtmltopdf = r'C:\Archivos de programa\wkhtmltopdf\bin\wkhtmltopdf.exe'
+        # 🔹 Filtrar solo los CVs del usuario logueado
+        cvs = CVProfile.objects.filter(id__in=selected_ids, user=request.user)
+        if not cvs.exists():
+            return HttpResponse("No se encontraron CVs válidos.", status=403)
+
+        # Configuración wkhtmltopdf
+        path_wkhtmltopdf = r"C:\Archivos de programa\wkhtmltopdf\bin\wkhtmltopdf.exe"
         config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
 
-        # Crear carpeta destino para el ZIP
-        zip_dir = os.path.join(settings.MEDIA_ROOT, 'cv_zips')
-        os.makedirs(zip_dir, exist_ok=True)
-
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        zip_filename = f'CVs_Seleccionados_{timestamp}.zip'
-        zip_path = os.path.join(zip_dir, zip_filename)
-
-        # Mapeo de skins a plantillas
+        # Mapeo de plantillas por skin
         template_map = {
-            'default': 'cv_manager/skins/pdf/cv_default_pdf.html',
-            'modern': 'cv_manager/skins/pdf/cv_modern_pdf.html',
-            'minimal': 'cv_manager/skins/pdf/cv_minimal_pdf.html',
+            "default": "cv_manager/skins/pdf/cv_default_pdf.html",
+            "modern": "cv_manager/skins/pdf/cv_modern_pdf.html",
+            "minimal": "cv_manager/skins/pdf/cv_minimal_pdf.html",
         }
 
-        with zipfile.ZipFile(zip_path, 'w') as zip_file:
+        # Crear archivo en memoria
+        buffer = io.BytesIO()
+        with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
             for cv in cvs:
-                # Obtener plantilla correspondiente al skin
-                template_path = template_map.get(cv.skin, template_map['default'])
+                template_path = template_map.get(cv.skin, template_map["default"])
 
-                # Obtener el perfil del usuario del CV
+                # Obtener perfil del usuario
                 try:
-                    profile = cv.user.userprofile  # o cv.user.profile según tu modelo
+                    profile = cv.user.userprofile
                 except UserProfile.DoesNotExist:
                     profile = None
 
-                context = {
-                    'cv': cv,
-                    'profile': profile,
-                }
+                # Renderizar HTML a PDF
+                context = {"cv": cv, "profile": profile}
+                html = render_to_string(template_path, context, request=request)
+                pdf_content = pdfkit.from_string(html, False, configuration=config)
 
-                html = render_to_string(template_path, context)
+                # Nombre seguro del archivo
+                filename = f"{slugify(cv.title)}_{cv.user.username}.pdf"
+                zip_file.writestr(filename, pdf_content)
 
-                pdf_file = pdfkit.from_string(html, False, configuration=config)
+        buffer.seek(0)
 
-                safe_title = slugify(cv.title)
-                filename = f"{safe_title}_{cv.user.username}.pdf"
-                zip_file.writestr(filename, pdf_file)
-
-        return redirect(f"{settings.MEDIA_URL}cv_zips/{zip_filename}")
+        # Respuesta HTTP con descarga
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        response = HttpResponse(buffer, content_type="application/zip")
+        response["Content-Disposition"] = f'attachment; filename="CVs_{timestamp}.zip"'
+        return response
 
     return HttpResponse("Método no permitido", status=405)
 
@@ -668,3 +818,19 @@ def mi_vista(request):
     }
 
     return render(request, 'cv_manager/info_url.html', contexto)
+
+
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+class CVProfileViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = CVProfileSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+    pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self):
+        # Filtramos solo los CVs del usuario logueado
+        return CVProfile.objects.filter(user=self.request.user).order_by('-updated_at')

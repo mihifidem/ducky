@@ -3,17 +3,39 @@
 {% block title %}Editar Habilidad Blanda{% endblock %}
 
 {% block content %}
-<div class="container my-5" style="max-width: 500px;">
+<main role="main" class="container my-5" style="max-width: 500px;">
   <div class="card shadow-sm p-4">
-    <h2 class="mb-4 text-center text-primary">✏️ Editar Habilidad Blanda</h2>
-    <form method="post" novalidate>
+    <h2 class="mb-4 text-center text-primary">
+      <span aria-hidden="true">✏️</span> Editar Habilidad Blanda
+    </h2>
+
+    <form method="post" novalidate role="form">
       {% csrf_token %}
-      {{ form.as_p }}
+      {% for field in form %}
+        <div class="mb-3">
+          <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}
+            <div class="form-text">{{ field.help_text }}</div>
+          {% endif %}
+          {% for error in field.errors %}
+            <div class="text-danger small" role="alert">{{ error }}</div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+
       <div class="d-flex justify-content-between mt-4">
         <button type="submit" class="btn btn-success px-4">Guardar</button>
-        <a href="{% url 'cv_panel' %}" class="btn btn-outline-secondary px-4">Cancelar</a>
+        <a href="{% url 'softskill_list' %}" class="btn btn-outline-secondary px-4" role="button">Cancelar</a>
       </div>
     </form>
   </div>
-</div>
+</main>
+
+<style>
+  button:focus-visible, a:focus-visible {
+    outline: 3px solid #0d6efd;
+    outline-offset: 2px;
+  }
+</style>
 {% endblock %}

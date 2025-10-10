@@ -3,12 +3,25 @@
 {% block title %}Confirmar eliminación de perfil{% endblock %}
 
 {% block content %}
-<h2>Confirmar eliminación de tu perfil</h2>
-<p>Esta acción eliminará tu información personal y configuración, pero tu cuenta de usuario permanecerá activa.</p>
+<main class="container my-5" role="main">
+  <section class="p-4 border rounded shadow-sm bg-light">
+    <h2 id="delete-title" class="text-danger mb-3">⚠️ Confirmar eliminación de tu perfil</h2>
+    <p>
+      Esta acción <strong>eliminará tu información personal y configuración</strong>, 
+      pero tu cuenta de usuario permanecerá activa.
+    </p>
 
-<form method="post">
-  {% csrf_token %}
-  <button type="submit" class="btn btn-danger">Eliminar mi perfil</button>
-  <a href="{% url 'cv_panel' %}" class="btn btn-secondary ms-2">Cancelar</a>
-</form>
+    <form method="post" aria-labelledby="delete-title">
+      {% csrf_token %}
+      <div class="mt-4 d-flex gap-2">
+        <button type="submit" class="btn btn-danger" aria-label="Eliminar definitivamente mi perfil">
+          Eliminar mi perfil
+        </button>
+        <a href="{% url 'cv_panel' %}" class="btn btn-secondary" role="button" aria-label="Cancelar y volver al panel">
+          Cancelar
+        </a>
+      </div>
+    </form>
+  </section>
+</main>
 {% endblock %}

@@ -1,8 +1,8 @@
 {% extends 'base2.html' %}
 {% block content %}
-<div class="container mt-5">
+<main class="container mt-5" role="main">
   <h2>Sesión cerrada</h2>
-  <p>Has cerrado sesión correctamente.</p>
-  <a href="{% url 'login' %}" class="btn btn-primary">Volver a iniciar sesión</a>
-</div>
+  <p role="status">Has cerrado sesión correctamente.</p>
+  <a href="{% url 'login' %}" class="btn btn-primary" role="button">Volver a iniciar sesión</a>
+</main>
 {% endblock %}

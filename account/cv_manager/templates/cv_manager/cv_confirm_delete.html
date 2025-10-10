@@ -2,21 +2,23 @@
 {% block title %}Eliminar CV{% endblock %}
 {% block content %}
 
-<div class="container mt-4">
-  <div class="card border-danger">
+<main class="container mt-4" role="main">
+  <div class="card border-danger" role="alertdialog" aria-labelledby="delete-cv-title">
     <div class="card-header bg-danger text-white">
-      <h4 class="mb-0">¿Estás seguro que deseas eliminar este CV?</h4>
+      <h2 id="delete-cv-title" class="mb-0">¿Estás seguro que deseas eliminar este CV?</h2>
     </div>
     <div class="card-body">
-      <p class="lead">Esta acción eliminará permanentemente el CV <strong>"{{ cv.title }}"</strong>.</p>
+      <p class="lead" role="alert" aria-live="assertive">
+        Esta acción eliminará permanentemente el CV <strong>"{{ cv.title }}"</strong>.
+      </p>
 
       <form method="post">
         {% csrf_token %}
         <button type="submit" class="btn btn-danger">Sí, eliminar</button>
-        <a href="{% url 'cv_list' %}" class="btn btn-secondary ms-2">Cancelar</a>
+        <a href="{% url 'cv_list' %}" class="btn btn-secondary ms-2" role="button">Cancelar</a>
       </form>
     </div>
   </div>
-</div>
+</main>
 
 {% endblock %}

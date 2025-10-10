@@ -1,15 +1,26 @@
 {% extends 'base2.html' %}
 
-{% block title %}Confirmar eliminación de habilidad dura{% endblock %}
+{% block title %}Eliminar Habilidad Dura{% endblock %}
 
 {% block content %}
-<h2>¿Eliminar habilidad blanda?</h2>
 
-<p>¿Estás seguro que quieres eliminar la habilidad <strong>{{ hard_skill.name }}</strong>?</p>
+<main class="container mt-4" role="main">
+  <div class="card border-danger" role="alertdialog" aria-labelledby="delete-hard-skill-title">
+    <div class="card-header bg-danger text-white">
+      <h2 id="delete-hard-skill-title" class="mb-0">¿Estás seguro que deseas eliminar esta habilidad dura?</h2>
+    </div>
+    <div class="card-body">
+      <p class="lead" role="alert" aria-live="assertive">
+        Esta acción eliminará permanentemente la habilidad <strong>"{{ hard_skill.name }}"</strong>.
+      </p>
 
-<form method="post">
-  {% csrf_token %}
-  <button type="submit" class="btn btn-danger">Sí, eliminar</button>
-  <a href="{% url 'cv_panel' %}" class="btn btn-secondary ms-2">Cancelar</a>
-</form>
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+        <a href="{% url 'hardskill_list' %}" class="btn btn-secondary ms-2" role="button">Cancelar</a>
+      </form>
+    </div>
+  </div>
+</main>
+
 {% endblock %}

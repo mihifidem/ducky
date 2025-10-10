@@ -1,13 +1,14 @@
 from django import forms
 from .models import UserJobExperience, UserEducation, UserLanguage, UserSoftSkill, UserHardSkill, UserHobby, CVProfile, Hobby, SoftSkill, HardSkill
 from django.core.exceptions import ValidationError
-
+from django.conf import settings
+from .skins import HTML_SKINS
 
 # Formulario para gestionar experiencia laboral de usuario
 class UserJobExperienceForm(forms.ModelForm):
     class Meta:
         model = UserJobExperience
-        fields = ['position', 'company', 'start_date', 'end_date', 'description']
+        fields = ['position', 'role', 'company', 'start_date', 'end_date', 'description']
         widgets = {
             'start_date': forms.DateInput(attrs={'type': 'date'}),  # Calendario para fechas
             'end_date': forms.DateInput(attrs={'type': 'date'}),
@@ -97,27 +98,44 @@ class UserHardSkillForm(forms.Form):
         user_skill, created = UserHardSkill.objects.get_or_create(user=user, skill=skill)
         return user_skill
 
-# Formulario para hobbies
-class UserHobbyForm(forms.Form):
-    hobby = forms.CharField(
+# Formulario para los Hobbies
+
+class UserHobbyForm(forms.ModelForm):
+    hobby_name = forms.CharField(
         label="Hobby",
-        widget=forms.TextInput(attrs={'placeholder': 'Ej: Escalar'}),
-        help_text="Escribe un hobby. Se creará si no existe."
+        required=False,  # ahora opcional
+        widget=forms.TextInput(attrs={'placeholder': 'Ej: Correr'}),
+        help_text="Solo cambia si quieres modificar el hobby."
     )
 
-    def save(self, user):
-        hobby_name = self.cleaned_data['hobby'].strip()
+    class Meta:
+        model = UserHobby
+        fields = ['description']  # description sigue siendo obligatorio
 
-        # Buscar con name__iexact (case-insensitive)
-        hobby = Hobby.objects.filter(name__iexact=hobby_name).first()
+    def __init__(self, *args, **kwargs):
+        if 'instance' in kwargs:
+            instance = kwargs['instance']
+            initial = kwargs.get('initial', {})
+            initial['hobby_name'] = instance.hobby.name
+            kwargs['initial'] = initial
+        super().__init__(*args, **kwargs)
 
-        if not hobby:
-            hobby = Hobby.objects.create(name=hobby_name)
+    def save(self, user=None, commit=True):
+        description = self.cleaned_data.get('description', '').strip()
+        hobby_name = self.cleaned_data.get('hobby_name', '').strip()
 
-        # Evita duplicados
-        user_hobby, created = UserHobby.objects.get_or_create(user=user, hobby=hobby)
-        return user_hobby
+        # Si no se cambió el hobby, usamos el existente
+        if hobby_name:
+            hobby, _ = Hobby.objects.get_or_create(name__iexact=hobby_name, defaults={'name': hobby_name})
+        else:
+            hobby = self.instance.hobby
 
+        # Guardamos el UserHobby
+        self.instance.hobby = hobby
+        self.instance.description = description
+        if commit:
+            self.instance.save()
+        return self.instance
 
 
 
@@ -127,7 +145,8 @@ class CVProfileForm(forms.ModelForm):
     class Meta:
         model = CVProfile
         fields = [
-            'title', 'skin', 'selected_experiences',
+            'title', 'slug', 'skin', 'is_public', 
+            'selected_experiences',
             'selected_educations',
             'selected_softskills', 'selected_hardskills', 
             'selected_languages',
@@ -142,6 +161,17 @@ class CVProfileForm(forms.ModelForm):
             'selected_hobbies': forms.CheckboxSelectMultiple(),
         }
 
+
+
+    def clean_slug(self):
+        slug = self.cleaned_data.get("slug")
+
+        reserved = getattr(settings, "RESERVED_SLUGS", ["admin", "api", "cv", "account", "media", "static"])
+        if slug in reserved:
+            raise ValidationError("❌ Este slug está reservado. Elige otro nombre para tu CV.")
+
+        return slug
+    
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)  # Captura el usuario para filtrar queryset
         super().__init__(*args, **kwargs)
@@ -152,3 +182,10 @@ class CVProfileForm(forms.ModelForm):
             self.fields['selected_hardskills'].queryset = UserHardSkill.objects.filter(user=user)
             self.fields['selected_languages'].queryset = UserLanguage.objects.filter(user=user)
             self.fields['selected_hobbies'].queryset = UserHobby.objects.filter(user=user)
+
+        # Selector visual de skins
+        self.fields['skin'].widget = forms.Select(
+            choices=[(key, key.capitalize()) for key in HTML_SKINS.keys()]
+        )
+        # Valor inicial
+        self.fields['skin'].initial = self.instance.skin if self.instance else 'default'

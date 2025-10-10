@@ -3,13 +3,24 @@
 {% block title %}Confirmar eliminación de habilidad blanda{% endblock %}
 
 {% block content %}
-<h2>¿Eliminar habilidad blanda?</h2>
 
-<p>¿Estás seguro que quieres eliminar la habilidad <strong>{{ soft_skill.name }}</strong>?</p>
+<main class="container mt-4" role="main">
+  <div class="card border-danger" role="alertdialog" aria-labelledby="delete-softskill-title" aria-describedby="delete-softskill-desc">
+    <div class="card-header bg-danger text-white">
+      <h2 id="delete-softskill-title" class="mb-0">¿Eliminar habilidad blanda?</h2>
+    </div>
+    <div class="card-body">
+      <p id="delete-softskill-desc" class="lead" role="alert" aria-live="assertive">
+        ¿Estás seguro que quieres eliminar la habilidad <strong>{{ soft_skill.name }}</strong>?
+      </p>
 
-<form method="post">
-  {% csrf_token %}
-  <button type="submit" class="btn btn-danger">Sí, eliminar</button>
-  <a href="{% url 'cv_panel' %}" class="btn btn-secondary ms-2">Cancelar</a>
-</form>
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+        <a href="{% url 'softskill_list' %}" class="btn btn-secondary ms-2" role="button">Cancelar</a>
+      </form>
+    </div>
+  </div>
+</main>
+
 {% endblock %}

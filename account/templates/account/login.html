@@ -1,67 +1,74 @@
 {% extends 'base2.html' %}
 {% load crispy_forms_tags %}
 {% load static %}
- {%block title_modul%}
- {%endblock%}
+
+{% block title %}Iniciar Sesión{% endblock %}
+
 {% block content %}
-<div class="container col-12">
-   
-<div class="app">
+<main class="container col-12" role="main">
+  <div class="app">
     <!-- begin app-wrap -->
     <div class="app-wrap">
-        <!-- begin pre-loader -->
-        <div class="loader">
-            <div class="h-100 d-flex justify-content-center">
-                <div class="align-self-center">
-                    <img src="{% static '/static/img/loader/loader.svg' %}" alt="loader">
-                </div>
-            </div>
+
+      <!-- begin pre-loader (decorativo, aria-hidden) -->
+      <div class="loader" aria-hidden="true">
+        <div class="h-100 d-flex justify-content-center">
+          <div class="align-self-center">
+            <img src="{% static 'img/loader/loader.svg' %}" alt="" role="presentation">
+          </div>
         </div>
-        <!-- end pre-loader -->
-       
-        <!--start login contant-->
-        <div class="app-contant">
-            <div class="bg-white">
-                <div class="container-fluid p-0">
-                    <div class="row no-gutters">
-                        <div class="col-sm-6 col-lg-5 col-xxl-3 align-self-center order-2 order-sm-1">
-                            <div class="d-flex align-items-center h-100-vh">
-                                <div class="login p-50">
-                                    <h1 class="mb-2">We Are Duckyers</h1>
-                                    <p>Welcome back, please login to your account.</p>
+      </div>
+      <!-- end pre-loader -->
 
-                                    <!-- Formulario Django funcional -->
-                                    <form method="post" action="{% url 'login' %}?next=/dashboard/" class="mt-3 mt-sm-5">
-                                        {% csrf_token %}
-                                        {{ form|crispy }}
-                                        <div class="col-12 mt-3">
-                                            <button type="submit" class="btn btn-success btn-block">Enter</button>
-                                        </div>
-                                    </form>
+      <!-- start login content -->
+      <div class="app-contant">
+        <div class="bg-white">
+          <div class="container-fluid p-0">
+            <div class="row no-gutters">
+              
+              <!-- Formulario de login -->
+              <section class="col-sm-6 col-lg-5 col-xxl-3 align-self-center order-2 order-sm-1" aria-labelledby="login-title">
+                <div class="d-flex align-items-center h-100-vh">
+                  <div class="login p-50 w-100">
+                    <h1 id="login-title" class="mb-2">Bienvenido a Duckyers</h1>
+                    <p>Por favor, inicia sesión en tu cuenta.</p>
 
-                                    <div class="col-12 mt-3">
-                                        <p>I don't have an account<a href="{% url 'register' %}">Register</a></p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <form method="post" action="{% url 'login' %}?next=/dashboard/" class="mt-3 mt-sm-5" aria-describedby="login-help">
+                      {% csrf_token %}
+                      {{ form|crispy }}
 
-                        <div class="col-sm-6 col-xxl-9 col-lg-7 bg-gradient o-hidden order-1 order-sm-2">
-                            <div class="row align-items-center h-100">
-                                <div class="col-7 mx-auto ">
-                                    <img class="img-fluid" src="{% static 'img/ducky/login.png' %}" alt="">
-                                </div>
-                            </div>
-                        </div>
+                      <div class="col-12 mt-3">
+                        <button type="submit" class="btn btn-success w-100" aria-label="Ingresar a tu cuenta">
+                          Ingresar
+                        </button>
+                      </div>
+                    </form>
+
+                    <div class="col-12 mt-3" id="login-help">
+                      <p>¿No tienes cuenta?
+                        <a href="{% url 'register' %}">Regístrate</a>
+                      </p>
                     </div>
+                  </div>
                 </div>
+              </section>
+
+              <!-- Imagen decorativa -->
+              <div class="col-sm-6 col-xxl-9 col-lg-7 bg-gradient o-hidden order-1 order-sm-2" aria-hidden="true">
+                <div class="row align-items-center h-100">
+                  <div class="col-7 mx-auto">
+                    <img class="img-fluid" src="{% static 'img/ducky/login.png' %}" alt="" role="presentation">
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
         </div>
-        <!--end login contant-->
+      </div>
+      <!-- end login content -->
+
     </div>
     <!-- end app-wrap -->
-</div>
-</div>
-
-<!-- end app -->
+  </div>
+</main>
 {% endblock %}

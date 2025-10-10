@@ -1,24 +1,26 @@
-
 {% extends 'base2.html' %}
-
 {% load static %}
 
 {% block title %}Mis CVs personalizados{% endblock %}
 
 {% block extra_css %}
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
 <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-
+<style>
+    button:focus-visible, a:focus-visible {
+        outline: 3px solid #0d6efd;
+        outline-offset: 2px;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="container py-5">
+<main class="container py-5" role="main">
     <div class="row justify-content-center">
         <div class="col-md-10">
 
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="mb-0">📋 Mis CVs personalizados</h1> 
+                <h1 class="mb-0"><span aria-hidden="true">📋</span> Mis CVs personalizados</h1> 
                 <div>
                     <a href="{% url 'cv_create' %}" class="btn btn-success shadow-sm me-2">
                         <i class="bi bi-plus-circle-fill"></i> Nuevo CV
@@ -26,14 +28,15 @@
                     <a href="{% url 'cv_panel' %}" class="btn btn-secondary">Cancelar</a>
                 </div>
             </div>
-<hr>
+
+            <hr>
+
             {% for cv in cvs %}
-            <div class="card mb-4 {{ cv.skin }}-card">
+            <div class="card mb-4 {{ cv.skin }}-card" role="region" aria-labelledby="cv-title-{{ cv.id }}">
                 <div class="card-body">
-                    <h5 class="card-title {{ cv.skin }}-title">{{ cv.title }}</h5>
-                    <h6 class="card-subtitle mb-2">📅 Creado el {{ cv.created_at|date:"d/m/Y" }}</h6>
-                    <h6 class="card-subtitle mb-2 text-muted">📝 Última modificación: {{ cv.updated_at|date:"d/m/Y H:i" }}</h6>
-                    
+                    <h5 id="cv-title-{{ cv.id }}" class="card-title {{ cv.skin }}-title">{{ cv.title|escape }}</h5>
+                    <h6 class="card-subtitle mb-2">Creado el {{ cv.created_at|date:"d/m/Y" }}</h6>
+                    <h6 class="card-subtitle mb-2 text-muted">Última modificación: {{ cv.updated_at|date:"d/m/Y H:i" }}</h6>
 
                     <p class="card-text">
                         {{ cv.selected_experiences.count }} experiencias ·
@@ -45,51 +48,44 @@
 
                     <div class="btn-group">
                         <a href="{% url 'cv_public_view' slug=cv.slug %}" target="_blank" class="btn btn-outline-primary btn-sm">
-                            🌐 Ver
+                            <span aria-hidden="true">🌐</span> Ver
                         </a>
                         <a href="{% url 'cv_edit' pk=cv.pk %}" class="btn btn-outline-secondary btn-sm">
-                            ✏️ Editar
+                            <span aria-hidden="true">✏️</span> Editar
                         </a>
                         <a href="{% url 'cv_clone' pk=cv.pk %}" class="btn btn-outline-warning btn-sm">
-                            📋 Clonar
+                            <span aria-hidden="true">📋</span> Clonar
                         </a>
                         <a href="{% url 'cv_delete' pk=cv.pk %}" class="btn btn-outline-danger btn-sm">
-                            🗑️ Eliminar
+                            <span aria-hidden="true">🗑️</span> Eliminar
                         </a>
-                        
                     </div>
                 </div>
             </div>
             {% empty %}
-                <div class="alert alert-info">No has creado ningún CV aún.</div>
-                {% endfor %}
+            <div class="alert alert-info" role="alert">No has creado ningún CV aún.</div>
+            {% endfor %}
 
-                <!-- 🚀 FORMULARIO PARA DESCARGAR EN ZIP -->
-                <div class="card mt-5 bg-light border-radius p-2 shadow-lg">
-                    <div class="card-body">
-                        <h2 class="card-title mb-4">📥 Descargar CVs seleccionados</h2>
-                        <form method="post" action="{% url 'cv_download_selected' %}">
-                            {% csrf_token %}
-                            <ul class="list-group mb-3">
-                                {% for cv in cvs %}
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <label class="mb-0">
-                                        <input type="checkbox" name="selected_cvs" value="{{ cv.id }}">
-                                        {{ cv.title }} ({{ cv.user.username }})
-                                    </label>
-                                </li>
-                                {% endfor %}
-                            </ul>
-                            <button type="submit" class="btn btn-primary">📦 Descargar seleccionados en ZIP</button>
-                        </form>
-                    </div>
+            <!-- Formulario de descarga -->
+            <div class="card mt-5 bg-light border-radius p-2 shadow-lg">
+                <div class="card-body">
+                    <h2 class="card-title mb-4"><span aria-hidden="true">📥</span> Descargar CVs seleccionados</h2>
+                    <form method="post" action="{% url 'cv_download_selected' %}">
+                        {% csrf_token %}
+                        <ul class="list-group mb-3">
+                            {% for cv in cvs %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <input type="checkbox" id="cv-{{ cv.id }}" name="selected_cvs" value="{{ cv.id }}" aria-labelledby="cv-label-{{ cv.id }}">
+                                <label id="cv-label-{{ cv.id }}" for="cv-{{ cv.id }}">{{ cv.title|escape}} ({{ cv.user.username|escape }})</label>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        <button type="submit" class="btn btn-primary">Descargar seleccionados en ZIP</button>
+                    </form>
                 </div>
-
             </div>
+
         </div>
     </div>
-
-</body>
-
-</html>
+</main>
 {% endblock %}

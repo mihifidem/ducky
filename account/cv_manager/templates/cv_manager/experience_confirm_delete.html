@@ -1,15 +1,32 @@
 {% extends 'base2.html' %}
 
-{% block title %}Confirmar eliminación de experiencia{% endblock %}
+{% block title %}Eliminar Experiencia{% endblock %}
 
 {% block content %}
-<h2>¿Eliminar experiencia?</h2>
 
-<p>¿Estás seguro que quieres eliminar la experiencia de <strong>{{ experience.position }}</strong> en <strong>{{ experience.company }}</strong>?</p>
+<main class="container mt-4" role="main">
+  <div class="card border-danger" role="alertdialog" aria-labelledby="delete-exp-title">
+    <div class="card-header bg-danger text-white">
+      <h2 id="delete-exp-title" class="mb-0">¿Eliminar experiencia?</h2>
+    </div>
+    <div class="card-body">
+      <p class="lead" role="alert" aria-live="assertive">
+        ¿Estás seguro que quieres eliminar la experiencia de <strong>{{ experience.position }}</strong> en <strong>{{ experience.company }}</strong>?
+      </p>
 
-<form method="post">
-  {% csrf_token %}
-  <button type="submit" class="btn btn-danger">Sí, eliminar</button>
-  <a href="{% url 'experience_list' %}" class="btn btn-secondary ms-2">Cancelar</a>
-</form>
+      <form method="post" role="form">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+        <a href="{% url 'experience_list' %}" class="btn btn-secondary ms-2" role="button">Cancelar</a>
+      </form>
+    </div>
+  </div>
+</main>
+
+<style>
+  button:focus-visible, a:focus-visible {
+    outline: 3px solid #0d6efd;
+    outline-offset: 2px;
+  }
+</style>
 {% endblock %}
