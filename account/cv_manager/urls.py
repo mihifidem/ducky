@@ -1,7 +1,14 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 
 from .views import dashboard_view, cv_panel_view, mi_vista
+from .views import CVProfileViewSet
+from rest_framework.routers import DefaultRouter
+
+
+# Creamos el router
+router = DefaultRouter()
+router.register(r'cvs', CVProfileViewSet, basename='cvs')
 
 urlpatterns = [
     # Dashboard / Panel
@@ -61,7 +68,10 @@ urlpatterns = [
     path('cv/download-selected/', views.download_selected_cvs, name='cv_download_selected'),
 
     # 404
-    path('*', views.page_not_found_view, name='error_404'),
+    # path('*', views.page_not_found_view, name='error_404'),
     # URL 
     path('probar-url/', mi_vista, name='url_probar'),
+
+    # Incluimos las URLs generadas por el router  (API REST)
+    path('', include(router.urls)),
 ]

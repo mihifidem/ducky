@@ -38,9 +38,17 @@ from .models import (
 
 from account.models import UserProfile
 
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from rest_framework.pagination import PageNumberPagination
+from .serializers import CVProfileSerializer
+
 # Función para manejar el error 404
 def cv_not_found_handler(request, exception):
     return render(request, "cv_manager/404.html", status=404)
+
+
 
 # ------------------------
 # Panel y Dashboard
@@ -810,3 +818,19 @@ def mi_vista(request):
     }
 
     return render(request, 'cv_manager/info_url.html', contexto)
+
+
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+class CVProfileViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = CVProfileSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+    pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self):
+        # Filtramos solo los CVs del usuario logueado
+        return CVProfile.objects.filter(user=self.request.user).order_by('-updated_at')

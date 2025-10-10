@@ -1,6 +1,5 @@
 {% extends 'base2.html' %}
 
-<<<<<<<< HEAD:account/cv_manager/templates/cv_manager/hardskill_form.html
 {% block title %}
 {% if form.instance.pk %}Editar Habilidad Fuerte{% else %}Añadir Habilidad Fuerte{% endif %}
 {% endblock %}
@@ -13,18 +12,6 @@
     </h2>
 
     <form method="post" novalidate>
-========
-{% block title %}{% if form.instance.pk %}✏️ Editar{% else %}➕ Añadir{% endif %} Idioma{% endblock %}
-
-{% block content %}
-<main class="container my-5" role="main">
-  <div class="card shadow-sm p-4 mx-auto" style="max-width: 500px;">
-    <h2 class="mb-4 text-center text-primary">
-      {% if form.instance.pk %}✏️ Editar{% else %}➕ Añadir{% endif %} Idioma
-    </h2>
-
-    <form method="post" novalidate aria-labelledby="form-title">
->>>>>>>> 6f9b01e2957779d92e4a8638ddbbc2ffaec52b99:account/cv_manager/templates/cv_manager/language_form.html
       {% csrf_token %}
 
       {% if form.errors %}
@@ -43,17 +30,10 @@
 
       <div class="d-flex justify-content-between mt-4">
         <button type="submit" class="btn btn-success px-4">Guardar</button>
-<<<<<<<< HEAD:account/cv_manager/templates/cv_manager/hardskill_form.html
         <a href="{% url 'hardskill_list' %}" class="btn btn-outline-secondary px-4" role="button">Cancelar</a>
-========
-        <a href="{% url 'language_list' %}" class="btn btn-secondary ms-2" role="button">Cancelar</a>
->>>>>>>> 6f9b01e2957779d92e4a8638ddbbc2ffaec52b99:account/cv_manager/templates/cv_manager/language_form.html
       </div>
     </form>
   </div>
 </main>
-<<<<<<<< HEAD:account/cv_manager/templates/cv_manager/hardskill_form.html
 
-========
->>>>>>>> 6f9b01e2957779d92e4a8638ddbbc2ffaec52b99:account/cv_manager/templates/cv_manager/language_form.html
 {% endblock %}
