@@ -74,4 +74,12 @@ urlpatterns = [
 
     # Incluimos las URLs generadas por el router  (API REST)
     path('', include(router.urls)),
+
+    # URL QR
+    path('cv/<slug:slug>/qr/', views.cv_qr_view, name='cv_qr'),
+
+    # Url de exportación
+
+    path('<int:pk>/export/json/', views.export_cv_json, name='export_cv_json'),
+    path('<int:pk>/export/csv/', views.export_cv_csv, name='export_cv_csv'),
 ]

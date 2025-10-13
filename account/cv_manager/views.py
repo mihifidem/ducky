@@ -12,6 +12,14 @@ from urllib.parse import urlparse, parse_qs
 from .models import CVProfile
 from account.cv_manager.models import UserJobExperience
 from django.http import Http404
+from django.contrib.sites.shortcuts import get_current_site
+from .utils import generate_qr
+
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.core import serializers
+import csv
 
 # External libraries
 import pdfkit
@@ -671,6 +679,11 @@ def cv_public_view(request, slug):
     if not profile:
         return render(request, 'cv_manager/cv_no_profile.html', status=404)
 
+    # ✅ Definir la variable antes de usarla (evita NameError)
+    absolute_photo_url = None
+    if profile and getattr(profile, 'photo', None):
+        absolute_photo_url = request.build_absolute_uri(profile.photo.url)
+
     # Mapear skins a plantillas
     template_map = {
         'default': 'cv_manager/skins/cv_default.html',
@@ -682,6 +695,7 @@ def cv_public_view(request, slug):
     return render(request, template_path, {
         'cv': cv,
         'profile': profile,
+        'absolute_photo_url': absolute_photo_url,
     })
 
 
@@ -709,6 +723,11 @@ def cv_download_pdf(request, slug):
     except UserProfile.DoesNotExist:
         profile = None
 
+    # ✅ Asegurar que la variable exista aunque no haya foto
+    absolute_photo_url = None
+    if profile and getattr(profile, 'photo', None):
+        absolute_photo_url = request.build_absolute_uri(profile.photo.url)
+    
     # Plantillas según el skin
     template_map = {
         'default': 'cv_manager/skins/pdf/cv_default_pdf.html',
@@ -721,6 +740,7 @@ def cv_download_pdf(request, slug):
     context = {
         'cv': cv,
         'profile': profile,
+        'absolute_photo_url': absolute_photo_url,
     }
     html = render_to_string(template_path, context, request=request)
 
@@ -834,3 +854,82 @@ class CVProfileViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         # Filtramos solo los CVs del usuario logueado
         return CVProfile.objects.filter(user=self.request.user).order_by('-updated_at')
+    
+# Qr Code
+    
+def cv_qr_view(request, slug):
+    """
+    Devuelve un código QR con la URL pública del CV.
+    """
+    cv = get_object_or_404(CVProfile, slug=slug)
+    domain = get_current_site(request).domain
+    cv_url = f"https://{domain}{reverse('cv_public_view', args=[cv.slug])}"
+
+    return generate_qr(cv_url)
+
+# vista protegida
+
+
+@login_required
+def export_cv_json(request, pk):
+    """Exportar un CV a JSON"""
+    cv = get_object_or_404(CVProfile, pk=pk, user=request.user)
+    
+    # Opción 1: usar Django serializers
+    data = serializers.serialize('json', [cv], indent=2)
+    return HttpResponse(data, content_type='application/json')
+
+
+# exportar cv a json
+
+@login_required
+def export_cv_csv(request, pk):
+    """Exportar un CV a CSV"""
+    # Filtrar por el usuario dueño del CV
+    cv = get_object_or_404(CVProfile, pk=pk, user=request.user)
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="{cv.title}.csv"'
+
+    writer = csv.writer(response)
+    
+    # Cabecera general
+    writer.writerow(['Sección', 'Campo', 'Valor'])
+    
+    # Información del usuario
+    user = cv.user
+    writer.writerow(['Perfil', 'Nombre', f'{user.first_name} {user.last_name}'])
+    writer.writerow(['Perfil', 'Email', user.email])
+    
+    # Si CVProfile tiene teléfono u otros campos propios
+    if hasattr(cv, 'phone'):
+        writer.writerow(['Perfil', 'Teléfono', cv.phone])
+    
+    # Experiencias
+    for exp in cv.selected_experiences.all():
+        writer.writerow(['Experiencia', 'Posición', exp.position])
+        writer.writerow(['Experiencia', 'Compañía', exp.company])
+        writer.writerow(['Experiencia', 'Fechas', f'{exp.start_date} – {exp.end_date or "Actualidad"}'])
+    
+    # Educación
+    for edu in cv.selected_educations.all():
+        writer.writerow(['Educación', 'Título', edu.title])
+        writer.writerow(['Educación', 'Institución', edu.institution])
+    
+    # Idiomas
+    for lang in cv.selected_languages.all():
+        writer.writerow(['Idioma', lang.language.name, lang.get_level_display()])
+    
+    # Habilidades blandas
+    for skill in cv.selected_softskills.all():
+        writer.writerow(['Habilidad blanda', skill.skill.name, ''])
+    
+    # Habilidades duras
+    for skill in cv.selected_hardskills.all():
+        writer.writerow(['Habilidad dura', skill.skill.name, ''])
+    
+    # Hobbies
+    for hobby in cv.selected_hobbies.all():
+        writer.writerow(['Hobby', hobby.hobby.name, ''])
+    
+    return response

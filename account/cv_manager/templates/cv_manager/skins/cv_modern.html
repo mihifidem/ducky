@@ -1,5 +1,21 @@
 {% extends 'base.html' %}
+{% block extra_head %}
+    <!-- 🧠 Metadatos sociales (Open Graph + Twitter) -->
+    <meta property="og:title" content="{{ cv.title }}">
+    <meta property="og:description" content="Currículum de {{ profile.full_name }}">
+{% if profile.photo %}
+<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ profile.photo.url }}">
+<meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{{ profile.photo.url }}">
+{% endif %}
 
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ cv.title }}">
+    <meta name="twitter:description" content="Currículum de {{ profile.full_name }}">
+{% endblock %}
 {% block content %}
 <main class="cv-container" role="main" style="color: {{ cv.primary_color }}; font-family: {{ cv.font_family }};">
 
@@ -11,6 +27,9 @@
 
   <div class="d-flex justify-content-between align-items-center my-3">
     <a href="{% url 'cv_download' slug=cv.slug %}" class="btn btn-success" role="button">📄 Descargar PDF</a>
+    <a href="{% url 'cv_qr' cv.slug %}" class="btn btn-info" role="button">📱 Descargar QR</a>
+    <a href="{% url 'export_cv_json' cv.pk %}" class="btn btn-primary">📄 Exportar JSON</a>
+    <a href="{% url 'export_cv_csv' cv.pk %}" class="btn btn-secondary">📑 Exportar CSV</a>
     <a href="{% url 'cv_list' %}" class="btn btn-danger" role="button">❌ Cancelar</a>
   </div>
 

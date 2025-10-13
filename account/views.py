@@ -13,7 +13,6 @@ from django.contrib.auth.forms import UserCreationForm
 from django.conf import settings
 from urllib.parse import urlparse, parse_qs
 from account.cv_manager.models import CVProfile
-
 # External libraries
 from datetime import datetime
 
