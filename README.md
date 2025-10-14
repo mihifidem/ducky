@@ -122,12 +122,22 @@ ALLOWED_HOSTS=127.0.0.1,localhost
 - Inclúyelo en .gitignore.
 
 ### 📸 Capturas de ejemplo (opcional)
-- Agrega imágenes en la carpeta /media o en /docs y enlázalas aquí:
 
 <p align="center">
-  <img src="docs/demo.png" alt="Demo principal" width="300" style="margin:10px;">
-  <img src="docs/login.png" alt="Pantalla de login" width="300" style="margin:10px;">
-  <img src="docs/cvs.png" alt="Pantalla de CVs" width="300" style="margin:10px;">
+  <figure style="display:inline-block; margin:10px;">
+    <img src="docs/demo.png" alt="Demo principal" width="300">
+    <figcaption align="center">Demo principal</figcaption>
+  </figure>
+
+  <figure style="display:inline-block; margin:10px;">
+    <img src="docs/login.png" alt="Pantalla de login" width="300">
+    <figcaption align="center">Pantalla de login</figcaption>
+  </figure>
+
+  <figure style="display:inline-block; margin:10px;">
+    <img src="docs/cvs.png" alt="Pantalla de CVs" width="300">
+    <figcaption align="center">Pantalla de CVs</figcaption>
+  </figure>
 </p>
 
 ### 📄 Licencia
