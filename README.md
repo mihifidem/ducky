@@ -79,24 +79,23 @@ python manage.py runserver
 Luego visita 👉 http://127.0.0.1:8000/ para ver la aplicación.
 ```
 ### 🧠 Estructura del proyecto
-
+- Este repositorio contiene un proyecto Django con módulos para gestión de usuarios, CVs, blog y trabajos/proyectos.
+```
 ducky/
-│
-├── account/        # Gestión de usuarios y autenticación
-|    |_ cv_manager  # Gestion de CVs
-├── blog/           # Entradas de blog y artículos
-├── core/           # Configuración y utilidades base
-├── jobs/           # Módulo de trabajos / proyectos
-├── media/          # Archivos multimedia subidos
-├── static/         # Archivos estáticos (CSS, JS, imágenes)
-├── templates/      # Plantillas HTML del sitio
-├── utils/          # Funciones auxiliares y helpers
-│
-├── manage.py       # Script principal de Django
-├── db.sqlite3      # Base de datos por defecto
-└── requirements.txt # Dependencias del proyecto
-|__ readme-md       # Explicación del proyecto y pasos a seguir
-
+├── account/ 🧑‍💻 Gestión de usuarios y autenticación
+│ └── cv_manager/ 📄 Gestión de CVs
+├── blog/ 📝 Entradas de blog y artículos
+├── core/ ⚙️ Configuración y utilidades base
+├── jobs/ 💼 Módulo de trabajos / proyectos
+├── media/ 🖼️ Archivos multimedia subidos
+├── static/ 💾 Archivos estáticos (CSS, JS, imágenes)
+├── templates/ 🏗️ Plantillas HTML del sitio
+├── utils/ 🔧 Funciones auxiliares y helpers
+├── manage.py 🏃 Script principal de Django
+├── db.sqlite3 🗄️ Base de datos por defecto
+├── requirements.txt 📦 Dependencias del proyecto
+└── README.md 📖 Explicación del proyecto y pasos a seguir
+```
 ### 💻 Uso
 - Inicia sesión o crea un nuevo usuario.
 
