@@ -124,12 +124,14 @@ ALLOWED_HOSTS=127.0.0.1,localhost
 ### 📸 Capturas de ejemplo (opcional)
 - Agrega imágenes en la carpeta /media o en /docs y enlázalas aquí:
 
-```
-![Demo principal](docs/demo.png)
-```
+<p align="center">
+  <img src="docs/demo.png" alt="Demo principal" width="300" style="margin:10px;">
+  <img src="docs/login.png" alt="Pantalla de login" width="300" style="margin:10px;">
+  <img src="docs/cvs.png" alt="Pantalla de CVs" width="300" style="margin:10px;">
+</p>
 
 ### 📄 Licencia
-- Este proyecto está licenciado bajo la MIT License.
+- Este proyecto está licenciado bajo la MIT-CIEF License.
 - Consulta el archivo LICENSE para más información.
 
 ### 👤 Autor
