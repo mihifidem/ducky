@@ -126,7 +126,7 @@ En la rama `cv` las aplicaciones relevantes son:
 
 ## 🗺 Diagrama de relaciones
 
-![Diagrama Mermaid](docs/diagramas/diagrama_mermaid.png)
+![Diagrama Mermaid](./diagramas/diagrama_mermaid.png)
 *Diagrama de relaciones del proyecto*
 
 ---
