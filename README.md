@@ -124,19 +124,22 @@ ALLOWED_HOSTS=127.0.0.1,localhost
 ### 📸 Capturas de ejemplo (opcional)
 
 <p align="center">
-  <figure style="display:inline-block; margin:10px;">
+  <figure style="display:inline-block; margin:20px;">
     <img src="docs/demo.png" alt="Demo principal" width="300">
-    <figcaption align="center">Demo principal</figcaption>
+    <figcaption style="color:blue; font-weight:bold; margin-top:5px;">Demo principal</figcaption>
+    <hr style="border:1px solid blue; width:300px; margin-top:5px;">
   </figure>
 
-  <figure style="display:inline-block; margin:10px;">
+  <figure style="display:inline-block; margin:20px;">
     <img src="docs/login.png" alt="Pantalla de login" width="300">
-    <figcaption align="center">Pantalla de login</figcaption>
+    <figcaption style="color:blue; font-weight:bold; margin-top:5px;">Pantalla de login</figcaption>
+    <hr style="border:1px solid blue; width:300px; margin-top:5px;">
   </figure>
 
-  <figure style="display:inline-block; margin:10px;">
+  <figure style="display:inline-block; margin:20px;">
     <img src="docs/cvs.png" alt="Pantalla de CVs" width="300">
-    <figcaption align="center">Pantalla de CVs</figcaption>
+    <figcaption style="color:blue; font-weight:bold; margin-top:5px;">Pantalla de CVs</figcaption>
+    <hr style="border:1px solid blue; width:300px; margin-top:5px;">
   </figure>
 </p>
 
